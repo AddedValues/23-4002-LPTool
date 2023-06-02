@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="6">
+            <File firstVisibleLine="178" xOffset="0" scrollWidth="3971" startPos="8833" endPos="8834" selMode="0" offset="0" wrapCount="1" lang="Python" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\Python\MECcharts.py" backupFilePath="" originalFileLastModifTimestamp="-1980201244" originalFileLastModifTimestampHigh="31028492" tabColourId="-1" mapFirstVisibleDisplayLine="148" mapFirstVisibleDocLine="178" mapLastVisibleDocLine="222" mapNbLine="44" mapHigherPos="7169" mapWidth="392" mapHeight="132" mapKByteInDoc="42" mapWrapIndentMode="1" mapIsWrap="yes">
+                <Fold line="72" />
+                <Fold line="91" />
+                <Fold line="97" />
+                <Fold line="105" />
+                <Fold line="108" />
+                <Fold line="111" />
+                <Fold line="114" />
+                <Fold line="117" />
+                <Fold line="120" />
+                <Fold line="123" />
+                <Fold line="126" />
+                <Fold line="129" />
+                <Fold line="132" />
+                <Fold line="135" />
+                <Fold line="281" />
+                <Fold line="289" />
+                <Fold line="317" />
+                <Fold line="351" />
+                <Fold line="390" />
+                <Fold line="465" />
+                <Fold line="557" />
+                <Fold line="816" />
+            </File>
+            <File firstVisibleLine="53" xOffset="0" scrollWidth="2396" startPos="2585" endPos="2585" selMode="0" offset="0" wrapCount="1" lang="Python" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\Python\MEClib.py" backupFilePath="" originalFileLastModifTimestamp="-2060036020" originalFileLastModifTimestampHigh="31028060" tabColourId="-1" mapFirstVisibleDisplayLine="27" mapFirstVisibleDocLine="85" mapLastVisibleDocLine="373" mapNbLine="43" mapHigherPos="1023" mapWidth="284" mapHeight="129" mapKByteInDoc="15" mapWrapIndentMode="1" mapIsWrap="no">
+                <Fold line="0" />
+                <Fold line="24" />
+                <Fold line="28" />
+                <Fold line="47" />
+                <Fold line="87" />
+                <Fold line="105" />
+                <Fold line="170" />
+                <Fold line="234" />
+                <Fold line="271" />
+                <Fold line="287" />
+                <Fold line="292" />
+                <Fold line="303" />
+                <Fold line="316" />
+                <Fold line="338" />
+            </File>
+            <File firstVisibleLine="428" xOffset="0" scrollWidth="3408" startPos="18422" endPos="18427" selMode="0" offset="0" wrapCount="1" lang="Python" encoding="-1" userReadOnly="yes" filename="C:\AddedValues Dropbox\GAMS\AVA\INVOPT_2023_03_24_c99cb1\run_jobs_AVA_14_1.py" backupFilePath="" originalFileLastModifTimestamp="-1065254400" originalFileLastModifTimestampHigh="31022649" tabColourId="-1" mapFirstVisibleDisplayLine="387" mapFirstVisibleDocLine="428" mapLastVisibleDocLine="472" mapNbLine="44" mapHigherPos="17040" mapWidth="181" mapHeight="132" mapKByteInDoc="18" mapWrapIndentMode="1" mapIsWrap="no">
+                <Fold line="0" />
+                <Fold line="17" />
+                <Fold line="38" />
+            </File>
+            <File firstVisibleLine="380" xOffset="0" scrollWidth="2447" startPos="17571" endPos="17571" selMode="0" offset="0" wrapCount="1" lang="Python" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\Python\MEC_run_jobs_2.py" backupFilePath="C:\Users\MogensBechLaursen\AppData\Roaming\Notepad++\backup\MEC_run_jobs_2.py@2023-04-28_124825" originalFileLastModifTimestamp="-591613054" originalFileLastModifTimestampHigh="31029694" tabColourId="-1" mapFirstVisibleDisplayLine="328" mapFirstVisibleDocLine="380" mapLastVisibleDocLine="423" mapNbLine="43" mapHigherPos="27927" mapWidth="142" mapHeight="129" mapKByteInDoc="38" mapWrapIndentMode="1" mapIsWrap="no">
+                <Fold line="65" />
+                <Fold line="72" />
+                <Fold line="128" />
+                <Fold line="136" />
+                <Fold line="147" />
+                <Fold line="154" />
+                <Fold line="166" />
+                <Fold line="170" />
+                <Fold line="178" />
+                <Fold line="183" />
+                <Fold line="201" />
+                <Fold line="258" />
+                <Fold line="261" />
+                <Fold line="345" />
+                <Fold line="352" />
+                <Fold line="370" />
+                <Fold line="621" />
+                <Fold line="627" />
+                <Fold line="711" />
+                <Fold line="715" />
+            </File>
+            <File firstVisibleLine="3243" xOffset="0" scrollWidth="2396" startPos="323156" endPos="323174" selMode="0" offset="0" wrapCount="1" lang="None (Normal Text)" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\MEC_run_jobs_1.log" backupFilePath="" originalFileLastModifTimestamp="-1239547196" originalFileLastModifTimestampHigh="31028265" tabColourId="-1" mapFirstVisibleDisplayLine="3243" mapFirstVisibleDocLine="3243" mapLastVisibleDocLine="3283" mapNbLine="40" mapHigherPos="4916" mapWidth="269" mapHeight="120" mapKByteInDoc="397" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="38" xOffset="0" scrollWidth="5533" startPos="2736" endPos="2736" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\MECmain.gms" backupFilePath="" originalFileLastModifTimestamp="1954636631" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="38" mapFirstVisibleDocLine="38" mapLastVisibleDocLine="79" mapNbLine="41" mapHigherPos="1590" mapWidth="378" mapHeight="123" mapKByteInDoc="2" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="636" xOffset="0" scrollWidth="3971" startPos="34214" endPos="34214" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\DeclareGlobalSets.gms" backupFilePath="" originalFileLastModifTimestamp="-1665742139" originalFileLastModifTimestampHigh="31029454" tabColourId="-1" mapFirstVisibleDisplayLine="404" mapFirstVisibleDocLine="404" mapLastVisibleDocLine="445" mapNbLine="41" mapHigherPos="24684" mapWidth="378" mapHeight="123" mapKByteInDoc="40" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="754" />
+            </File>
+            <File firstVisibleLine="17" xOffset="0" scrollWidth="5533" startPos="1050" endPos="1058" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\LoopPeriodPost.gms" backupFilePath="" originalFileLastModifTimestamp="1954444969" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="10" mapFirstVisibleDocLine="10" mapLastVisibleDocLine="47" mapNbLine="37" mapHigherPos="4559" mapWidth="395" mapHeight="111" mapKByteInDoc="6" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="53" xOffset="0" scrollWidth="3971" startPos="3737" endPos="3737" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SavePeriodResults.gms" backupFilePath="" originalFileLastModifTimestamp="1954918445" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="53" mapFirstVisibleDocLine="53" mapLastVisibleDocLine="87" mapNbLine="34" mapHigherPos="42" mapWidth="262" mapHeight="102" mapKByteInDoc="7" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="83" xOffset="0" scrollWidth="1836" startPos="6570" endPos="6588" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\DeclareMaster.gms" backupFilePath="" originalFileLastModifTimestamp="1953663571" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="270" mapFirstVisibleDocLine="270" mapLastVisibleDocLine="313" mapNbLine="43" mapHigherPos="-1" mapWidth="374" mapHeight="129" mapKByteInDoc="37" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="302" />
+                <Mark line="378" />
+                <Mark line="389" />
+                <Mark line="399" />
+            </File>
+            <File firstVisibleLine="12" xOffset="0" scrollWidth="1429" startPos="608" endPos="608" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\LoopMasterPost.gms" backupFilePath="" originalFileLastModifTimestamp="-1683561364" originalFileLastModifTimestampHigh="31029688" tabColourId="-1" mapFirstVisibleDisplayLine="12" mapFirstVisibleDocLine="12" mapLastVisibleDocLine="45" mapNbLine="33" mapHigherPos="-1" mapWidth="315" mapHeight="99" mapKByteInDoc="5" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="50" />
+            </File>
+            <File firstVisibleLine="292" xOffset="0" scrollWidth="1627" startPos="10122" endPos="10122" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SolveSlaveModel.gms" backupFilePath="" originalFileLastModifTimestamp="1955230879" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="292" mapFirstVisibleDocLine="292" mapLastVisibleDocLine="334" mapNbLine="42" mapHigherPos="-1" mapWidth="386" mapHeight="126" mapKByteInDoc="12" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="204" />
+            </File>
+            <File firstVisibleLine="28" xOffset="0" scrollWidth="3971" startPos="2491" endPos="2491" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SavePeriodStats.gms" backupFilePath="" originalFileLastModifTimestamp="1954918445" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="28" mapFirstVisibleDocLine="28" mapLastVisibleDocLine="69" mapNbLine="41" mapHigherPos="6666" mapWidth="266" mapHeight="123" mapKByteInDoc="8" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="74" />
+                <Mark line="91" />
+                <Mark line="97" />
+                <Mark line="102" />
+            </File>
+            <File firstVisibleLine="70" xOffset="0" scrollWidth="1693" startPos="3628" endPos="3628" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\LoopRollHorizPre.gms" backupFilePath="" originalFileLastModifTimestamp="1954601509" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="18" mapFirstVisibleDocLine="18" mapLastVisibleDocLine="62" mapNbLine="44" mapHigherPos="-1" mapWidth="391" mapHeight="132" mapKByteInDoc="8" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="5533" startPos="381" endPos="381" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\PrepareMaster.gms" backupFilePath="" originalFileLastModifTimestamp="1954636631" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="57" mapFirstVisibleDocLine="57" mapLastVisibleDocLine="97" mapNbLine="40" mapHigherPos="-1" mapWidth="268" mapHeight="120" mapKByteInDoc="9" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="462" xOffset="0" scrollWidth="5533" startPos="22138" endPos="22138" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\DumpPeriodsToExcel.gms" backupFilePath="" originalFileLastModifTimestamp="1954132918" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="260" mapFirstVisibleDocLine="456" mapLastVisibleDocLine="505" mapNbLine="49" mapHigherPos="21082" mapWidth="355" mapHeight="147" mapKByteInDoc="22" mapWrapIndentMode="1" mapIsWrap="yes">
+                <Fold line="95" />
+                <Fold line="106" />
+                <Fold line="197" />
+                <Fold line="228" />
+                <Fold line="240" />
+                <Fold line="247" />
+                <Fold line="254" />
+                <Fold line="271" />
+                <Fold line="295" />
+            </File>
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="5533" startPos="315" endPos="315" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SaveSlaveResults.gms" backupFilePath="" originalFileLastModifTimestamp="1892203039" originalFileLastModifTimestampHigh="31025448" tabColourId="-1" mapFirstVisibleDisplayLine="0" mapFirstVisibleDocLine="0" mapLastVisibleDocLine="49" mapNbLine="49" mapHigherPos="0" mapWidth="362" mapHeight="147" mapKByteInDoc="1" mapWrapIndentMode="1" mapIsWrap="yes" />
+            <File firstVisibleLine="357" xOffset="0" scrollWidth="3971" startPos="19438" endPos="19438" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\InitMasterLoop.gms" backupFilePath="" originalFileLastModifTimestamp="591498045" originalFileLastModifTimestampHigh="31029367" tabColourId="-1" mapFirstVisibleDisplayLine="359" mapFirstVisibleDocLine="359" mapLastVisibleDocLine="399" mapNbLine="40" mapHigherPos="2378" mapWidth="268" mapHeight="120" mapKByteInDoc="19" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="311" />
+                <Mark line="312" />
+            </File>
+            <File firstVisibleLine="60" xOffset="0" scrollWidth="1165" startPos="3524" endPos="3527" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SolveMasterModel.gms" backupFilePath="" originalFileLastModifTimestamp="1955074632" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="0" mapFirstVisibleDocLine="0" mapLastVisibleDocLine="34" mapNbLine="34" mapHigherPos="-1" mapWidth="264" mapHeight="102" mapKByteInDoc="5" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="7" xOffset="0" scrollWidth="5533" startPos="781" endPos="1437" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\LoopRollHorizPost.gms" backupFilePath="" originalFileLastModifTimestamp="1954444969" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="7" mapFirstVisibleDocLine="7" mapLastVisibleDocLine="38" mapNbLine="31" mapHigherPos="0" mapWidth="268" mapHeight="93" mapKByteInDoc="3" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="556" xOffset="0" scrollWidth="3971" startPos="21987" endPos="21987" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\PrepareSlave.gms" backupFilePath="" originalFileLastModifTimestamp="140184768" originalFileLastModifTimestampHigh="31029364" tabColourId="-1" mapFirstVisibleDisplayLine="556" mapFirstVisibleDocLine="556" mapLastVisibleDocLine="593" mapNbLine="37" mapHigherPos="2201" mapWidth="267" mapHeight="111" mapKByteInDoc="23" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1451" startPos="1214" endPos="1214" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SetupSlaveModel.gms" backupFilePath="" originalFileLastModifTimestamp="1955074632" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="0" mapFirstVisibleDocLine="0" mapLastVisibleDocLine="40" mapNbLine="40" mapHigherPos="-1" mapWidth="247" mapHeight="120" mapKByteInDoc="1" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="174" xOffset="0" scrollWidth="835" startPos="11101" endPos="11101" selMode="0" offset="0" wrapCount="1" lang="None (Normal Text)" encoding="-1" userReadOnly="yes" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\MECmain.log" backupFilePath="" originalFileLastModifTimestamp="646880586" originalFileLastModifTimestampHigh="31029306" tabColourId="-1" mapFirstVisibleDisplayLine="174" mapFirstVisibleDocLine="174" mapLastVisibleDocLine="217" mapNbLine="43" mapHigherPos="-1" mapWidth="376" mapHeight="129" mapKByteInDoc="11" mapWrapIndentMode="1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="930" startPos="998" endPos="998" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\DeclareMasterStats.gms" backupFilePath="" originalFileLastModifTimestamp="1953663571" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="512" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="234" xOffset="0" scrollWidth="1187" startPos="6283" endPos="6283" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\TimeAggrPeriod.gms" backupFilePath="" originalFileLastModifTimestamp="1955230879" originalFileLastModifTimestampHigh="31029362" tabColourId="-1" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="512" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="23" xOffset="0" scrollWidth="1616" startPos="1599" endPos="1599" selMode="0" offset="0" wrapCount="1" lang="GAMS_JBT" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\INVOPT\Master\SetupMasterModel.gms" backupFilePath="" originalFileLastModifTimestamp="-547442977" originalFileLastModifTimestampHigh="31029670" tabColourId="-1" mapFirstVisibleDisplayLine="23" mapFirstVisibleDocLine="23" mapLastVisibleDocLine="69" mapNbLine="46" mapHigherPos="-1" mapWidth="269" mapHeight="138" mapKByteInDoc="31" mapWrapIndentMode="1" mapIsWrap="no">
+                <Mark line="30" />
+                <Mark line="46" />
+                <Mark line="435" />
+                <Mark line="468" />
+                <Mark line="483" />
+                <Mark line="596" />
+            </File>
+        </mainView>
+        <subView activeIndex="0">
+            <File firstVisibleLine="380" xOffset="0" scrollWidth="2447" startPos="17585" endPos="17585" selMode="0" offset="0" wrapCount="1" lang="Python" encoding="-1" userReadOnly="no" filename="C:\GitHub\23-1002 MEC FF\Python\MEC_run_jobs_2.py" backupFilePath="C:\Users\MogensBechLaursen\AppData\Roaming\Notepad++\backup\MEC_run_jobs_2.py@2023-04-28_124825" originalFileLastModifTimestamp="-591613054" originalFileLastModifTimestampHigh="31029694" tabColourId="-1" mapFirstVisibleDisplayLine="328" mapFirstVisibleDocLine="380" mapLastVisibleDocLine="423" mapNbLine="43" mapHigherPos="27927" mapWidth="142" mapHeight="129" mapKByteInDoc="38" mapWrapIndentMode="1" mapIsWrap="no" />
+        </subView>
+    </Session>
+</NotepadPlus>

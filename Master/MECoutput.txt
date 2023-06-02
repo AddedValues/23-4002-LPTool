@@ -1,0 +1,37 @@
+filter=0
+
+* NOTE on using GDXXRW to export GDX results to Excel. McCarl
+* Any item to be exported must be unloaded (saved) to a gdx file using the execute_unload stmt (see above).
+* 1: By default an item is assumed to be a table (2D) and the first index being the row index.
+* 2: By vectors (1D) do specify cdim=0 to obtain a column vector, otherwise a row vector is obtained.
+* 3: GDXXRW args options cdim and rdim control how a multi-dim item is written to the Excel sheet:
+*    a: cdim is the no. of dimensions going into columns.
+*    b: rdim is the no. of dimensions going into rows.
+*    c: The dimension of the item must equal cdim + rdim.
+* 4: Column indices are the rightmost indices of the item (indices are set names).
+* 5: The name of the item is not written as a part of export stmt eg var=<varname> rng=<sheetname>!<topleft cell> cdim=... rdim=...
+* 6: When cdim=0 the range will hold no header row ie. the range should be addressed to begin one row lower than multidim. items.
+* 7: Formulas cannot be written. A text starting with '=' raises a 'Parameter missing for option' error.
+* See details and examples in the McCarl article "Rearranging rows and columns" in the GAMS Documentation Center.
+
+* OutItemsTable
+*--- text="OutItemsTable" rng=OutItems!A8
+*--- par=OutItemsTable squeeze=N rng=OutItems!A9
+
+* Overview as the last sheet to be written hence the actual sheet when opening Excel file.
+
+*-- OverView Inputs
+text="ActualScenario" rng=Overview!A3:A3
+set=actSc rng=Overview!B3:B3
+text="DurationPeriod" rng=OverView!A6:A6
+par=DurationPeriod rng=OverView!B6:B6
+text="ActScen" rng=Overview!A7
+par=ActScen squeeze=N rng=Overview!A8 cdim=0 rdim=1
+par=StatsSolver squeeze=N rng=OverView!A71 cdim=0 rdim=1
+text="GAMS Job statistics" rng=OverView!A70:A70
+
+par=StatsU squeeze=N     rng=OverView!E4 cdim=1 rdim=1
+text="Unit stats"        rng=Overview!E4
+par=StatsVak squeeze=N   rng=OverView!E30 cdim=1 rdim=1
+text="VAK stats"         rng=Overview!E30
+

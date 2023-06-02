@@ -1,0 +1,27 @@
+* Denne fil indeholder gurobi options for mastermodellen.
+* Den har extension .op9 jf. GAMS linket:  https://www.gams.com/41/docs/UG_GamsCall.html#GAMSAOoptfile
+
+IIS=1
+rerun=1
+feasopt=0
+feasoptmode=0	 
+freegamsmodel=0
+heuristics=0.3
+
+mipgap=0.005
+
+mipgapabs=0.30
+mipstart=0
+*--- numericfocus=2
+numericfocus=1
+*--- scaleflag=1
+scaleflag=2
+seed=0
+sensitivity=1
+threads=2
+timelimit=2500
+*--- varhint=1
+*--- concurrentMIP=3
+*--- BarHomogeneous = 1
+*--- integralityfocus=1
+integralityfocus=0

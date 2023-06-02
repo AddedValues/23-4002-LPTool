@@ -1,0 +1,6 @@
+ LIMROW=5
+ LIMCOL=5
+ SavePoint=0
+ SolPrint=OFF
+ Dformat=2
+ GDX=default

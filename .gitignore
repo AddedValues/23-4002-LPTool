@@ -1,0 +1,22 @@
+
+Debug/
+
+GAMS playground/
+
+Kapac-optim/
+
+Presentations/
+
+Systemydelser/
+
+Beregninger/
+
+*.gdx
+
+Python/MECTidsAggregering.xlsx
+
+Python/AVA_MainTimeAggr.py
+
+Python/copilot.py
+
+Python/dfIterMecF.xlsx

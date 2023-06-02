@@ -1,0 +1,9 @@
+[CHART]
+VERID=GAMSIDE Chart(s) V1
+GDXFILE=MecLpMain.gdx
+TITLE=ElspotActual
+SUBTITLE=Actual elspot price
+
+[SERIES1]
+SYMBOL=ElspotActual
+TYPE=line

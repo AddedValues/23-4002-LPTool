@@ -1,0 +1,13 @@
+$log Entering file: %system.incName%
+$Title 23-4002 MEC Load planning tool
+$eolcom #
+
+
+
+$Include GlobalSettings.gms
+$Include DeclareGlobalSets.gms
+$Include DeclareSlave.gms
+$Include DeclareSlaveModel
+$Include ReadScenarios.gms
+$Include PrepareSlave.gms      
+$Include LoopPeriods.gms
