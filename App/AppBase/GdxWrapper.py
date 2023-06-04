@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 import gams as g
 import copy
+import AppBase.LpBase as lpbase
 
 # from gams import *
 
@@ -58,7 +59,9 @@ class GdxWrapper():
     def __init__(self, db: g.GamsDatabase, name:str= None, pathFile:str= None, logger: logging.Logger = None):
         """Initializes instance by a user-given database or by a name and a file path."""
         # pathGdx = r'C:\Users\MogensBechLaursen\Documents\gamsdir\projdir\DIN\ESV4\ESV4 scenarier\219MWf\DIN 101.gdx'
-        self.logger = logger
+        # self.logger = logger
+
+        self.logger = logging.getLogger(lpbase.Lpbase.logName)
         if db is None:
             self.name = name
             self.pathFile = pathFile
@@ -96,6 +99,8 @@ class GdxWrapper():
         # self.allLookup['parm'] = self.parmLookup
         # self.allLookup['var'] = self.varLookup
         # self.allLookup['eqn'] = self.eqnLookup
+
+        return
 
     # ----------------------------------------------------------------------------------------------------------
     def firstkey(self, d : dict):
@@ -213,6 +218,16 @@ class GdxWrapper():
 
         return ['None', None]
 
+    # def getGSymbol(self, symbolName) -> GSymbol:
+    #     """ Returns GamsSymbol instance wrapped as GSymbol instance or None if non-existent."""
+    #     [kind, symbol] = self.getSymbolKind(symbolName)
+    #     if symbol is None:
+    #         return None
+    #     else:
+    #         return GSymbol(symbol, self)
+
+    #     return
+    
     # ----------------------------------------------------------------------------------------------------------
     def getAsGSymbols(self, symFilter = None):  # symbolkind:str, 
         """
@@ -476,7 +491,7 @@ class GdxWrapper():
             return values
 
     # ----------------------------------------------------------------------------------------------------------
-    def getDataFrame(self, symbolName, returnAsDataFrame=True, attrName='level'):
+    def getDataFrame(self, symbolName, attrName='level'):
         """
         Returns attribute values of named symbol (parm, var or eqn) as a pandas dataframe.
           symbolName:      Name of GAMS symbol (must be eqn, parm, var).
@@ -512,7 +527,7 @@ class GdxWrapper():
         doms = symbol.domains_as_strings
         # for idom in range(len(doms)):
         #     self.logger.debug('{0}.domain[{1}] = {2}'.format(symbolName, idom, doms[idom]))
-        if (gSymbol.dimension == 1):  #--- and not returnAsDataFrame:
+        if gSymbol.dimension == 1: 
             d = dict()
             for rec in symbol:
                 attrValue = self.getAttrValue(gSymbol.kind, rec, attrName)
@@ -524,7 +539,7 @@ class GdxWrapper():
         rowSet = self.getSet(doms[0])
         rowKeys = self.getSetMembers(rowSet.name)
         nRow = rowSet.number_records
-        # if gSymbol.dimension == 1 and returnAsDataFrame:
+        # if gSymbol.dimension == 1 and not returnAsDict:
         #     colKeys = ['Value']
         #     nCol = 1
         # else: 

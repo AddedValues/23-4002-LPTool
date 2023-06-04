@@ -1,8 +1,10 @@
 
-import uuid
 # from typing import Protocol
+import uuid
 import datetime as dt
-import LpBase as lpbase
+import enum                           # https://www.tutorialspoint.com/enum-in-python 
+import AppBase.LpBase as lpbase
+
 
 class JobSpec(lpbase.Lpbase):
     """

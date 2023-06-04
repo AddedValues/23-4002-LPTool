@@ -1,7 +1,7 @@
 
 import numpy as np
 import pandas as pd
-import LpBase as lpbase  
+import AppBase.LpBase as lpbase  
 from gams import GamsWorkspace
 
 class JobHandler(lpbase.LpBase):
