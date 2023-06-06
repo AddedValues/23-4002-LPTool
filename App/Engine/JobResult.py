@@ -59,8 +59,11 @@ class JobResult(Lpbase):
                 # entity is a two-dimensional hence has three columns: tt, other-domain, attrName
                 otherDomain = gsym.domains[1] if gsym.domains[0] == 'tt' else gsym.domains[0]
                 df = entity.pivot(index='tt', columns=otherDomain, values=attrName)
-                # Convert index to integer values after removing the 't' prefix.
+                # Convert index to integer values after removing the 't' prefix of tt-members.
                 df.index = [int(s[1:]) for s in df.index]
+                df.sort_index(inplace=True)
+                entity = df
+            else:
                 df.sort_index(inplace=True)
                 entity = df
 

@@ -387,12 +387,12 @@ class GdxWrapper():
         [kind, symbol] = self.getSymbolKind(symbolName)
         if symbol is None:
             self.logger.error('GAMS symbol name ' + symbolName + ' is neither Set, Parameter, Variable nor Equation')
-            return []
+            raise ValueError('GAMS symbol name ' + symbolName + ' is neither Set, Parameter, Variable nor Equation')
 
         gSymbol = GSymbol(symbol, self)
         if gSymbol.kind == 'set':
-            self.logger.error('Cannot retrieve value(s) for GAMS set.')
-            return []
+            self.logger.error('Cannot retrieve value(s) for a GAMS set.')
+            raise ValueError('Cannot retrieve value(s) for a GAMS set.')
 
         # Handle scalars first as they have no dependencies on sets.
         if gSymbol.isScalar:

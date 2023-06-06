@@ -22,3 +22,5 @@ Python/copilot.py
 Python/dfIterMecF.xlsx
 Test.log
 data.json
+
+*.pyc
