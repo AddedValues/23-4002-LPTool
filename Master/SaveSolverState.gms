@@ -1,6 +1,6 @@
 $log Entering file: %system.incName%
 
-#begin Run stats fra solver
+*begin Run stats fra solver
 $OnText
  Fil til GAMS $batInclude control option ifm. MEC-forsyning model.
 
@@ -27,8 +27,8 @@ StatsSolver('SumInfeas')      = ifthen(%1.sumInfes NE 0, %1.sumInfes, EPS);
 
 StatsInfeas(t,net,InfeasDir) = QInfeas.L(t,net,InfeasDir);
 
-#end Run stats fra solver
+*end Run stats fra solver
 
 #TODO Erstat med embedded python kode til omdøbning af udskrevne filer fra denne .gms fil.
 
-#end
+*end

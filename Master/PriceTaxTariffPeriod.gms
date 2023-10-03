@@ -7,7 +7,7 @@ Inkluderes af:  MecLpMain.gms
 Argumenter:     <endnu ikke defineret>
 $OffText
 
-#begin Braendsels og el-tariffer
+*begin Braendsels og el-tariffer
 # OBS Det antages at kun SR-anlæg kan være gasfyrede, ellers skal der differentieres mellem gastarifferne.
 TariffFuelMWh('NGas')    = YS('TariffNgasSLK') / LhvMWhPerUnitFuel('NGas');
 TariffFuelMWh('FGO')     = YS('TariffOil')     / Brandsel('FGO',    'Densitet') / LhvMWhPerUnitFuel('FGO');
@@ -50,7 +50,7 @@ TariffElEffekt('Blow')       = YS('TariffElEffektBLow');
 # Beregn DSO-tariffen for hver DSO-kundetype (dso) og hver årstime som funktion af årstimens el-last niveau (loadDso).
 TariffDso_hh(tt,dso) = sum(loadDso $(ord(loadDso) EQ TariffDsoLoad_hh(tt)), TariffDsoAll(dso,loadDso));
 
-#begin Beregning af anlægsafhængige el-tariffer.
+*begin Beregning af anlægsafhængige el-tariffer.
 TariffElecU_hh(tt,u)   = YS('TariffElTSO')   + YS('TariffElTrade')                          + sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffDso_hh(tt,dso));
 TariffEigenU_hh(tt,u)  = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffDso_hh(tt,dso));
 TariffEigenPump_hh(tt) = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + TariffDso_hh(tt,'BLow');
@@ -58,9 +58,9 @@ TariffElSellU(u)       = YS('TariffElTrade') + YS('TariffElFeedIn') + sum(dso $(
 TariffElRaadighedU(u)  = sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffElRaadighed(dso));
 TariffElEffektU(u)     = sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffElEffekt(dso));
 
-#end
+*end
                                                                                           
-#end Braendsels- og el-tariffer
+*end Braendsels- og el-tariffer
 
 *MBL: Kedel-afgifterne er baseret dels på brændselsmængde (m3, Liter), dels på varmeproduktionen (GJ).
 TaxRateMWh('BioOlie','co2','kedel') = YS('TaxCO2BioOlieKedel') / Brandsel('BioOlie','Densitet') / LhvMWhPerUnitFuel('BioOlie');      # Convert from Liter to MWh base.

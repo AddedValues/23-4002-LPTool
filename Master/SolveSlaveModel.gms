@@ -38,7 +38,7 @@ loop (uq $OnUGlobal(uq),
 # Transmission always on at any time if the line is available.
 bOnT.fx(t,tr) = 1 $OnTrans(tr);
 
-#begin Opsætning af anlægsaktivitet bOn.
+*begin Opsætning af anlægsaktivitet bOn.
 
 # Tildeling af anlægstilstand forud for aktuelle RH. Nødvendigt for kunne referere tilbage til foregående RH i slave-modellen.
 # StateU indeholder tilstanden på timebasis, dvs. anlægsaktivitet 
@@ -58,7 +58,7 @@ loop (upr,
         PowInUPrevious(upr) = PowInU.L(tt,upr);
       );
     );
-	
+    
     # Optional fiksering af anlægstilstand i sidste tidspunkt af sidste RH-step.
     if (ord(rhStep) GE nRHstep + 1,
       #--- display "DEBUG: SolveSlaveModel rhStep = nRHstep + 1";
@@ -77,11 +77,11 @@ loop (upr,
   PowInUPreviousRH(upr,actRHstep) = PowInUPrevious(upr);
 );
 
-#end 
+*end 
 
 #--- abort.noerror "BEVIDST STOP I SolveSlaveModel";
 
-#begin Opsætning af VAK aktivitet.
+*begin Opsætning af VAK aktivitet.
 $OffOrder
 
 loop (vak,
@@ -127,7 +127,7 @@ loop (vak,
 
 $OnOrder
 
-#end
+*end
 
 # Tvangskørsler på diverse anlæg (priority)
 loop (forcedOnUpr $OnUGlobal(forcedOnUpr), 
@@ -137,7 +137,7 @@ loop (forcedOnUpr $OnUGlobal(forcedOnUpr),
 );
 
 
-#begin Låsning af ikke-bidragende anlæg til kapacitetsreservationer
+*begin Låsning af ikke-bidragende anlæg til kapacitetsreservationer
 
 loop (uelec $OnUGlobal(uelec),
   loop (updown,
@@ -145,7 +145,7 @@ loop (uelec $OnUGlobal(uelec),
   );
 );
 
-#end
+*end
 
 
 # Generel opsætning af rolling horizon
@@ -163,7 +163,7 @@ QInfeas.up(t,net,InfeasDir) = BLen(t) * QInfeasMax;  # Øvre grænse på virtuel
 # Der er ingen tilskud til klassisk elproduktion i DK.
 #--- ElTilskud.fx(tt,kv) = 0.0;
 
-#begin Store grænser for at detektere unbounded model.
+*begin Store grænser for at detektere unbounded model.
 
 # OBS Upper bound sættes kun hvis modellen viser sig at være unbounded, ellers forstyrrer det solveren.
 
@@ -219,17 +219,17 @@ if (FALSE,
 
 );  #
 
-#end Store grænser for at detektere unbounded model.
+*end Store grænser for at detektere unbounded model.
 
 $if not errorfree $exit
 
-#end Initialisering af variable.
+*end Initialisering af variable.
 
 
 execute_unload "MecLpMain.gdx";
 
 
-#begin Udfør optimering af slave-model
+*begin Udfør optimering af slave-model
 
 modelSlave.optFile = 1;
 $include options.inc
@@ -248,11 +248,11 @@ ElseIf (pModelStat GT 2 AND pModelStat NE 8),
   abort "Solve af slave model mislykkedes. Model skrevet til: MEC_SlaveSolveFailed.gdx";
 );
 
-#end Udfør optimering af slave-model
+*end Udfør optimering af slave-model
   
 
 
-#begin Post calculation of results.
+*begin Post calculation of results.
 $OffOrder
 # MBL: Hvis startomk = 0, så er bStart arbitrært 0 eller 1. Derfor beregnes korrekte værdier for start(ON=1) og stop (ON=2) herunder.
 bStartStop(t,upr,startstop) = 0;
@@ -268,4 +268,4 @@ loop (upr $OnUGlobal(upr),
   );
 );
 $OnOrder
-#end   Post calculation of results.
+*end   Post calculation of results.

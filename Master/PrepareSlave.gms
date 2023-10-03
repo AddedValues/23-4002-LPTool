@@ -4,12 +4,12 @@ Projekt:    23-4002 MEC LP Lastplanlægning
 Filnavn:    PrepareSlave.gms
 $OffText
 #(
-#begin Overførsel og validering af master scenarie.
+*begin Overførsel og validering af master scenarie.
 
 DumpPeriodsToGdx = ActScen('DumpPeriodsToGdx');
 if (DumpPeriodsToGdx LT 0 OR DumpPeriodsToGdx GT 2, execute_unload "MecLpMain.gdx"; abort 'DumpPeriodsToGdx skal være 0, 1 eller 2'; );
 
-#begin Rolling Horizon
+*begin Rolling Horizon
 
 LenRHhoriz       = ActScen('LenRollHorizon');
 LenRHstep        = ActScen('StepRollHorizon');
@@ -23,10 +23,10 @@ if (LenRHhoriz LT 1 OR LenRHhoriz GT 8760,       execute_unload "MecLpMain.gdx";
 LenRHhorizSave = LenRHhoriz;
 LenRHstepSave  = LenRHstep;
 
-#end Rolling Horizon
+*end Rolling Horizon
 
 
-#begin Tidsinterval
+*begin Tidsinterval
     
 OnCapacityReservation  = ActScen('OnCapacityReservation');
 DurationPeriod         = ActScen('DurationPeriod');
@@ -75,10 +75,10 @@ loop (planZone,
 
 # REMOVE PeriodFrac = DurationPeriod / card(tt);  
 
-#end Tidsinterval
+*end Tidsinterval
 
 
-#begin Overfør scenarieparametre fælles for anlæg.
+*begin Overfør scenarieparametre fælles for anlæg.
 
 QInfeasMax        = ActScen('QInfeasMax');
 OnVakStartFix     = ActScen('OnVakStartFix');
@@ -87,10 +87,10 @@ OnRampConstraints = ActScen('OnRampConstraints');
 ElspotYear        = ActScen('ElspotYear');
 QDemandYear       = ActScen('QDemandYear');
 
-#end
+*end
 
 
-#begin CHECK Fordeling af DataU på forbrugsområder.
+*begin CHECK Fordeling af DataU på forbrugsområder.
 
 OnTrans(tr)   = DataTransm(tr,'On');
 OnNet(net)    = OnNetGlobal(net);
@@ -113,7 +113,7 @@ loop (u,
   );
 );                                
 
-#begin Check at mindst eet anlæg tilknyttet en VAK er aktivt.
+*begin Check at mindst eet anlæg tilknyttet en VAK er aktivt.
 Scalar NActiveUpr "Tæller antal aktive anlæg knyttet til given VAK";
 Loop (vak $OnUGlobal(vak),
   actVak(vak) = yes;
@@ -136,13 +136,13 @@ Loop (vak $OnUGlobal(vak),
 #--- PmtTransmPipe = (RealRente) / (1-(1+RealRente)**(-InvLenTransmPipe));
 #--- PmtTransmPump = (RealRente) / (1-(1+RealRente)**(-InvLenTransmPump));
 
-#end 
+*end 
 
 display AvailUNet;
 
 
 
-#begin Aktive anlæg
+*begin Aktive anlæg
 
 setOnNetGlobal(net) = OnNetGlobal(net);
 setOnUGlobal(u)     = (OnUGlobal(u) GT 0 AND NOT vak(u));
@@ -162,15 +162,15 @@ loop (net $OnNetGlobal(net),
 );
 display uActive, setOnNetGlobal, setOnUGlobal, unewActive;
 
-#end
+*end
 
-#end Fordeling af DataU på forbrugsområder.
+*end Fordeling af DataU på forbrugsområder.
 
-#end Overførsel og validering af master scenarie.
+*end Overførsel og validering af master scenarie.
 
-#begin Anlægsspecifikationer
+*begin Anlægsspecifikationer
 
-#begin Sikre at at alle definerede produktionsanlæg også har en linje i tabellen DataU.
+*begin Sikre at at alle definerede produktionsanlæg også har en linje i tabellen DataU.
 
 tmp = 0;
 loop (upr $(NOT kv(upr)),
@@ -181,9 +181,9 @@ loop (upr $(NOT kv(upr)),
   );
 );
 if (tmp > 0, abort 'Mindst eet produktionsanlæg upr mangler i tabellen DataU. Se navnene i listing.')  ;
-#end
+*end
 
-#begin Virkningsgrader
+*begin Virkningsgrader
 
 TaxEForm(kv) = CHP(kv,'EFormel');
 
@@ -198,10 +198,10 @@ loop (upr,
 
 AffAux(uaff) = EtaQU(uaff) / (EtaPU(uaff) + EtaQU(uaff));
 
-#end
+*end
 
 
-#begin Aktive brændsler
+*begin Aktive brændsler
 
 fActive(f) = no;
 OnFuel(f) = 0;
@@ -236,10 +236,10 @@ loop (upr $OnUGlobal(upr),
   tmp = sum(f,FuelMix(upr,f));
   If (sum(f,FuelMix(upr,f)) NE 1, execute_unload "MecLpMain.gdx"; abort "Fuel fractions do not all sum to one."; );
 );
-#end
+*end
                  
 
-#begin Sikring at en rådig VAK har mindst eet rådigt produktionsanlæg tilknyttet. 
+*begin Sikring at en rådig VAK har mindst eet rådigt produktionsanlæg tilknyttet. 
 
 display OnUGlobal, upr2vak;
 loop (vak $OnUGlobal(vak),
@@ -260,10 +260,10 @@ loop (vak $OnUGlobal(vak),
   );
 );
 
-#end 
+*end 
 
 
-#begin VAK parametre
+*begin VAK parametre
 
 #--- loop (vak,
 #---   If (DataU(vak,'FracFixVak') < 0 OR DataU(vak,'FracFixVak') > 1, execute_unload "MecLpMain.gdx"; abort "DataU(vak,'FracFixVak') out-of-range"; );
@@ -271,10 +271,10 @@ loop (vak $OnUGlobal(vak),
 
 LVak.L(tt,vak) = 0.0;
 
-#end VAK parametre
+*end VAK parametre
 
 
-#begin Raadigheder
+*begin Raadigheder
 
 # Revisionsperioder overtrumfer raa raadigheder.
 # Revision_hh == 0 angiver ingen revision.
@@ -301,16 +301,16 @@ loop (ucool $OnUGlobal(ucool),
   );
 );
 
-#end Raadigheder
+*end Raadigheder
 
-#end Anlægsspecifikationer
+*end Anlægsspecifikationer
 
-#begin Overførsel og validering af årsscenarier.
+*begin Overførsel og validering af årsscenarier.
 
 
-#end Overførsel og validering af årsscenarier.
+*end Overførsel og validering af årsscenarier.
 
-#begin Overførsel fra tabellen Prognoses
+*begin Overførsel fra tabellen Prognoses
 
 QDemandActual_hh(tt,'netHo') = Prognoses_hh(tt,'QdemHo');
 QDemandActual_hh(tt,'netSt') = Prognoses_hh(tt,'QdemSt');
@@ -332,23 +332,23 @@ THeatSource_hh(tt,'PtX')    = Prognoses_hh(tt,'TPtX');
 #--- TNet_hh(tt,'Tretur')  = Prognoses_hh(tt,'Tretur');
 #--- TNet_hh(tt,'Tamb')    = Prognoses_hh(tt,'Tamb');
 
-#end Overførsel fra tabellen Prognoses
+*end Overførsel fra tabellen Prognoses
 
-#begin Overførsel fra tabellen Diverse
+*begin Overførsel fra tabellen Diverse
 
 OwnerShare('tr1') = Diverse('StruerAndel');
 OwnerShare('tr2') = 1 - Diverse('StruerAndel');
       
-#end Overførsel fra tabellen Diverse
+*end Overførsel fra tabellen Diverse
 
-#begin Beregning af COP- og varmeydelses-profiler.
+*begin Beregning af COP- og varmeydelses-profiler.
 
 # Tilknyt en varmekildetype til hver VP.
 DataHp(hp_Air,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Air',    lblCopYield);
-DataHp(hp_Gw,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Ground', lblCopYield);
-DataHp(hp_Sea,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sea',    lblCopYield);
+#--- DataHp(hp_Gw,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Ground', lblCopYield);
+#--- DataHp(hp_Sea,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sea',    lblCopYield);
+#--- DataHp(hp_DC,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'DC',     lblCopYield);
 DataHp(hp_Sew,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sewage', lblCopYield);
-DataHp(hp_DC,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'DC',     lblCopYield);
 DataHp(hp_Arla, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Arla',   lblCopYield);
 DataHp(hp_Birn, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Birn',   lblCopYield);
 DataHp(hp_PtX,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'PtX',    lblCopYield);
@@ -387,30 +387,30 @@ Loop (hp,
   COPmin(hp)         = smin(tt, COP_hh(tt,hp));
 ); 
 
-#end 
+*end 
 
-#begin Kapacitetsallokeringer
+*begin Kapacitetsallokeringer
 
 CapEReservationSum(tbid,updown)  = sum(elmarket, CapEReservation(tbid,elmarket, updown));
 
 
-#end Kapacitetsallokeringer
+*end Kapacitetsallokeringer
 
 execute_unload "MecLpMain.gdx";
 
 
-#begin Initialisering af max. indfyret effekt.
+*begin Initialisering af max. indfyret effekt.
 CapQU(u)       = DataU(u,'CapacQ');
 PowInUMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
 PowInUMax(kv)  = CHP(kv,'Fmax') $OnUGlobal(kv);
 PowInUMax(hp)  = PowInUMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
 
-#end Initialisering af max. indfyret effekt.
+*end Initialisering af max. indfyret effekt.
 
 # HACK Carbon capture anlæg ikke aktuelt i modellen (endnu).
-uCC(cc) = 0.0;
+#--- uCC(cc) = 0.0;
                    
-#begin Struers ejerandel af grundlastvarmen.
+*begin Struers ejerandel af grundlastvarmen.
 
 # Reglen er, at Struer må trække mere transmissionsvarme end ejerandelen tilsiger,
 # hvis Holstebro ikke udnytter sin andel.
@@ -430,22 +430,22 @@ uCC(cc) = 0.0;
 QbaseMaxAll = sum(kv $OnUGlobal(kv), CHP(kv,'Qmax') + CHP(kv,'QRgkMax') + CHP(kv,'Qbypass')) 
               + sum(upr $(uprbase(upr) AND NOT kv(upr)), DataU(upr,'Fmax') * DataU(upr,'EtaQ'));       
 
-#end 
+*end 
 
 
-#begin Kapacitet af eksisterende transmissioner til forbrugsområder.
+*begin Kapacitet af eksisterende transmissioner til forbrugsområder.
 
-#begin Aktive Transmissionsledninger.
+*begin Aktive Transmissionsledninger.
 
 trActive(tr) = (OnTransGlobal(tr) GT 0);
 display trActive;
 
-#end
+*end
 
 # HACK Retning låses til udgangssituationen angivet i TransmConfig.
 DirTrans(tr)  = 1;
 
-#begin Varmetab og pumpearbejde i transmissionsledninger
+*begin Varmetab og pumpearbejde i transmissionsledninger
 
 # Transmissionsparametre, som er uafhængige af flowretning på T-ledning rørpar.
 loop (tr $OnTransGlobal(tr),
@@ -477,12 +477,12 @@ loop (tr $OnTransGlobal(tr),
     alphaT_hh(t,tr,trkind) = kT(t,tr,trkind) * L(tr) / QTmax(tr);
   );
 );  # Loop (tr)
-#end
+*end
 
 #--- CapexTrans(tr) = ((18300 * DN(tr) + 950) * L(tr) / 1E6) * PmtTransmPipe;  # DN har enheden [m].
 #--- CapexPump(tr)  = InvCostPump * PmtTransmPump * NPump(tr) / 1E6;
 
-#end
+*end
                               
 
 #)

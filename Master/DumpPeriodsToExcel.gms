@@ -3,7 +3,7 @@ Denne GAMS modelfil er beregnet til inkludering ($INCLUDE) i SILK-modellen.
 Den udfører rapportering af optimeringsfasen for en given periode, perL, som defineres i modellen.
 $OffText
 
-#begin DUMP til Excel output
+*begin DUMP til Excel output
 
 SalesHeatTotal(net)  = tiny;
 SalesPowerTotal(net) = tiny;
@@ -98,7 +98,7 @@ display OperHours, QMargPrice;
 
 $if not errorfree $exit
 
-#begin Beregning af StatsT
+*begin Beregning af StatsT
 
 StatsT(tr,topicT)     = 0.0;
 loop (tr $OnTrans(tr),
@@ -107,9 +107,9 @@ loop (tr $OnTrans(tr),
   StatsT(tr,'CostPump') = sum(t, CostPump.L(t,tr));
 );
 
-#end Beregning af StatsT
+*end Beregning af StatsT
 
-#begin Beregning af StatsU
+*begin Beregning af StatsU
 
 #--- Set topicU     'Prod unit stats' /
 #---    FullLoadHours, OperHours, BypassHours, RGKhours,
@@ -202,22 +202,22 @@ loop (u $OnUGlobal(u),
   );
 );
 
-#end Beregning af StatsU
+*end Beregning af StatsU
 
 
-#end Beregning af StatsVak
+*end Beregning af StatsVak
 
 StatsVak(vak,'TurnOver') $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum(tt, QVakAbs.L(tt,vak)) / CapQU(vak)) $OnUGlobal(vak);
 StatsVak(vak,'QLoss')    $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum(tt, VakLoss.L(tt,vak))) $OnUGlobal(vak);
 
-#end Beregning af StatsVak
+*end Beregning af StatsVak
 
 #--- loop (upr, loop (topicU,   if (StatsU(upr,topicU)     EQ 0.0, StatsU(upr,topicU)     = tiny; ); ); ) $OnUGlobal(upr);
 #--- loop (vak, loop (topicVak, if (StatsVak(vak,topicVak) EQ 0.0, StatsVak(vak,topicVak) = tiny; ); ); ) $OnUGlobal(upr);
 display StatsU, StatsVak;
 
 
-#begin Beregning af StatsTax
+*begin Beregning af StatsTax
 
 StatsTax(upr,tax) = 0.0;
 
@@ -227,24 +227,24 @@ loop (upr $OnUGlobal(upr),
   StatsTax(upr,'ets') = sum(t, CO2KvoteOmkst.L(t,upr));
 );
 
-#end 
+*end 
 
-#begin Beregning af StatsFuel
+*begin Beregning af StatsFuel
 
 StatsFuel(f,'CO2QtyPhys')  = CO2emisFuelSum(f,'phys');
 StatsFuel(f,'CO2QtyRegul') = CO2emisFuelSum(f,'regul');
 StatsFuel(f,'Qty')         = sum(upr $(OnUGlobal(upr) AND FuelMix(upr,f) GT 0.0), FuelMix(upr,f) * PowInUSum(upr) / LhvMWhPerUnitFuel(f) );
 
-#end
+*end
 
-#begin Beregning af StatsOther
+*begin Beregning af StatsOther
 
 # Other stats
 StatsOther('ucool','HeatVented') = max(tiny, sum(ucool $OnUGlobal(ucool), sum(t, QCool.L(t,ucool))) );
 
-#end 
+*end 
 
-#begin
+*begin
 
 #--- Q_L(tt,u)             = Q.L(tt,u);
 #--- QT_L(tt,tr)           = QT.L(tt,tr);
@@ -257,10 +257,10 @@ StatsOther('ucool','HeatVented') = max(tiny, sum(ucool $OnUGlobal(ucool), sum(t,
 #--- bOnSR_L(tt,netq)      = bOnSR.L(tt,netq);
 #--- LVak_L(tt,vak)        = LVak.L(tt,vak);
 
-#end     
+*end     
 
 
-#begin Beregn hver ejers andel af grundlastvarmen i hvert tidspunkt.
+*begin Beregn hver ejers andel af grundlastvarmen i hvert tidspunkt.
 
 # Først beregnes den samlede grundlast fra BHP (netMa og netHo).
 
@@ -279,10 +279,10 @@ ViolationOwnerShare(t,'netHo') = bOnSR.L(t,'netSt') $(BaseLoadShare(t,'netHo') G
 ViolationOwnerShare(t,'netSt') = bOnSR.L(t,'netHo') $(BaseLoadShare(t,'netSt') GT (    Diverse('StruerAndel')));
 CountViolationOwnerShare(netq) = sum(t, ViolationOwnerShare(t,netq));
 
-#end
+*end
 
 
-#begin Beregning af StatsAll
+*begin Beregning af StatsAll
 
 StatsAll('SlaveObj')      = ObjSumRHreal * PeriodObjScale;
 StatsAll('HeatProduced')  = sum(upr $OnUGlobal(upr), StatsU(upr, 'HeatGen'));
@@ -297,7 +297,7 @@ StatsAll('ViolateSt')     = max(tiny, CountViolationOwnerShare('netSt'));
 StatsAll('ElspotPrice')   = sum(t, ElspotActual(t)) / card(t);
 StatsAll('VPO')           = - StatsAll('SlaveObj') / StatsAll('HeatDelivered');
 
-#end Beregning af StatsAll
+*end Beregning af StatsAll
        
 
 * Alle items skal have mindst ét ikke-nul element for at blive overført til gdx-databasen og dermed til rådighed for GDXXRW.
@@ -305,7 +305,7 @@ loop (lblScenMas, if (ActScen(lblScenMas)    EQ 0.0, ActScen(lblScenMas)    = ti
 loop (topicSolver,  if (StatsSolver(topicSolver) EQ 0.0, StatsSolver(topicSolver) = tiny;) );
 
 
-#begin Udskrivning via GDX-file til Excel via GDXXRW
+*begin Udskrivning via GDX-file til Excel via GDXXRW
 
 execute_unload 'MECoutput.gdx',
 Scenarios, actSc, ActScen, DurationPeriod, DataU, DataHp, DataTransm, QTmin, QTmax, Brandsel,
@@ -366,6 +366,6 @@ execute "gdxxrw.exe MECoutput.gdx o=MECoutput.xlsm trace=1 @MECoutput.txt";
 
 );  # If %DumpStatsToExcel% NE 0 ...
 
-#end Udskrivning via GDX-file til Excel via GDXXRW
+*end Udskrivning via GDX-file til Excel via GDXXRW
 
-#end DUMP til Excel output
+*end DUMP til Excel output

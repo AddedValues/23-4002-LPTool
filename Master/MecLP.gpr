@@ -1419,21 +1419,21 @@ PlaneRownr=-1
 1=
 
 [MRUFILES]
-1=C:\GitHub\4002-LP-tool\Master\DeclareGlobalSets.gms
-2=C:\GitHub\4002-LP-tool\Master\LoopPeriodPre.gms
-3=C:\GitHub\4002-LP-tool\Master\MecLpMain.LVak.gch
-4=C:\GitHub\4002-LP-tool\Master\MecLpMain.ElspotActual.gch
-5=C:\GitHub\4002-LP-tool\Master\DeclareSlave.gms
-6=C:\GitHub\4002-LP-tool\Master\DumpPeriodsToExcel.gms
-7=C:\GitHub\4002-LP-tool\Master\SolveSlaveModel.gms
-8=C:\GitHub\4002-LP-tool\Kapac-optim\m11s02u31r00f00\MECmain_Scen_m11s02u31r00f00.gdx
+1=C:\GitHub\23-4002-LPTool\Master\DeclareGlobalSets.gms
+2=C:\GitHub\23-4002-LPTool\Master\LoopPeriodPre.gms
+3=C:\GitHub\23-4002-LPTool\Master\MecLpMain.LVak.gch
+4=C:\GitHub\23-4002-LPTool\Master\MecLpMain.ElspotActual.gch
+5=C:\GitHub\23-4002-LPTool\Master\DeclareSlave.gms
+6=C:\GitHub\23-4002-LPTool\Master\DumpPeriodsToExcel.gms
+7=C:\GitHub\23-4002-LPTool\Master\SolveSlaveModel.gms
+8=C:\GitHub\23-4002-LPTool\Kapac-optim\m11s02u31r00f00\MECmain_Scen_m11s02u31r00f00.gdx
 
 [OPENWINDOW_1]
-FILE0=C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
-FILE1=C:\GitHub\4002-LP-tool\Master\MECLpMain.gms
-FILE2=C:\GitHub\4002-LP-tool\Master\MECLpMain.lst
-FILE3=C:\GitHub\4002-LP-tool\Master\MecLpMain.Q.gch
-FILE4=C:\GitHub\4002-LP-tool\Master\MECLpMain.lst
+FILE0=C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
+FILE1=C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
+FILE2=C:\GitHub\23-4002-LPTool\Master\MECLpMain.lst
+FILE3=C:\GitHub\23-4002-LPTool\Master\MecLpMain.Q.gch
+FILE4=C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
 MAXIM=0
 TOP=2
 LEFT=3

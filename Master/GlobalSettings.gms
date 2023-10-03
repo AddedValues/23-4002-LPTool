@@ -3,7 +3,7 @@ $log Entering file: %system.incName%
 
 $show
 
-#begin    Reduce listing file size
+*begin    Reduce listing file size
 
 * Reduce listing file size jf. https://support.gams.com/gams:how_do_i_reduce_the_size_of_my_listing_.lst_file
 
@@ -19,7 +19,7 @@ option
     solprint = on,  # solvers solution output printed
     sysout = on;    # solvers system output printed
 
-#end
+*end
 
 # Profiling optionen kan ikke sættes indenfor loops, derfor sættes den her.
 #--- option profile=3;
@@ -27,7 +27,7 @@ option
 #)
 
 
-#begin Global settings
+*begin Global settings
 
 # Shorthand for boolean constants.
 Scalar FALSE 'Shorthand for false = 0 (zero)' / 0 /;
@@ -68,5 +68,5 @@ Scalar PeriodObjScale 'Skala af master objective' / 1.0 /;  # DKK
 
 $show
 
-#end
+*end
 

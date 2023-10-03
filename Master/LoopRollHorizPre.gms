@@ -68,7 +68,7 @@ if (nRHstep LT 0,               abort 'FEJL i Rolling Horizons: nRHstep er negat
 if (floor(nRHstep) NE nRHstep,  abort 'FEJL i Rolling Horizons: nRHstep er ikke heltallig.', nRHstep; );
 
 
-#begin Beregning af start og slut tidspunkt for hvert step i rolling horizon.
+*begin Beregning af start og slut tidspunkt for hvert step i rolling horizon.
 # MBL 2020-06-09 17:40: nRHstep er antal regulære step af længde LenRHstep. Dertil kommer et ekstra step med en residual længde.
 # MBL 2023-01-18 12:53: Tidspunkterne t(tt) er aggregerede tidspunkter, som evt. kan være enkelttimer ifm. ingen aggregering.
 
@@ -111,14 +111,14 @@ loop (rhStep $(ord(rhStep) LE nRHstep + 1),
 
 display "DEBUG: RHIntv", nRhStep, LenRHhoriz, LenRHStep, RHIntv;
 
-#end 
+*end 
 
 #--- execute_unload "Main.gdx";
 #--- abort.noerror "BEVIDST STOP i LoopRollHorizPre.gms";
 
 
 
-#--- #begin Beregn CO2-emissions reference fordelt på RH efter varmebehovet.
+#--- *begin Beregn CO2-emissions reference fordelt på RH efter varmebehovet.
 #--- $OffOrder
 #--- 
 #--- # CO2-loftet er årsbaseret, og bliver her forholdsmæssigt fordelt på den aktuelle periode.
@@ -137,7 +137,7 @@ display "DEBUG: RHIntv", nRhStep, LenRHhoriz, LenRHStep, RHIntv;
 #--- );
 #--- $OnOrder
 #--- 
-#--- #end 
+#--- *end 
 
 #--- # Dump modellen på gdx så inspektion undervejs muliggøres.
 #--- #--- execute_unload 'Main.gdx';

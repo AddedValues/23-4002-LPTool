@@ -14,25 +14,27 @@ $OffText
 t(tt) = ord(tt) LE NblockActual;
 
 
-#begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
+*begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
 
 PowInUSum(upr) = sum(t, PowInU.L(t,upr));
 
 CO2emisFuelSum(f,co2kind) = sum(upr $(OnUGlobal(upr) AND (FuelMix(upr,f) GT 0)), 
                                 PowInUSum(upr) *  
                                   [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * 
-                                    [Brandsel(f,'FossilAndel') * (1-sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'regul') 
-                                     + (1.0 - 0.8 * sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'phys')]
+                                    #--- [Brandsel(f,'FossilAndel') * (1-sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'regul') 
+                                    #--- + (1.0 - 0.8 * sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'phys')]
+                                    [Brandsel(f,'FossilAndel') * (1-0) $sameas(co2kind,'regul') 
+                                     + (1.0 - 0.8 * (0)) $sameas(co2kind,'phys')]
                                   ]  
                                   + [YS('CO2ElecMix') $(sameas(f,'elec') AND sameas(co2kind,'phys'))]                 
                                 ) / 1000;
 
 
-#begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
+*begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
 
 
 
-#begin Beregning af driftsmæssige skyggepriser for kapaciteter.
+*begin Beregning af driftsmæssige skyggepriser for kapaciteter.
 
 # Marginaler udtrækkes af kapacitetsligninger
 # Der tages højde for at solveren ikke har beregnet marginaler, idet disse så har værdien UNDF eller NA
@@ -44,23 +46,23 @@ CO2emisFuelSum(f,co2kind) = sum(upr $(OnUGlobal(upr) AND (FuelMix(upr,f) GT 0)),
 #    7:  x is -INF ( )
 #    8:  x is EPS
 
-#end
+*end
 
-#begin DUMP til Excel output
+*begin DUMP til Excel output
 
 
-#begin Dump options - full or partial model dumped to Excel, Gdx
+*begin Dump options - full or partial model dumped to Excel, Gdx
 
 $Include DumpPeriodsToExcel.gms
 
 #--- $Include SavePeriodstats.gms
 
-#end   DUMP til Excel output
+*end   DUMP til Excel output
 
 
-#begin Udskrivning af slaveresultat i gdx-format for aktuel periode.
+*begin Udskrivning af slaveresultat i gdx-format for aktuel periode.
 
 #DISABLED for at vinde tid.
 $batInclude 'SavePeriodResults.gms'       
 
-#end   Udskrivning af slaveresultat i gdx-format for aktuel periode.
+*end   Udskrivning af slaveresultat i gdx-format for aktuel periode.

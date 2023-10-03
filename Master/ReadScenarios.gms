@@ -15,7 +15,7 @@ Scalar scenMasNo 'Master scenario number';
 
 $onUNDF
 
-#begin Indlæs scenarier fra Excel.
+*begin Indlæs scenarier fra Excel.
 
 Parameter OnNetGlobalScen(net,scmas)              'Aktiv forsyningsnet 0/1';
 parameter DataTransmScen(tr,lblDataTransm,scmas)  'Bruges til indlæsning fra ScenMaster arket.';
@@ -98,16 +98,16 @@ $unload
 $gdxout
 #--- $terminate 'BEVIDST STOP i ReadScenarios';
 
-#end Indlæs scenarier fra Excel.
+*end Indlæs scenarier fra Excel.
 
 
 
-#begin Groft fejlcheck af indlæsning fra Excel via GDXXRW. QA på scenarie sheets udføres i PrepareMaster.gms.
+*begin Groft fejlcheck af indlæsning fra Excel via GDXXRW. QA på scenarie sheets udføres i PrepareMaster.gms.
 
 # Hvis den numeriske sum af en parameter eller underrum heraf er nul, er data ikke blevet korrekt overført fra Excel (typisk fejl er startcellens adresse).
 #(
 
-#begin Sheet DataU
+*begin Sheet DataU
 if (sum(f,   abs(FuelCode(f)))  EQ 0.0,  execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af FuelCode er nul.";); 
 if (sum(net, abs(OmrCode(net))) EQ 0.0,  execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af OmrCode er nul.";); 
 
@@ -116,30 +116,30 @@ loop (hpSource,
     if (sum(lblHpCop, abs(DataHpKind(lblHpCop,hpSource,lblCopYield))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af DataHpKind er nul for mindst een kombination af hpSource og lblHpCop."; );
   );
 );
-#end 
+*end 
 
-#begin Sheet CHP
+*begin Sheet CHP
 loop (kv, if (sum(lblCHP, abs(CHP(kv,lblCHP))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af række i CHP-tabellen er nul for mindst eet KV-anlæg."; ); );
-#end 
+*end 
 
-#begin Sheet Brandsel
+*begin Sheet Brandsel
 loop (lblBrandsel,
   if (sum(f, abs(Brandsel(f,lblBrandsel))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Summen af mindst een kolonne i tabellen Brandsel er nul"; );
 );
-#end
+*end
 
-#begin Sheet Transmission og Pipes
+*begin Sheet Transmission og Pipes
 if (sum(lblTrConfig, sum(tr,abs(TransmConfig(tr,lblTrConfig)))) EQ 0.0,  execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af netF eller netT i TransmConfig er nul"; ); 
 loop (lblPipe,
   if (sum(pipe, abs(Pipes(pipe,lblPipe))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af mindst een kolonne i tabellen Pipes er nul."; );
 );
-#end 
+*end 
 
-#begin Sheet Diverse
+*begin Sheet Diverse
 if (sum(lblDiverse, abs(Diverse(lblDiverse))) EQ 0.0, abort "ERROR: Sum af tabellen Diverse er nul."; );
-#end Sheet Diverse
+*end Sheet Diverse
 
-#begin Sheet StateU
+*begin Sheet StateU
 
 $OffOrder
 
@@ -151,9 +151,9 @@ loop (u,
 );
 $OnOrder
 
-#end Sheet StateU
+*end Sheet StateU
 
-#begin Master scenarier
+*begin Master scenarier
 # Check at hele master-scenarie tabellen er indlæst.
 # Dette check udføres her for at undgå spildtid ved at køre videre med mangelfulde data.
 if (abs(Scenarios('BottomLineScenMaster','scmas1') - 999) GT 0.1,  execute_unload "MecLpMain.gdx"; abort 'ERROR-1: Sidste række i master scenarie tabellen er ikke indlæst. Check GDXXRW specifikationen.');
@@ -192,9 +192,9 @@ OnUGlobal(u)     = OnUGlobalScen(u,actSc);
 OnURevision(cp)  = OnURevisionScen(cp,actSc);
 
 
-#begin Transmissions-relaterede parametre
+*begin Transmissions-relaterede parametre
 
-#begin Rådighed af T-ledninger.
+*begin Rådighed af T-ledninger.
 OnTransGlobal(tr) = DataTransm(tr,'On');
 
 # Check at de forbundne net er defineret.
@@ -237,7 +237,7 @@ loop (tr $OnTransGlobal(tr),
 # Flowretning er ensrettet som defineret i TransmConfig.
 DirTrans(tr) = +1;
 
-#end
+*end
 
 H    = 0.9;    # [m]
 Cpp  = 4186;   # [J/kg*K]
@@ -271,26 +271,26 @@ loop (tr $OnTransGlobal(tr),
 );
 display DataTransm, DN, DiT, DyiT, Roughness, L, VelocMax, TinletT;
 
-#end Transmissions-relaterede parametre
+*end Transmissions-relaterede parametre
 
 
-#end   Master scenarier
+*end   Master scenarier
 
-#begin års scenarier
+*begin års scenarier
 
 
-#begin Check at hele års-scenarie tabellen er indlæst for det udvalgte årsscenarie.
+*begin Check at hele års-scenarie tabellen er indlæst for det udvalgte årsscenarie.
 if (YS("BottomLineYearScen") NE 999,
   execute_unload "MecLpMain.gdx";
   display "Fejlbehæftet række i årsscenarie";
   abort "ERROR-5: Sidste række i årsscenarie tabellen er ikke indlæst. Check GDXXRW specifikationen.";
 );
-#end
+*end
 
-#end   års scenarier
+*end   års scenarier
 
 
-#begin QA på DataU
+*begin QA på DataU
 
 # MaNVak1 og MaNVak2 udelukker hinanden gensidigt, så begge kan ikke være aktive.
 if (OnUGlobal('MaNVak1') AND OnUGlobal('MaNVak2'),
@@ -298,9 +298,9 @@ if (OnUGlobal('MaNVak1') AND OnUGlobal('MaNVak2'),
   abort "MaNVak1 og MaNVak2 kan ikke begge være aktive."
 );
 
-#end   QA på DataU
+*end   QA på DataU
 
-#begin QA på FuelMix og FuelPrice
+*begin QA på FuelMix og FuelPrice
 
 loop (upr $OnUGlobal(upr), 
   actUpr(upr) = yes;
@@ -312,16 +312,16 @@ loop (upr $OnUGlobal(upr),
   );
 );
 
-#end  QA på FuelMix og FuelPrice
+*end  QA på FuelMix og FuelPrice
 
-#begin Kapacitetsreservation
+*begin Kapacitetsreservation
 
 CapEAvail(uelec,updown) = CapEAvail(uelec,updown) $OnUGlobal(uelec);
 
-#end Kapacitetsreservation
+*end Kapacitetsreservation
 
 
-#--- #begin Indlæsning af timeblokke fra særskilt Excel-fil.
+#--- *begin Indlæsning af timeblokke fra særskilt Excel-fil.
 #--- 
 #--- $onecho > MECTidsAggregering.txt
 #--- * TimeBlocks:  rowdim = tt,  coldims = aggr, yrPlan
@@ -335,7 +335,7 @@ CapEAvail(uelec,updown) = CapEAvail(uelec,updown) $OnUGlobal(uelec);
 #--- $LOAD TimeBlocks
 #--- $GDXIN
 #--- 
-#--- #end Indlæsning af timeblokke fra særskilt Excel-fil.
+#--- *end Indlæsning af timeblokke fra særskilt Excel-fil.
 
 
 #)

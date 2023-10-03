@@ -1,18 +1,18 @@
 $log Entering file: %system.incName%
 #(
 $OnText
-Projekt:    23-4002 MEC LP LastplanlÃ¦gning
-Scope:      Definerer fÃ¦lles / tvÃ¦rgÃ¥ende sets, parameters, variables, equations for slavemodellen.
+Projekt:    23-4002 MEC LP Lastplanlægning
+Scope:      Definerer fælles / tværgående sets, parameters, variables, equations for slavemodellen.
 Filnavn:    DeclareGlobalSets.gms
 $OffText
 
-#begin SET ERKLÃ†RINGER
+*begin SET ERKLÆRINGER
 
 option strictSingleton = 0;
 
 Set bound           'lblBounds'               / min, max /;
 
-#begin TidsmÃ¦ssige sets og parametre.
+*begin Tidsmæssige sets og parametre.
 
 Set             rhStep    'Rolling Horizon RHstep'  / s1 * s52 /;
 Set             beginend                            / begin, end, endstep, len, lenstep, nhourhoriz, nhourstep /;
@@ -25,10 +25,10 @@ Set aggr      'Tidsblok-skemaer'                  / aggr1 * aggr6 /;         # E
 Singleton set  actBlock(aggr) 'Aktuelt blokskema' / system.empty /;
 
 # OBS Vedr. sets for tidspunkter:
-#     set tt  er den basale tidsoplÃ¸sning fx timeniveau.
-#     set t   er den aktuelle tidsoplÃ¸sning, som kan vÃ¦re aggregeret. set t bruges til at afgrÃ¦nse tidsomrÃ¥det for optimeringen.
-#     set tRH er tidspunkterne i den aktuelle rullende horisont, og matcher tidsoplÃ¸sningen i set t, dvs. tRH kan vÃ¦re et aggregeret tidspunkt.
-#     BemÃ¦rk at set tt og set t begge anvender 't' som indeksnavn.
+#     set tt  er den basale tidsopløsning fx timeniveau.
+#     set t   er den aktuelle tidsopløsning, som kan være aggregeret. set t bruges til at afgrænse tidsområdet for optimeringen.
+#     set tRH er tidspunkterne i den aktuelle rullende horisont, og matcher tidsopløsningen i set t, dvs. tRH kan være et aggregeret tidspunkt.
+#     Bemærk at set tt og set t begge anvender 't' som indeksnavn.
 
 # TODO Set tt  shall be included $Include to allow for flexible time range.
 Set tt         'Time intervals available at any resolution' / t1*t2016 /;  # Accomodates for 7 days at 5 min resolution.
@@ -43,7 +43,7 @@ alias (ta, t);
 Singleton set actt(tt)            'Aktuelt tidspkt.'         / system.empty /;
 Singleton set actb(tt)            'Aktuelt aggr. tidspkt.'   / system.empty /;
 
-# OBS : Dette stmt: [ t(tt) = yes; ] er nÃ¸dvendigt for senere at slukke for elementer i set t.
+# OBS : Dette stmt: [ t(tt) = yes; ] er nødvendigt for senere at slukke for elementer i set t.
 t(tt) = yes;
 
 set tt2tbid(tt,tbid) 'Kobling mellem tt og tbid';
@@ -54,11 +54,11 @@ tt2tbid(tt,tbid) = no;
 tt2hh(tt,tta)    = no;
 
 
-#--- Parameter MonthDays(mo)            'Antal dÃ¸gn i hver mÃ¥ned' / mo1 31, mo2 28, mo3 31, mo4 30, mo5 31, mo6 30, mo7 31, mo8 31, mo9 30, mo10 31, mo11 30, mo12 31 /;
-#--- Parameter MonthDaysAccum(mo)       'Akkum. antal dÃ¸gn i mÃ¥ned';
-#--- Parameter MonthHoursAccum(mo)      'Akkum. antal timer i mÃ¥ned';
-#--- Parameter MonthTimeAccumAggr(mo)   'Akkum. antal tidspunkter i mÃ¥ned';   # Beregnes senere, nÃ¥r tidsaggregering er kendt.
-#--- Parameter MonthFraction(mo)        'MÃ¥nedens andel af Ã¥ret';
+#--- Parameter MonthDays(mo)            'Antal døgn i hver måned' / mo1 31, mo2 28, mo3 31, mo4 30, mo5 31, mo6 30, mo7 31, mo8 31, mo9 30, mo10 31, mo11 30, mo12 31 /;
+#--- Parameter MonthDaysAccum(mo)       'Akkum. antal døgn i måned';
+#--- Parameter MonthHoursAccum(mo)      'Akkum. antal timer i måned';
+#--- Parameter MonthTimeAccumAggr(mo)   'Akkum. antal tidspunkter i måned';   # Beregnes senere, når tidsaggregering er kendt.
+#--- Parameter MonthFraction(mo)        'Månedens andel af året';
 #--- MonthDaysAccum('mo1') = MonthDays('mo1');
 #--- loop (mo $(ord(mo) GT 1), MonthDaysAccum(mo) = MonthDaysAccum(mo-1) + MonthDays(mo); );
 #--- MonthHoursAccum(mo) = MonthDaysAccum(mo) * 24;
@@ -66,38 +66,37 @@ tt2hh(tt,tta)    = no;
 #--- MonthFraction(mo) = MonthDays(mo) / tmp;
 #--- display MonthDaysAccum, MonthHoursAccum, MonthFraction;
 
-#end TidsmÃ¦ssige sets og parametre.
+*end Tidsmæssige sets og parametre.
 
-#begin Scenarier
+*begin Scenarier
 Set scmas                      'Masterscenarier'         / scmas1 * scmas3 /;
 Singleton Set actSc(scmas)     'Aktive masterscenarie'   / scmas1 /;
 
-#end
+*end
 
 Set dso                        'DSO typer '              / Alow, Ahigh, Blow, Bhigh, A0 /;
 Set loadDSO                    'Ellast niveauer'         / low,  high, peak/;
 Singleton set actDso(dso)      'Aktuel DSO type';
 
 
-#begin Define label Set for ScenMaster
+*begin Define label Set for ScenMaster
 Set lblScenMas 'ScenMaster labels' /
               ActualMasterScen,
               # Tracking info
                   SaveTimestamp, ScenarioID, 
               # Controls for optimization
                   DumpPeriodsToGdx,
-                # TidsomrÃ¥de
+                # Tidsområde
                   LenRollHorizon, StepRollHorizon, LenRollHorizonOverhang, CountRollHorizon, 
                   OnCapacityReservation, DurationPeriod, HourBegin, HourEnd, HourBeginBidDay, HoursBidDay, 
                   TimeResolutionDefault, TimeResolutionBid, OnTimeAggr, AggrKind, 
-              # Capacity controls
               # Misc. controls.
                   QInfeasMax, OnVakStartFix, OnStartCostSlk, OnRampConstraints, ElspotYear, QdemandYear,
                   BottomLineScenMaster /;
 
-#end Define label Set for ScenMaster
+*end Define label Set for ScenMaster
 
-#begin Define label Set for ScenYear
+*begin Define label Set for ScenYear
 
 Set lblScenYear 'Markedspriser, tariffer og afgifter' /
                   CalYear,
@@ -110,8 +109,8 @@ Set lblScenYear 'Markedspriser, tariffer og afgifter' /
                   TaxEnergiFGOKedel, TaxEnergiNGasKedel, TaxEnergiNGasMotor, TaxEnergiBiomasse, TaxEnergiNGasKedelMax, TaxEnergiElQMax, TaxEnergiEl, TaxEnergiElReduc,
                   TaxNOxFlisKedel, TaxNOxPelletKedel, TaxNOxHalm, TaxNOxFGOKedel, TaxNOxBioOlieKedel, TaxNOxNGasKedel, TaxNOxNGasMotor, TaxNOxRefusionPctNGasKedel, TaxNOxRefusionPctNGasMotor,
                   TaxSOxFlis, TaxSOxPellet, TaxSOxHalm, TaxSOxBioOlie, TaxSOxFGO, TaxOverskudsVarme, TaxSOxAffald,
-                # Tariffer pÃ¥ drivmidler
-                  TariffDsoAlowLoadLow,  TariffDsoAlowLoadHigh,  TariffDsoAlowLoadPeak,                        # Tids-afhÃ¦ngige DSO-tariffer
+                # Tariffer på drivmidler
+                  TariffDsoAlowLoadLow,  TariffDsoAlowLoadHigh,  TariffDsoAlowLoadPeak,                        # Tids-afhængige DSO-tariffer
                   TariffDsoAhighLoadLow, TariffDsoAhighLoadHigh, TariffDsoAhighLoadPeak,
                   TariffDsoBlowLoadLow,  TariffDsoBlowLoadHigh,  TariffDsoBlowLoadPeak,
                   TariffDsoBhighLoadLow, TariffDsoBhighLoadHigh, TariffDsoBhighLoadPeak,
@@ -122,15 +121,15 @@ Set lblScenYear 'Markedspriser, tariffer og afgifter' /
                   TariffOil, TariffNGas, TariffNGasSLK,
                   BottomLineYearScen /;
 
-#end Define label Set for ScenYear
+*end Define label Set for ScenYear
 
-#end   Scenarier
+*end   Scenarier
 
 
-#begin Prognoser og Raadigheder
+*begin Prognoser og Raadigheder
 
 set lblPrognoses      'Prognoser' /
-                # EfterspÃ¸rgsel og OV-effektgrÃ¦nser
+                # Efterspørgsel og OV-effektgrænser
                   QdemHo, QdemSt, QmaxPtX, 
                 # Elpriser og -tariffer
                   Elspot, TariffDsoLoad, 
@@ -151,35 +150,42 @@ set hpMapT(hpSource, lblThpSource) 'Korrespondance VP-type til VP-kildetemperatu
                Air.TAir, Ground.TGround, Sea.TSea, Sewage.TSewage, DC.TDC, Arla.TArla, Birn.TBirn, PtX.TPtx
                /; 
 
-#end Prognoser og Raadigheder
+*end Prognoser og Raadigheder
 
 
-#begin Nets, Plants and fuels
+*begin Nets, Plants and fuels
 
-Set Owner               'AnlÃ¦gsejere'              / MEC /;
-set actor               'AktÃ¸rer'                  / netHo, netSt, netMa /;
-set net(actor)          'ForsyningsomrÃ¥der'        / netHo, netSt, netMa /;
-set netq(net)           'Reale forsyningsomrÃ¥der'  / netHo, netSt /;
+Set Owner               'Anlægsejere'              / MEC /;
+set actor               'Aktører'                  / netHo, netSt, netMa /;
+set net(actor)          'Forsyningsområder'        / netHo, netSt, netMa /;
+set netq(net)           'Reale forsyningsområder'  / netHo, netSt /;
 Set Produc(Actor)       'Producenter Alle'         / netHo, netSt, netMa /;   
 alias (net, anet);
 
 parameter NetId(net) 'Ordinal af element i set net';
 NetId(net) = ord(net);
 
-# TODO Overskudsvarme leverandÃ¸rer defineres her:
-Set produExtR(Produc)    'Producenter eksterne+SV1' / system.empty /;
+# TODO Overskudsvarme leverandører defineres her:
+Set produExtR(Produc)   'Producenter eksterne+SV1' / system.empty /;
 Set produExt(produExtR) 'Producenter eksterne'      / system.empty /;  # Producenter eksterne til forsyningsselskaberne.
-Set producNet(produExt,net); #                      / system.empty /;  # Placering af eksist. eksterne producenter i omrÃ¥der.
+Set producNet(produExt,net); #                      / system.empty /;  # Placering af eksist. eksterne producenter i områder.
 
-Set f                 'Drivmidler'               / BioOlie, FGO, Ngas, Flis, Pellet, Halm, HPA, Affald, 
-                                                   Elec, Varme, 
-                                                   OV-Arla, OV-Arla2, OV-Birn, OV-Ptx /;
-                                                   
-Set fbio(f)           'Biobraendsler'            / Flis, Pellet, Halm, HPA /;
-Set fflis(f)          'FlisbrÃ¦ndsler'            / Flis, HPA /;
-Set fmatr(f)          'Materielle drivmidler'    / BioOlie, FGO, NGas, Flis, Pellet, Halm, HPA, Affald /;
-Set fov(f)            'Overskudsvarme'           / OV-Arla, OV-Arla2, OV-Birn, OV-Ptx /;
-Set fsto(f)           'Lagerbare brÃ¦ndsler'      / BioOlie, GFO, Flis, Pellet, Halm, HPA, Affald /;
+
+Set fall              'Drivmidler og energikilder' / BioOlie, FGO, Ngas, Flis, Pellet,   Halm, Affald, HPA, 
+                                                     Elec, Varme, Sol, Gratis, Stenkul, 
+                                                     OV-Arla, OV-Arla2, OV-Birn, OV-PtX,
+                                                     fossilFuel, biogenFuel, elecDrive, surplusHeat, ambientHeat /;
+
+Set fPrimary(fall)    'Primaerenergier'             / fossilFuel, biogenFuel, elecDrive, surplusHeat, ambientHeat /;
+
+Set f(fall)           'Drivmidler'                 / BioOlie, FGO, Ngas, Flis, Pellet, Halm, Affald, HPA, 
+                                                     Elec, Varme, Sol, Gratis, Stenkul, 
+                                                     OV-Arla, OV-Arla2, OV-Birn, OV-PtX /;
+Set fbio(f)           'Biobraendsler'              / Flis, Pellet, Halm, HPA /;
+Set fflis(f)          'Flisbraendsler'             / Flis, HPA /;
+Set fmatr(f)          'Materielle drivmidler'      / BioOlie, FGO, NGas, Flis, Pellet, Halm, HPA, Affald, Stenkul /;
+Set fov(f)            'Overskudsvarme'             / OV-Arla, OV-Arla2, OV-Birn, OV-PtX /;
+Set fsto(f)           'Lagerbare brændsler'        / BioOlie, FGO, Flis, Pellet, Halm, HPA, Affald /;
 Set fActive(f)        'Aktive fuels';
 Singleton set actF(f) 'Aktuelt fuel';
 
@@ -190,173 +196,281 @@ Alias(net,netT);
 Alias(net,netF);
 
 
-set uall 'Units (produktionsanlÃ¦g inkl. VAK) og statistik'  /
+set uall 'Units (produktionsanlaeg inkl. VAK) og statistik'  /
     HoGk, HoOk, 
     StGk, StOk, StEk, 
-    MaAff1, MaAff2, MaBio, MaCool, MaCool2, #--- MaBioGas, 
-    MaEk, MaVak, 
-    # NYE ANLÃ†G (Nye VAK hÃ¥ndteres i modellen som eksisterende anlÃ¦g, dvs. de kapacitetsoptimeres ikke).
-    HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, HoNVak, 
-    StNhpAir, StNhpSew, StNhpSea,  StNFlis, StNEk, StVak,
-    MaNAff, MaNBk, MaNbioKVV, MaNhpPtx, MaNVak1, MaNVak2, 
-    uaggr
+    MaAff1, MaAff2, MaBio, MaCool, MaCool2, MaEk,  
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir, StNFlis, StNEk, 
+    MaNbk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtX, 
+    HoNVak, StVak, MaVak, MaNVak1, MaNVak2, 
+    uaggr      # uaggr sammenfatter statistik for alle anlaeg.
    /;
 
-set u(uall) 'Units (produktionsanlÃ¦g inkl. VAK)'  /
+set u(uall) 'Units (produktionsanlaeg inkl. VAK)'  /
     HoGk, HoOk, 
     StGk, StOk, StEk, 
-    MaAff1, MaAff2, MaBio, MaCool, MaCool2, #--- MaBioGas, 
-    MaEk, MaVak, MaNAff,    # OBS : MaNAff hÃ¥ndteres som eksisterende anlÃ¦g.
-    # NYE ANLÃ†G (Nye VAK hÃ¥ndteres i modellen som eksisterende anlÃ¦g, dvs. de kapacitetsoptimeres ikke).
-    HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, HoNVak, 
-    StNhpAir, StNhpSew, StNhpSea,  StNFlis, StNEk, StVak,
-    MaNbioKVV, MaNBk, MaNhpPtx, MaNVak1, MaNVak2 
+    MaAff1, MaAff2, MaBio, MaCool, MaCool2, MaEk,  
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir,  StNFlis, StNEk, 
+    MaNbk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtX, 
+    HoNVak, StVak, MaVak, MaNVak1, MaNVak2
    /;
                       
-set upr(u)  'ProduktionsanlÃ¦g excl. VAK' /
+set upr(u)  'Produktionsanlaeg excl. VAK' /
     HoGk, HoOk, 
     StGk, StOk, StEk, 
-    MaAff1, MaAff2, MaBio, #--- MaBioGas, 
-    MaEk, MaNAff, 
-    # NYE ANLÃ†G
-    HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, 
-    StNhpAir, StNhpSew, StNhpSea, StNFlis, StNEk,
-    MaNBk, MaNbioKVV, MaNhpPtx
+    MaAff1, MaAff2, MaBio, MaCool, MaCool2, MaEk,  
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir,  StNFlis, StNEk, 
+    MaNbk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtX
    /;
 
-set uov(upr)  'Overskudsvarme VP'   / HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtx /;
-set upsr(upr) 'SR-produktionsanlÃ¦g' /
+set uBioKVV(upr) 'BioKVV'                    / MaNbKV1 /;
+set uov(upr)     'Overskudsvarme VP'         / HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtX /;
+set uptx(uov)    'VP knyttet til OV fra PtX' / MaNhpPtX /;
+set upsr(upr)    'SR-produktionsanlaeg'      /
     HoGk, HoOk,
     StGk, StOk
    /;
- 
    
-set ugas(upsr) 'Gasfyrede anlÃ¦g' / HoGk, StGk /;
+set ugas(upsr) 'Gasfyrede anlaeg' / HoGk, StGk /;
+
+set urHo(upr) 'Holstebro SR-produktionsanlaeg';    #---  / HoGk, HoOk /;   #---, HoNEk, MaEk, MaNEk  /;
+set urSt(upr) 'Struer SR-produktionsanlaeg'   ;    #---  / StGk, StOk /;   #---, StEk,  StNEk  /;
+
                   
-# OBS Elkedler kan ikke kun karakteriseres som spidslast efter Tarifmodel 3.0 er trÃ¥dt i kraft pga. delvis omlÃ¦gning til effektbetaling.
-set urHo(upr) 'Holstebro SR-produktionsanlÃ¦g'  / system.empty /;  #--- / HoGk, HoOk /;   #---, HoNEk, MaEk  /;
-set urSt(upr) 'Struer SR-produktionsanlÃ¦g'     / system.empty /;  #--- / StGk, StOk /;   #---, StEk,  StNEk  /;
+# OBS Elkedler kan ikke kun karakteriseres som spidslast efter Tarifmodel 3.0 er trådt i kraft pga. delvis omlægning til effektbetaling.
+set urHo(upr) 'Holstebro SR-produktionsanlæg'  / system.empty /;  #--- / HoGk, HoOk /;   #---, HoNEk, MaEk  /;
+set urSt(upr) 'Struer SR-produktionsanlæg'     / system.empty /;  #--- / StGk, StOk /;   #---, StEk,  StNEk  /;
 
    
-set uq(upr) 'Varmeproducerende anlÃ¦g (ikke KV)'  /
+set uq(upr) 'Varmeproducerende anlaeg (ikke KV)'  /
     HoGk, HoOk,  
     StGk, StOk, StEk,
     MaEk, 
-    # NYE ANLÃ†G
-    HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, 
-    StNhpAir, StNhpSew, StNhpSea, StNFlis, StNEk,
-    MaNBk, MaNhpPtx
+    # NYE ANLaeG
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir, StNFlis, StNEk,
+    MaNbk, MaNEk, MaNhpAir, MaNhpPtX 
    /;
 
-set forcedOnUpr(upr) 'TvangskÃ¸rte anlÃ¦g hvis rÃ¥dige' / MaAff1, MaAff2, MaNAff /; #--- MaBioGas
+set forcedOnUpr(upr) 'Tvangskoerte anlaeg hvis raadige' / MaAff1, MaAff2 /;
 
+set usol(u)         'Solvarmeanlaeg'         / system.empty /;
+                    
+set cp(upr)         'Centrale anlaeg'        / MaAff1, MaAff2, MaBio, MaNbKV1 /;
+set kv(upr)         'Kraftvarmeanlaeg'       / MaAff1, MaAff2, MaBio, MaNbKV1 /;
+set kvaff(kv)       'Affaldsanlaeg'          / MaAff1, MaAff2 /;
+set kvexist(kv)     'Eksist. KV-anlaeg'      / MaAff1, MaAff2, MaBio /;
+set uaff(kv)        'Affaldsanlaeg'          / MaAff1, MaAff2 /;
+set uaffupr(upr)    'Affaldsanlaeg'          / MaAff1, MaAff2 /;
+set uaffexist(upr)  'Eksist. affaldsanlaeg'  / MaAff1, MaAff2 /;
+set urgk(upr)       'RGK-anlaeg'             / system.empty /;
+Set gm(upr)         'Gasmotorer'             / system.empty /;
+Set gt(upr)         'Gasturbiner'            / system.empty /;
 
-#--- set usol(u)       'SolvarmeanlÃ¦g'         / system.empty /;
-set cp(upr)       'Centrale anlÃ¦g'        / MaAff1, MaAff2, MaBio, MaNAff /;  #--- MaBioGas, 
-set kv(upr)       'KraftvarmeanlÃ¦g'       / MaAff1, MaAff2, MaBio, MaNAff /;  #--- MaBioGas, 
-set kvaff(kv)     'AffaldsanlÃ¦g KV'       / MaAff1, MaAff2, MaNAff /;
-set uaff(kv)      'AffaldsanlÃ¦g'          / MaAff1, MaAff2, MaNAff /;
-set uaffupr(upr)  'AffaldsanlÃ¦g'          / MaAff1, MaAff2, MaNAff /;
-set cc(uaff)      'AnlÃ¦g med CC mulighed' / MaNAff/; 
-set urgk(upr)     'RGK-anlÃ¦g'             / MaAff1, MaAff2 /;
-Set gm(upr)       'Gasmotorer'            / system.empty /;
-Set gt(upr)       'Gasturbiner'           / system.empty /;
-
-Set upraff(upr)  'ProduktionsanlÃ¦g som er affaldsanlÃ¦g'  / MaAff1, MaAff2, MaNAff /;
-Set uprmaff(upr) 'ProduktionsanlÃ¦g pÃ¥nÃ¦r affaldsanlÃ¦g';
+Set upraff(upr)  'Produktionsanlaeg som er affaldsanlaeg'  / MaAff1, MaAff2 /;
+Set uprmaff(upr) 'Produktionsanlaeg paanaer affaldsanlaeg';
 uprmaff(upr)    = yes;
 uprmaff(upraff) = no;
 
-Set uprbase(upr) 'GrundlastanlÃ¦g' /
-    MaAff1, MaAff2, MaBio, #--- MaBioGas,
-    MaNAff, MaNBk, MaNbioKVV, MaNhpPtx,
-    # NYE ANLÃ†G
-    HoNhpAir, HoNhpSew, 
+Set uprbase(upr) 'Grundlastanlaeg' /
+    MaAff1, MaAff2, MaBio, 
+    MaNbk, MaNhpAir, MaNbKV1, MaNhpPtX, 
+    HoNhpAir, HoNhpSew, HoNFlis, 
     HoNhpArla, HoNhpArla2, HoNhpBirn, 
-    StNhpAir, StNhpSew, StNhpSea, StNFlis 
+    StNhpAir, StNFlis 
     /;
 
-set ucool(u)   'BortkÃ¸leanlÃ¦g'         / MaCool, MaCool2 /;
-set cool2net(ucool,net)  'Hvilke bortkÃ¸leanlÃ¦g i hvilket net'            / (MaCool, MaCool2).netHo /;
-set aff2cool(uaff,ucool) 'Hvilke affaldsanlÃ¦g til hvilket kÃ¸leanlÃ¦g'     / MaAff1.MaCool, MaAff2.MaCool2, MaNAff.MaCool2 /;
+set ucool(u)             'Bortkoeleanlaeg'                              / MaCool, MaCool2 /;
+set cool2net(ucool,net)  'Hvilke bortkoeleanlaeg i hvilket net'         / (MaCool, MaCool2).netHo /;
+set aff2cool(uaff,ucool) 'Hvilke affaldsanlaeg til hvilket koeleanlaeg' / MaAff1.MaCool, MaAff2.MaCool2 /;
 
-set uek(upr)   'El-kedler'            / HoNEk, MaEk, StEk, StNEk /;
+set uek(upr)   'El-kedler'            / HoNEk, MaEk, StEk, StNEk, MaNEk /;
 
 Set hp(upr)    'Varmepumper (VP)'     /
     HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, 
-    StNhpAir, StNhpSew, StNhpSea, MaNhpPtx
+    StNhpAir, 
+    MaNhpAir, MaNhpPtX 
     /;
 
-Set uelec(upr)      'Elkoblede anlÃ¦g'       / MaAff1, MaAff2, MaBio, MaNAff, MaNbioKVV,   #--- MaBioGas, 
-                                              HoNEk, StEk, StNEk, MaEk, 
-                                              HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn,  
-                                              StNhpAir, StNhpSew, StNhpSea, 
-                                              MaNhpPtx
-                                            /; 
+Set uelec(upr)      'Elkoblede anlæg'       / MaAff1, MaAff2, MaBio, MaEk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtx,
+                                              HoNEk, HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn,  
+                                              StEk, StNEk, StNhpAir
+                                            /;
 
-set uelcons(uelec) 'Elforbrugende anlÃ¦g'    / HoNEk, MaEk, StEk, StNEk, 
+set uelprod(uelec) 'Elproducerende anlæg'   / MaAff1, MaAff2, MaBio, MaNbKV1 /;  
+
+
+set uelcons(uelec) 'Elforbrugende anlæg'    / HoNEk, MaEk, StEk, StNEk, 
                                               HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, 
-                                              StNhpAir, StNhpSew, StNhpSea, 
+                                              StNhpAir, 
                                               MaNhpPtx 
                                             /;
-                                            
-set uelprod(uelec) 'Elproducerende anlÃ¦g'   / MaAff1, MaAff2, MaBio, MaNAff, MaNbioKVV /;  #--- MaBioGas, 
 
-Set hp_air(hp)     'Luft-VP'                / HoNhpAir, StNhpAir /;
-Set hp_gw(hp)      'Grundvands-VP'          / System.empty /;
-Set hp_sea(hp)     'Havvands-VP'            / StNhpSea /;
-Set hp_sew(hp)     'Spildevands-VP'         / HoNhpSew, StNhpSew /;
-Set hp_DC(hp)      'Datacenter - VP'        / system.empty /; 
+
+Set hp_air(hp)     'Luft-VP'                / HoNhpAir, StNhpAir, MaNhpAir /;
+Set hp_sew(hp)     'Spildevands-VP'         / HoNhpSew /;
 Set hp_Arla(hp)    'OV-Arla-VP'             / HoNhpArla, HoNhpArla2 /;
 Set hp_Birn(hp)    'OV-Birn-VP'             / HoNhpBirn/;
-Set hp_PtX(hp)     'PtX overskudsvarme'     / MaNhpPtx /;
+Set hp_PtX(hp)     'PtX overskudsvarme'     / MaNhpPtX /;
 Set hp_OV(hp)      'VP med OV-afgift'       / system.empty /;
 
 
-Set unonco2(u)     'AnlÃ¦g u. CO2-emission'      / MaBio /;  #--- MaBioGas, 
-Set uregulco2(u)   'AnlÃ¦g m.regulat. CO2-emis'  /
+Set unonco2(u)     'Anlaeg u. CO2-emission'      / MaBio, MaNbk, MaNbKV1, HoNFlis, StNFlis /;
+Set uregulco2(u)   'Anlaeg m.regulat. CO2-emis'  /
     HoGk, HoOk, 
     StGk, StOk,
-    MaAff1, MaAff2, MaNAff
+    MaAff1, MaAff2
     /;
 
-# OBS MaNAff hÃ¥ndteres som et eksisterende anlÃ¦g, idet dets kapacitet er fikseret.
-Set uexist(u)         'Eksist. anlÃ¦g'            /
-    HoGk, HoOk, MaAff1, MaAff2, MaBio, MaCool, MaCool2, #--- MaBioGas,
-    StGk, StOk, StEk, StVak, 
-    MaNAff, MaEk, 
-    MaVak, HoNVak, MaNVak1, MaNVak2
+Set uexist(u)         'Eksist. anlaeg'            /
+    HoGk, HoOk, MaAff1, MaAff2, MaBio, MaCool, MaCool2,
+    StGk, StOk, StEk,  
+    MaEk, 
+    HoNVak, StVak, MaVak, MaNVak1, MaNVak2
     /;
 
 Set hpexist(u)         'Eksist. varmepumper'       /
     system.empty
     /;
 
-Set unew(u)    'Nye anlÃ¦g'   /
-    HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+Set unew(u)    'Nye anlaeg'   /
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
     #--- HoNVak,  MaNVak1, MaNVak2, 
-    StNhpAir, StNhpSew, StNhpSea,  StNFlis, StNEk,
+    StNhpAir,  StNFlis, StNEk,
     #--- StVak, 
-    MaNBk, MaNbioKVV, MaNhpPtx
+    MaNbk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtX 
     /;
-Set unewuq(unew) 'Nye varmeanlÃ¦g' /
-    HoNhpAir, HoNhpSew, MaNBk, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtx,
-    StNhpAir, StNhpSew, StNhpSea,  StNFlis, StNEk
+Set unewupr(unew)    'Nye produktionsanlaeg'   /
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir, StNFlis, StNEk,
+    MaNbk, MaNEk, MaNhpAir, MaNbKV1, MaNhpPtX 
+    /;
+Set unewuq(unew) 'Nye varmeanlaeg' /
+    HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir, StNFlis, StNEk,
+    MaNbk, MaNEk, MaNhpAir, MaNhpPtX
     /;
 Set unewhp(unew) 'Nye varmepumper'  /
-    HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtx,
-    StNhpAir, StNhpSew, StNhpSea
+    HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+    StNhpAir,  
+    MaNhpAir, MaNhpPtX
    /;
+
+Set uopt(unew)       'Nye anlaeg som skal kapacitetsoptimeres';   
+set unonopt(unew)    'Nye anlaeg som ikke skal kapacitetsoptimeres.';
 
 set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
 Set vaknew(u)        'Nye varmetanke'     / system.empty /;
 
-set ucoolexist(uexist)   'Eksisterende bortkÃ¸leanlÃ¦g'    / MaCool, MaCool2 /;
-set ucoolnew(unew)       'Nye bortkÃ¸leanlÃ¦g'             / system.empty /;
+set ucoolexist(uexist)   'Eksisterende bortkoeleanlaeg'    / MaCool, MaCool2 /;
+set ucoolnew(unew)       'Nye bortkoeleanlaeg'             / system.empty /;
+
+set uother(upr)          'Anlaeg som prioriteres efter OV' / system.empty /;
+uother(upr) = not uaffupr(upr) and not uov(upr);
 
 
 
-#begin Sets for transmissionsledninger.
+#--- set usol(u)       'Solvarmeanlæg'         / system.empty /;
+#--- set cp(upr)       'Centrale anlæg'        / MaAff1, MaAff2, MaBio /;
+#--- set kv(upr)       'Kraftvarmeanlæg'       / MaAff1, MaAff2, MaBio /;
+#--- set kvaff(kv)     'Affaldsanlæg KV'       / MaAff1, MaAff2 /;
+#--- set uaff(kv)      'Affaldsanlæg'          / MaAff1, MaAff2 /;
+#--- set uaffupr(upr)  'Affaldsanlæg'          / MaAff1, MaAff2 /;
+#--- set urgk(upr)     'RGK-anlæg'             / MaAff1, MaAff2 /;
+#--- Set gm(upr)       'Gasmotorer'            / system.empty /;
+#--- Set gt(upr)       'Gasturbiner'           / system.empty /;
+#--- 
+#--- Set upraff(upr)  'Produktionsanlæg som er affaldsanlæg'  / MaAff1, MaAff2 /;
+#--- Set uprmaff(upr) 'Produktionsanlæg pånær affaldsanlæg';
+#--- uprmaff(upr)    = yes;
+#--- uprmaff(upraff) = no;
+#--- 
+#--- Set uprbase(upr) 'Grundlastanlæg' /
+#---     MaAff1, MaAff2, MaBio, 
+#---     MaNbk, MaNbKV1, MaNhpPtx,
+#---     # NYE ANLÆG
+#---     HoNhpAir, HoNhpSew, 
+#---     HoNhpArla, HoNhpArla2, HoNhpBirn, 
+#---     StNhpAir, StNFlis 
+#---     /;
+#--- 
+#--- set ucool(u)   'Bortkøleanlæg'         / MaCool, MaCool2 /;
+#--- set cool2net(ucool,net)  'Hvilke bortkøleanlæg i hvilket net'            / (MaCool, MaCool2).netHo /;
+#--- set aff2cool(uaff,ucool) 'Hvilke affaldsanlæg til hvilket køleanlæg'     / MaAff1.MaCool, MaAff2.MaCool2 /;
+#--- 
+#--- set uek(upr)   'El-kedler'            / HoNEk, MaEk, StEk, StNEk /;
+#--- 
+#--- Set hp(upr)    'Varmepumper (VP)'     /
+#---     HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+#---     StNhpAir, MaNhpPtx
+#---     /;
+#--- 
+#--- Set uelec(upr)      'Elkoblede anlæg'       / MaAff1, MaAff2, MaBio, MaNbKV1,  
+#---                                               HoNEk, StEk, StNEk, MaEk, 
+#---                                               HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn,  
+#---                                               StNhpAir, 
+#---                                               MaNhpPtx
+#---                                             /; 
+#--- 
+#---                                             
+#--- set uelprod(uelec) 'Elproducerende anlæg'   / MaAff1, MaAff2, MaBio, MaNbKV1 /;  
+#--- 
+#--- Set hp_air(hp)     'Luft-VP'                / HoNhpAir, StNhpAir /;
+#--- Set hp_gw(hp)      'Grundvands-VP'          / System.empty /;
+#--- Set hp_sew(hp)     'Spildevands-VP'         / HoNhpSew /;
+#--- Set hp_DC(hp)      'Datacenter - VP'        / system.empty /; 
+#--- Set hp_Arla(hp)    'OV-Arla-VP'             / HoNhpArla, HoNhpArla2 /;
+#--- Set hp_Birn(hp)    'OV-Birn-VP'             / HoNhpBirn/;
+#--- Set hp_PtX(hp)     'PtX overskudsvarme'     / MaNhpPtx /;
+#--- Set hp_OV(hp)      'VP med OV-afgift'       / system.empty /;
+#--- 
+#--- 
+#--- Set unonco2(u)     'Anlæg u. CO2-emission'      / MaBio /; 
+#--- Set uregulco2(u)   'Anlæg m.regulat. CO2-emis'  /
+#---     HoGk, HoOk, 
+#---     StGk, StOk,
+#---     MaAff1, MaAff2
+#---     /;
+#--- 
+#--- # OBS MaNAff håndteres som et eksisterende anlæg, idet dets kapacitet er fikseret.
+#--- Set uexist(u)         'Eksist. anlæg'            /
+#---     HoGk, HoOk, MaAff1, MaAff2, MaBio, MaCool, MaCool2, 
+#---     StGk, StOk, StEk, StVak, 
+#---     MaEk, 
+#---     MaVak, HoNVak, MaNVak1, MaNVak2
+#---     /;
+#--- 
+#--- Set hpexist(u)         'Eksist. varmepumper'       /
+#---     system.empty
+#---     /;
+#--- 
+#--- Set unew(u)    'Nye anlæg'   /
+#---     HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, 
+#---     #--- HoNVak,  MaNVak1, MaNVak2, 
+#---     StNhpAir,  StNFlis, StNEk,
+#---     #--- StVak, 
+#---     MaNbk, MaNbKV1, MaNhpPtx
+#---     /;
+#--- Set unewuq(unew) 'Nye varmeanlæg' /
+#---     HoNhpAir, HoNhpSew, MaNbk, HoNEk, HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtx,
+#---     StNhpAir,  StNFlis, StNEk
+#---     /;
+#--- Set unewhp(unew) 'Nye varmepumper'  /
+#---     HoNhpAir, HoNhpSew, HoNhpArla, HoNhpArla2, HoNhpBirn, MaNhpPtx,
+#---     StNhpAir /;
+#--- 
+#--- set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
+#--- Set vaknew(u)        'Nye varmetanke'     / system.empty /;
+#--- 
+#--- set ucoolexist(uexist)   'Eksisterende bortkøleanlæg'    / MaCool, MaCool2 /;
+#--- set ucoolnew(unew)       'Nye bortkøleanlæg'             / system.empty /;
+
+
+
+*begin Sets for transmissionsledninger.
 
 set tr            'T-ledninger'        / tr1 * tr3 /;
 set trkind        'Transmission kind'  / frem, retur /;
@@ -366,15 +480,15 @@ set trActive(tr)  'Aktive T-ledninger';
 set pipe              'Used DN pipe sizes'      / DN100, DN125, DN150, DN200, DN250, DN300, DN400, DN500, DN600, DN700, DN800, DN900, DN1000, DN1100, DN1200 /;
 set lblpipe                                     / DN, Di, InsulDiam1, InsulDiam3, Roughness /;
 set lblDataTransm     'T-ledning attributter'   / On, netF, netT, Lkm, DNmm, TFone, TRtwo, VelocMax, MinFlow, QTmax, Capex /;
-set lblTrConfig       'T-ledning opsÃ¦tning'     / netF, netT /;
+set lblTrConfig       'T-ledning opsætning'     / netF, netT /;
 
-singleton set actpipe(pipe) 'Aktuel rÃ¸rdimension for given T-ledning';
+singleton set actpipe(pipe) 'Aktuel rørdimension for given T-ledning';
 singleton set acttr(tr)     'Aktuel T-ledning';
 
-#end
+*end
 
-Singleton set actU(u)     'Aktuelt anlÃ¦g';
-Singleton set actUpr(upr) 'Aktuelt produktionsanlÃ¦g';
+Singleton set actU(u)     'Aktuelt anlæg';
+Singleton set actUpr(upr) 'Aktuelt produktionsanlæg';
 Set uActive(u)            'Aktive units u';
 Set setOnUGlobal(u)       'Aktive units u';
 Set setOnNetGlobal(net)   'Aktive net';
@@ -382,26 +496,25 @@ Set unewActive(unew)      'Aktive nye units';
 
 alias(u,ualias);
 
-#begin VAK sets
+*begin VAK sets
 
 set vak(u)    'Varmetanke'  / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
 
 Singleton set actVak(vak) 'Aktuel VAK';
 
-set vaknet(vak,net)      'Hvilke vak hÃ¸rer til hvilket net' /
+set vaknet(vak,net)      'Hvilke vak hører til hvilket net' /
    (MaVak, MaNVak1, MaNVak2).netMa, HoNVak.netHo, StVak.netSt 
    /;
 
-set upr2vak(upr,vak)     'Hvilke prod-anlÃ¦g kan lade pÃ¥ vak' /
+set upr2vak(upr,vak)     'Hvilke prod-anlæg kan lade på vak' /
    (HoNEk).HoNVak, 
-   (StNhpAir, StNhpSew, StNhpSea,  StNFlis, StNEk).StVak,
-   #--- (MaAff1, MaAff2, MaBio, MaBioGas, MaEk, MaNAff, MaNBk, MaNbioKVV, MaNhpPtx).(MaVak, MaNVak1, MaNVak2)
-   (MaAff1, MaAff2, MaBio, MaEk, MaNAff, MaNBk, MaNbioKVV, MaNhpPtx).(MaVak, MaNVak1, MaNVak2)
+   (StNhpAir,  StNFlis, StNEk).StVak,
+   (MaAff1, MaAff2, MaBio, MaEk, MaNbk, MaNbKV1, MaNhpPtx).(MaVak, MaNVak1, MaNVak2)
    /;
     
-set tr2vak(tr,vak)       'Hvilke T-ledninger kan lade pÃ¥ vak' / tr1.StVak, tr2.HoNVak /;
+set tr2vak(tr,vak)       'Hvilke T-ledninger kan lade på vak' / tr1.StVak, tr2.HoNVak /;
 
-set vak2tr(vak,tr)      'Hvilke tanke kan indfÃ¸de pÃ¥ hvilke T-ledninger' /
+set vak2tr(vak,tr)      'Hvilke tanke kan indføde på hvilke T-ledninger' /
    (MaVak, MaNVak1, MaNVak2).(tr1, tr2)
    /;
 
@@ -410,13 +523,13 @@ set net2tr(net,tr)      'Hvilke net til hvilke T-ledning' / netMa.(tr1,tr2) /;
 set net2net(netF,netT)  'NetF kan forsynes netT'          / (netMa).(netHo, netSt)   /;
 
 
-#begin Validering af set medlemsskab for anlÃ¦g u.
+*begin Validering af set medlemsskab for anlæg u.
 FoundError = FALSE;
 loop (u,
   actU(u) = yes;
   if (uexist(u) AND unew(u),
     FoundError = TRUE;
-    display "ERROR: actU er medlem af bÃ¥de unew og uexist.";
+    display "ERROR: actU er medlem af både unew og uexist.";
   elseif (NOT uexist(u) AND NOT unew(u) AND NOT vak(u)),
     FoundError = TRUE;
     display actU, "ERROR: actU er ikke medlem af hverken unew eller uexist.";
@@ -427,12 +540,12 @@ if (FoundError,
   display "ERROR: Inkonsistente set medlemsskaber for uexist og unew er fundet. Se display listings herover.";
   abort "ERROR: Inkonsistente set medlemsskaber for uexist og unew er fundet. Se display listings herover.";
 );
-#end
+*end
 
-#begin Validering af set medlemsskab for VAK,
+*begin Validering af set medlemsskab for VAK,
 
-Scalar nUprOn     'Antal rÃ¥dige prod.-anlÃ¦g';
-Scalar nTrOn      'Antal rÃ¥dige transm.ledninger';
+Scalar nUprOn     'Antal rådige prod.-anlæg';
+Scalar nTrOn      'Antal rådige transm.ledninger';
 
 FoundError = FALSE;
 loop (vak,
@@ -440,16 +553,16 @@ loop (vak,
   tmp = 0;
   tmp = sum(upr $upr2vak(upr,vak), 1);
   if (tmp EQ 0,
-    display actVak, tmp, "WARNING: actVak er ikke tilknyttet nogen produktionsanlÃ¦g.";
+    display actVak, tmp, "WARNING: actVak er ikke tilknyttet nogen produktionsanlæg.";
     
-    # Check fÃ¸rst om en vak uden indfÃ¸dende prod.-anlÃ¦g kan oplades fra en T-ledning, inden der meldes fejl.
+    # Check først om en vak uden indfødende prod.-anlæg kan oplades fra en T-ledning, inden der meldes fejl.
     nTrOn = 0;
     loop (tr,
        if (tr2vak(tr,vak), nTrOn = nTrOn + 1; );
     );
     if (nTrOn EQ 0,
       FoundError = TRUE;
-      display actVak, "ERROR: actVak ovenfor er hverken tilknyttet indfÃ¸dende produktionsnlÃ¦g eller T-ledning";
+      display actVak, "ERROR: actVak ovenfor er hverken tilknyttet indfødende produktionsnlæg eller T-ledning";
     );
   );
 );
@@ -457,18 +570,18 @@ if (FoundError,
   display actVak, "ERROR: Inkonsistente set medlemsskaber af upr2vak hhv. tr2vak er fundet. Se display listings herover.";
   abort "ERROR: Inkonsistente set medlemsskaber af upr2vak hhv. tr2vak er fundet. Se display listings herover.";
 );
-#end
+*end
 
 
-#end VAK sets
+*end VAK sets
 
 
-set tax               'tax kinds'               / afv, atl, ch4, co2, nox, sox, ets, enr, VE, Oversk /;  # aff-varme, aff-tillÃ¦g, metan, co2, nox, sox, kvote, energi, tilskud, Overskudsvarmeafgift.
+set tax               'tax kinds'               / afv, atl, ch4, co2, nox, sox, ets, enr, VE, Oversk /;  # aff-varme, aff-tillæg, metan, co2, nox, sox, kvote, energi, tilskud, Overskudsvarmeafgift.
 
 Set taxaff(tax)       'taxes for waste'         / afv, atl /;
-Set taxs(tax)         'taxes but enr'           / ch4, co2, nox, sox/;                           # afgifter pÃ¥nÃ¦r kvote samt energi- og affaldsafgifter.
-Set taxkv(tax)        'taxes but enr,co2'       / ch4, nox, sox /;                               # afgifter pÃ¥nÃ¦r kvote samt energi- og affaldsafgifter.
-Set taxkv2(tax)       'taxes based on fuelheat' / enr, co2 /;                                    # afgifter, som pÃ¥lÃ¦gges brÃ¦ndsel til varmeproduktion i KV-anlÃ¦g.
+Set taxs(tax)         'taxes but enr'           / ch4, co2, nox, sox/;                           # afgifter pånær kvote samt energi- og affaldsafgifter.
+Set taxkv(tax)        'taxes but enr,co2'       / ch4, nox, sox /;                               # afgifter pånær kvote samt energi- og affaldsafgifter.
+Set taxkv2(tax)       'taxes based on fuelheat' / enr, co2 /;                                    # afgifter, som pålægges brændsel til varmeproduktion i KV-anlæg.
 Set m                 'Machine kind'            / kedel, motor, kv, vp /;
 
 Set lblDataU          'Labels for DataU'        / Idriftsat, Omraade, KvoteOmfattet, Aggregat, CapacQ, ModuleSize, Fmin, Fmax, EtaQ, EtaP, ElEig0, ElEig1, 
@@ -498,15 +611,15 @@ set InfeasDir          'Infeas direction'  / source, drain /;
 
 $OffOrder
 
-set unonkv(u) 'Non KV produktionsanlÃ¦g';
+set unonkv(u) 'Non KV produktionsanlæg';
 unonkv(upr) = NOT kv(upr);
 
 $OnOrder
 
-#end Plants and fuels
+*end Plants and fuels
 
 
-#begin Capacity allocations
+*begin Capacity allocations
 
 set updown            'Up-Down regulation'            / up, down /;
 set elmarket          'Electricy markets'             / FCR, aFRR, mFRR /;
@@ -514,10 +627,10 @@ set planZone          'Planning zone: Bid or default' / Default, Bid /;
 set planPhase         'Planning phase'                / FCR, aFRR, mFRR, dayAhead, intraDay /;
 set lblElMarket       'Elmarkeds egenskaber'          / Active, Symmetric, Up, Down, PriceAvail, PriceUp, PriceDown, BidMin, TimeToFull /;
 
-#end Capacity allocations
+*end Capacity allocations
 
-#begin Other sets
-Set onoff             'on-off markÃ¸r'                              / on, off /;
+*begin Other sets
+Set onoff             'on-off markør'                              / on, off /;
 Set startstop                                                      / start, stop /;
 Set other             'Other items, plants' / ucool /;
 Set secondOrderFcn    'Coefficients for a second order function'   / intercept, 1st, 2nd /;
@@ -531,23 +644,20 @@ Set mapHp2Source(hp,hpSource) 'Map VP til varmekildetype';
 
 mapHp2Source(hp,hpSource) = no;
 mapHp2Source(hp_air,  'air')    = yes;
-mapHp2Source(hp_gw,   'ground') = yes;
-mapHp2Source(hp_sea,  'sea')    = yes;
 mapHp2Source(hp_sew,  'sewage') = yes;
-mapHp2Source(hp_DC,   'DC')     = yes;
 mapHp2Source(hp_Arla, 'Arla')   = yes;
 mapHp2Source(hp_Birn, 'Birn')   = yes;
 mapHp2Source(hp_PtX,  'PtX')    = yes;
 
-#end Other sets
+*end Other sets
 
-#begin Sets for statistics
+*begin Sets for statistics
 
-# NB: Disse sets til statistik skal defineres fÃ¸r alle andre, som indeholder medlemmer med samme navn.
-#     En besynderlighed ved GAMS er, at rÃ¦kkefÃ¸lgen af Set-members fastlÃ¦gges i den rÃ¦kkefÃ¸lge, hvori de defineres pÃ¥ tvÃ¦rs af sets.
-#     Og dermed bliver rÃ¦kkefÃ¸lge af udskrivning af stats vha. GDXXRW afhÃ¦ngig af rÃ¦kkefÃ¸lgen for definition af sets.
+# NB: Disse sets til statistik skal defineres før alle andre, som indeholder medlemmer med samme navn.
+#     En besynderlighed ved GAMS er, at rækkefølgen af Set-members fastlægges i den rækkefølge, hvori de defineres på tværs af sets.
+#     Og dermed bliver rækkefølge af udskrivning af stats vha. GDXXRW afhængig af rækkefølgen for definition af sets.
 
-Set cpStatType 'Stats typer for centrale anlÃ¦g' / QRGK, Pbrut, Pnet, Q, QRGKShare /;
+Set cpStatType 'Stats typer for centrale anlæg' / QRGK, Pbrut, Pnet, Q, QRGKShare /;
 
 Set topicAll 'Overall statistics' /
     ElspotPrice, SlaveObj, VPO, 
@@ -573,7 +683,7 @@ Set topicU     'Prod unit stats' /
     EtaPower, EtaHeat, PowInMax, ElSpotIncome,
     CapEAllocMWhUp, CapEAllocMWhDown     /;
 
-Set topicMecU     'MEC anlÃ¦gs-stats' /
+Set topicMecU     'MEC anlægs-stats' /
     OperHours, BypassHours, Rgkhours,
     TurnOver, RealPowerPriceBuy, RealPowerPriceSell,
     NStart, CO2QtyPhys, CO2QtyRegul, PowInU, FuelQty,
@@ -584,16 +694,16 @@ Set topicMecU     'MEC anlÃ¦gs-stats' /
     CapacCost, ContribMargin, HeatCapacPrice, HeatTotalPrice
     /;
     
-Set topicMecF 'MEC BrÃ¦ndsels-stats' / Qty, Pris, CO2QtyPhys, CO2QtyRegul /;
+Set topicMecF 'MEC Brændsels-stats' / Qty, Pris, CO2QtyPhys, CO2QtyRegul /;
 
-#--- Set topicMecF     'MEC brÃ¦ndsels-stats' /    
+#--- Set topicMecF     'MEC brændsels-stats' /    
 #---    ElspotPris, AffaldsPris, HalmPris, FlisPris, HpaPris, GasPris, OliePris, OV-ArlaPris, OV-Arla2Pris, OV-BirnPris, OV-PtXPris, 
 #---    CO2KvotePris
 #---    /;
 
 Set topicT        'Transmission stats' / QSent, QLost, CostPump /;
 Set topicWind     'Prod unit stats'    / TotalDbElWind, TotalPWindHp, TotalPWindActual /;
-Set topicVak      'Vak stat topics'    / MMax, QLoss, Turnover /;  # MMax er hÃ¸jeste vÃ¦rdi af nyttemassen (toplag for varm/lunken tank, bundlag for kold tank).
+Set topicVak      'Vak stat topics'    / MMax, QLoss, Turnover /;  # MMax er højeste værdi af nyttemassen (toplag for varm/lunken tank, bundlag for kold tank).
 Set topicOther    'Other topics'       / HeatVented /;
 Set topicFuel     'Fuel topics'        / Qty, CO2QtyPhys, CO2QtyRegul /;
 
@@ -609,9 +719,9 @@ Set topicMasOvwFuel     'Master overview topics for periods'    / CO2QtyPhys, CO
 
 
 
-#end Sets for statistics
+*end Sets for statistics
 
-#end SET ERKLÃ†RINGER
+*end SET ERKLÆRINGER
 
 $If not errorfree $exit
 

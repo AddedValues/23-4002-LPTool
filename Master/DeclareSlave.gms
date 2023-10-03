@@ -10,10 +10,10 @@ Inkluderes af:  MecLpMain.gms
 $OffText
     
 
-#begin Sets og parametre.
+*begin Sets og parametre.
 
 
-#begin Variables
+*begin Variables
 
 Free     variable       zSlave                       'Slave objective';
 Positive variable       QSales(tt)                   'Varmesalg [DKK]';
@@ -33,7 +33,7 @@ Free variable           TotalElIncome(tt,kv);
 Free variable           ElSales(tt,kv)             'Indtægt fra elsalg';
 #--- Free variable           ElTilskud(tt,kv);
 
-#begin Transmission
+*begin Transmission
 
 Positive variable       QT(tt,tr)                   'Transmitteret varme [MWq]';
 Positive variable       QTloss(tt,tr)               'Transmissionsvarmetab [MWq]';
@@ -42,7 +42,7 @@ Free     variable       CostPump(tt,tr)             'Pumpeomkostninger';
 Binary   variable       bOnT(tt,tr)                 'On/off timetilstand for T-ledninger';
 Binary   variable       bOnTAll(tr)                 'On/off årstilstand for T-ledninger';
 
-#end
+*end
 
 Positive variable       QCool(tt,ucool);
 Positive variable       PowInU(tt,upr)             'Indgivet effekt [MWf]';
@@ -94,7 +94,7 @@ Positive variable       QVakAbs(tt,vak)            'Absolut laderate for beregni
 Positive variable       Qbase(tt)                  'Grundlastvarmeproduktion';
 Positive variable       QbasebOnSR(tt,netq)        'Product af Qbase og bOnSR';
 
-#begin Kapacitetsallokeringer
+*begin Kapacitetsallokeringer
 Positive variable       CapEAlloc(tt,uelec,updown)    'Kapacitetsallokeringer på anlægsbasis';
 Positive variable       CapESlack(tt,updown)          'Kapacitetsallokerings slack ift. diskret størrelse';
 Positive variable       CapEAllocSumU(tt,updown)      'Kapacitetsallokering summeret over anlæg';
@@ -121,13 +121,13 @@ EQ_AllocReservMatch(tbid,tt,updown) $(OnCapacityReservation AND ord(tbid) LE Hou
 Equation EQ_CostCapESlack(tt,updown)      'Beregner penalty på CapESlack';
 EQ_CostCapESlack(t,updown) $(OnCapacityReservation AND IsBidDay(t)) .. CostCapESlack(t,updown)  =E=  CapESlackPenalty * CapESlack(t,updown);
 
-#end Kapacitetsallokeringer
+*end Kapacitetsallokeringer
 
-#end
+*end
 
-#begin Ligningsspecifikationer
+*begin Ligningsspecifikationer
 
-#begin Overordnede equations
+*begin Overordnede equations
 Equation EQ_ObjSlave                        'Objektfunktion med totale omkostninger';
 Equation EQ_QSales(tt)                      'FJV-salg';
 Equation EQ_Start(tt,upr);
@@ -186,10 +186,10 @@ EQ_TotalCostU(t,u) $(OnU(t,u)) .. TotalCostU(t,u)  =E=  sum(upr $sameas(upr,u),
 #--- EQ_TotalElIncome(t,kv) $(OnU(t,kv)) .. TotalElIncome(t,kv)    =E=  [ElSales(t,kv) + ElTilskud(t,kv)] $OnU(t,kv);
 EQ_TotalElIncome(t,kv) $(OnU(t,kv)) .. TotalElIncome(t,kv)    =E=  [ElSales(t,kv)] $OnU(t,kv);
 
-#end Overordnede equations
+*end Overordnede equations
 
 
-#begin Produktionsgrænser og varmebalance.
+*begin Produktionsgrænser og varmebalance.
 Equation EQ_PowInProdU(tt,upr)    'Indgiven effekt [MW]';
 Equation EQ_QProdUmin(tt,upr)     'Min. varmeproduktion for units [MWq]';
 Equation EQ_QProdUmax(tt,upr)     'Max. varmeproduktion for units [MWq]';
@@ -243,9 +243,9 @@ EQ_RampUpMax(t,upr)   $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampUp')
 EQ_RampDownMax(t,upr) $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampDown') LT (1.0 - tiny)) .. PowInU(t,upr) - BLenRatio(t) * [PowInUPrevious(upr) $(ord(t) EQ 1) + PowInU(t-1,upr) $(ord(t) GT 1)]  =G=  -min(1.0, 1E-3 + DataU(upr,'RampDown') * TimeResol(t)) * BLen(t) * PowInUMax(upr) * bOn(t,upr);
 $OnOrder
 
-#end Produktionsgrænser og varmebalance
+*end Produktionsgrænser og varmebalance
 
-#begin Produktionsomkostninger
+*begin Produktionsomkostninger
 
 #--- Equation EQ_FixedDVCostTotal;
 #--- Equation EQ_FixedDVCost(upr);
@@ -327,7 +327,8 @@ EQ_ElEgbrugOmkst(t,upr) ..  ElEgbrugOmkst(t,upr)  =E=  ElEigen(t,upr) * TariffEl
 # CO2-indholdet af elektrictet varierer med årsfremskrivningerne.
 # TODO Beregning af CO2 emission tager ikke højde for udetid på CC-anlæg.
 EQ_CO2emisUpr(t,upr,co2kind) $OnU(t,upr) ..  CO2emis(t,upr,co2kind)   =E=  PowInU(t,upr) * sum(f $(FuelMix(upr,f) GT 0),
-                                                                           [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * [Brandsel(f,'FossilAndel') * (1-sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'regul') + (1.0 - 0.8 * sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'phys')]]  #
+                                                                           #--- [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * [Brandsel(f,'FossilAndel') * (1-sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'regul') + (1.0 - 0.8 * sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'phys')]]  #
+                                                                           [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * [Brandsel(f,'FossilAndel') * (1-0) $sameas(co2kind,'regul') + (1.0 - 0.8 * (0)) $sameas(co2kind,'phys')]]  
                                                                            + [YS('CO2ElecMix') $(sameas(f,'elec') AND sameas(co2kind,'phys'))]                  #
                                                                          ) / 1000;
 
@@ -343,17 +344,17 @@ EQ_CO2emisUpr(t,upr,co2kind) $OnU(t,upr) ..  CO2emis(t,upr,co2kind)   =E=  PowIn
 #--- EQ_FuelQty(t,upr) $OnU(t,upr)  ..  FuelQty(t,upr)  =E=  PowInU(t,upr) / sum(f, FuelMix(upr,f) * Brandsel(f,'LhvMWh')); 
 EQ_FuelQty(t,upr) $OnU(t,upr)  ..  FuelQty(t,upr)  =E=  PowInU(t,upr) / sum(f, FuelMix(upr,f) * LhvMWhPerUnitFuel(f)); 
 
-#end Produktionsomkostninger
+*end Produktionsomkostninger
 
 
-#--- #begin Solvarme
+#--- *begin Solvarme
 #--- Equation EQ_Sol(tt,usol);
 #--- # TODO Solvarme kan ikke undertrykkes i praksis, kun i en model. Det skal være en =E= restriktion, men det kræver både lager og bortkølingsfacilitet for at undgå infeasibility.
 #--- EQ_Sol(t,usol)  $OnU(t,usol)  .. Q(t,usol)  =L=  BLen(t) * Solvarme(t,usol) ;     # Den maksimale solvarmeproduktion i modellen følger tidsserien for den virkelige solvarmeproduktion.
 #--- 
-#--- #end Solvarme
+#--- *end Solvarme
 
-#begin Ligninger for KV-anlæg
+*begin Ligninger for KV-anlæg
 
 Equation EQ_BypassMax(tt);
 Equation EQ_Pbrut(tt,kv);
@@ -440,7 +441,7 @@ Equation EQ_DVOmkstRGK(tt,kv);
 EQ_DVOmkstRGK(t,kv) $OnU(t,kv)  .. DVOmkstRGK(t,kv) =E=  QRgk(t,kv) * CHP(kv,'VarDVOmkstRgk');
 
 
-#begin Gasmotorer
+*begin Gasmotorer
 Equation EQ_Taxes1Gm(tt,taxkv,gm);
 Equation EQ_Taxes2Gm(tt,gm);
 Equation EQ_Taxes3Gm(tt,gm);
@@ -448,11 +449,11 @@ Equation EQ_Taxes3Gm(tt,gm);
 EQ_Taxes1Gm(t,taxkv,gm) $OnU(t,gm) ..  TaxProdU(t,gm,taxkv)   =E=  TaxRateMWh('NGas',taxkv,'kv') * PowInU(t,gm);
 EQ_Taxes2Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'enr')   =E=  TaxRateMWh('NGas','enr','kv') * sum(kv $sameas(kv,gm), FuelHeat(t,kv));
 EQ_Taxes3Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'co2')   =E=  TaxRateMWh('NGas','co2','kv') * sum(kv $sameas(kv,gm), FuelHeat(t,kv));
-#end Gasmotorer
+*end Gasmotorer
 
 
 
-#begin Affaldsanlæg
+*begin Affaldsanlæg
 
 # Afgiftsberegning for affaldsanlæg er mere kompliceret end for øvrige typer produktionsanlæg. Dertil håndteres beregningen særskilt her.
 # Der er kun ét affaldsanlæg (SoAffald) i modellen med tilhørende RGK og bortkøleanlæg (SoCool)
@@ -475,13 +476,13 @@ Positive variable CO2emisHeat(tt,uaff)            'CO2 emission ifm varmeprodukt
 
 # Sikring af at hovedanlæg er i drift for tilknyttet RGK-anlæg.
 Equation EQ_RGKpremis(tt,kv)  'Sikring af hovedanlæg i drift for RGK';
-Equation EQ_BypassCC(tt,uaff) 'Bypass skal være slukket når CC er tændt';
 EQ_RGKpremis(t,kv) $OnU(t,kv) .. bOn(t,kv)  =L=  bOnRGK(t,kv);
 
-EQ_BypassCC(t,uaff)  .. bBypass(t,'MaNAff') =L= 1 - sum(cc $sameas(uaff,cc), uCC(cc));
+#--- Equation EQ_BypassCC(tt,uaff) 'Bypass skal være slukket når CC er tændt';
+#--- EQ_BypassCC(t,uaff)  .. bBypass(t,'MaNAff') =L= 1 - sum(cc $sameas(uaff,cc), uCC(cc));
 
 
-#begin Omkostningsallokering til varme- hhv. affaldssiden.
+*begin Omkostningsallokering til varme- hhv. affaldssiden.
 
 #HACK
 #--- Positive variable AffTaxRabat(tt,uaff)            'Rabat på tillægsafgiften';
@@ -518,7 +519,7 @@ EQ_AffTax(t,uaff,tax) $OnU(t,uaff) .. TaxProdU(t,uaff,tax)  =E=  AffTaxVarme(t,u
 #---                                                                                    + AffTaxTill(t,uaff) + AffTaxCO2(t,uaff)
 #---                                                                                    ];
 
-#end
+*end
 
 Equation EQ_QAffLev(tt,uaff);
 Equation EQ_QAffTaxVarme(tt,uaff);
@@ -565,11 +566,11 @@ EQ_AffFuelQtyHeat(t,uaff) $OnU(t,uaff) .. FuelQtyHeat(t,uaff)  =E=  FuelHeat(t,u
 EQ_AffCO2KvoteOmkst(t,uaff) $OnU(t,uaff)     .. AffCO2KvoteOmkst(t,uaff)      =E=  YS('TaxCO2Kvote') * CO2emis(t,uaff,'regul');
 EQ_AffCO2KvoteOmkstHeat(t,uaff) $OnU(t,uaff) .. AffCO2KvoteOmkstHeat(t,uaff)  =E=  YS('TaxCO2Kvote') * CO2emisHeat(t,uaff) $OnU(t,uaff);
 
-#end Affaldsanlæg
+*end Affaldsanlæg
 
-#end Ligninger for KV-anlæg
+*end Ligninger for KV-anlæg
 
-#begin Ligninger for VAK
+*begin Ligninger for VAK
 
 Equation EQ_QVakAbs1(tt,vak);
 Equation EQ_QVakAbs2(tt,vak);
@@ -624,9 +625,9 @@ EQ_dLVakMax(t,vak) $(OnU(t,vak))  ..  LVak(t,vak)  =L=  [LVakPrevious(vak) $(ord
 
 $OnOrder
 
-#end Ligninger for VAK
+*end Ligninger for VAK
 
-#begin Transmission
+*begin Transmission
 
 # Struers ejerandel er aktiv øvre grænse, når Holstebro har aktive SR-anlæg.
 # Reglen er, at Struer må trække mere transmissionsvarme end ejerandelen tilsiger,
@@ -727,16 +728,16 @@ EQ_varmetabT(t,tr)  $(OnTrans(tr)) .. QTloss(t,tr)   =E=  BLen(t) * ([1.0 - exp(
 #HACK Linearisering af pumpeomkostninger: WpumpActual(t,tr) := Wpump(tr) * CostElecT(t) * QT(t,tr) / QTmax(tr);
 EQ_CostPump(t,tr)   $OnTrans(tr)   .. CostPump(t,tr)  =E=  Wpump(tr) * [ ElspotActual(t) + TariffEigenPump(t) ] * QT(t,tr) / QTmax(tr);   # [DKK]
 
-#end
+*end
 
 
 
 
-#begin Slave model declaration
+*begin Slave model declaration
 
 model modelSlave / all /;
 
-#end Slave model declaration
+*end Slave model declaration
 
 
 

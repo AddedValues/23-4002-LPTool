@@ -1,6 +1,6 @@
 $log Entering file: %system.incName%
 
-#begin Tidsaggregering af parametre
+*begin Tidsaggregering af parametre
 
 # Tidsaggregering af parametre kan koste adskillige minutter at udføre i GAMS formulering.
 # Derfor udføres den såvidt muligt kun een gang ved første masteriteration (MasterIter=2) og persisteres på en gdx-fil for indlæsning i efterfølgende masteriterationer.
@@ -9,10 +9,9 @@ $log Entering file: %system.incName%
 # Denne omstændelige procedure skyldes alene den ekstremt begrænsede teksthåndtering i GAMS modelsproget.
                                     
                                     
-
 if (NOT UseTimeAggr AND NOT UseTimeExpansionAny,               
 
-  #begin No time aggregation, just 1-on-1 mapping.
+*begin No time aggregation, just 1-on-1 mapping.
 
   # Parametre som indtil videre er tidsuafhængige.
 
@@ -32,7 +31,7 @@ if (NOT UseTimeAggr AND NOT UseTimeExpansionAny,
   #--- GasPriceActual(tt)        = GasPriceActual_hh(tt);
   #--- dQExt(tt,produExtR)       = dQExt_hh(tt,produExtR);
   
-  #end No time aggregation or expansion, just 1-on-1 mapping.
+*end No time aggregation or expansion, just 1-on-1 mapping.
 
   
 elseif (NOT UseTimeAggr AND UseTimeExpansionAny),      # Ingen tidsaggregering, men tidsekspansion.
@@ -62,7 +61,7 @@ elseif (NOT UseTimeAggr AND UseTimeExpansionAny),      # Ingen tidsaggregering, 
   
 elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men ingen tidsekspansion.
     
-    #begin Tidsaggregering DEAKTIVERET
+*begin Tidsaggregering DEAKTIVERET
     abort "Tidsaggregering er p.t. deaktiveret";
     
     #--- GasPriceSum         = 0.0;
@@ -149,10 +148,10 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
       display "ERROR in %system.incName%"; 
       abort "ERROR: Fejl i aggregering af diskrete skift. Se listing ovenfor."; 
     );
-    #end Tidsaggregering DEAKTIVERET
+*end Tidsaggregering DEAKTIVERET
 );  # if (NOT UseTimeAggr AND NOT UseTimeExpansionAny,  #--- )
 
-#begin DISABLED
+*begin DISABLED
 #--- # Opsætning af månedsbaserede tidspunkter. 
 #--- MonthTimeAccumAggr(mo) = MonthHoursAccum(mo);
 
@@ -181,21 +180,21 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
 #---   );
 #--- );
 #--- display "INFO: MonthTimeAccumAggr", MonthTimeAccumAggr, MonthHoursAccum;
-#end DISABLED
+*end DISABLED
 
-#end Tidsaggregering
+*end Tidsaggregering
 
 # Beregn om begge eksisterende affaldsanlæg er til rådighed til et givet tidspunkt.
 BothAffAvailable(t) = OnU(t,'MaAff1') AND OnU(t,'MaAff2');
 
 
-#begin Beregning af tidsafhængig elektrisk kapacitet for uelec anlæg.
+*begin Beregning af tidsafhængig elektrisk kapacitet for uelec anlæg.
 
 loop (kv $OnUGlobal(kv),   CapEU(t,uelprod) $sameas(uelprod,kv)  = EtaPU(kv) * PowInUMax(kv);  );
 loop (uek $OnUGlobal(uek), CapEU(t,uelcons) $sameas(uelcons,uek) = PowInUMax(uek); );
 loop (hp $OnUGlobal(hp),   CapEU(t,uelcons) $sameas(uelcons,hp)  = PowInUMax(hp) / COP(t,hp); );  
 
-#end
+*end
 
 
 

@@ -10,7 +10,7 @@ Argumenter:     <endnu ikke defineret>
 
 $OffText
 
-#begin Validering af indlæste scenarie data
+*begin Validering af indlæste scenarie data
 
 #TODO Konsistenscheck 
 #TODO Konsistenscheck 
@@ -18,9 +18,9 @@ $OffText
 #TODO Konsistenscheck 
 #TODO Konsistenscheck 
 
-#end Validering af indlæste scenarie data
+*end Validering af indlæste scenarie data
 
-#begin Validering af indlæste slave data
+*begin Validering af indlæste slave data
 
-#end Validering af indlæste slave data
+*end Validering af indlæste slave data
 

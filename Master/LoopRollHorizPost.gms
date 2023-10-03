@@ -69,7 +69,7 @@ ObjSumRHreal = sum(rhStep, ObjectiveRHreal(rhstep));
 TotalSumCO2Emis(net,co2kind) =  sum(tt $(ord(tt) LE DurationPeriod), TotalCO2Emis.L(tt,net,co2kind));
 
 
-#begin Beregn marginaler for kapacitetsallokeringer til elmarkeder
+*begin Beregn marginaler for kapacitetsallokeringer til elmarkeder
 
 # Tolkning af equation marginaler:
 #   Generelt angiver en equation marginal, hvad objektfunktionen (her: gevinsten) vil stige, hvis højresiden øges med 1 enhed, alt andet lige.
@@ -90,5 +90,5 @@ GradUCapE(tbid,uelprod,'down') $OnUGlobal(uelprod) = + sum(tt2tbid(tt,tbid), EQ_
 GradUCapESumU(tbid,updown) = sum(uelec $OnUGlobal(uelec), GradUCapE(tbid,uelec,updown));
 GradUCapETotal(updown)     = sum(tbid, GradUCapESumU(tbid,updown));
 
-#end 
+*end 
 

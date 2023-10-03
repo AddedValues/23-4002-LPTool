@@ -1,63 +1,56 @@
 
---- Job MECLpMain.gms Start 06/02/23 07:37:04 41.2.0 5110e5ff WEX-WEI x86 64bit/MS Windows
+--- Job MECLpMain.gms Start 10/03/23 07:14:04 44.4.0 06604687 WEX-WEI x86 64bit/MS Windows
 --- Applying:
-    C:\GAMS\41\gmsprmNT.txt
+    C:\GAMS\44.4\gmsprmNT.txt
     C:\Users\MogensBechLaursen\OneDrive - Added Values P S\Dokumenter\GAMS\gamsconfig.yaml
 --- GAMS Parameters defined
-    Input C:\GitHub\4002-LP-tool\Master\MECLpMain.gms
+    Input C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
     PageWidth 180
     PageSize 0
     PageContr 2
     Action CE
-    ScrDir C:\GitHub\4002-LP-tool\Master\225a\
-    SysDir C:\GAMS\41\
-    WorkDir C:\GitHub\4002-LP-tool\Master\
+    ScrDir C:\GitHub\23-4002-LPTool\Master\225a\
+    SysDir C:\GAMS\44.4\
+    WorkDir C:\GitHub\23-4002-LPTool\Master\
     LogOption 3
     DFormat 2
     TFormat 0
     ErrorLog 99
-    LimRow 5
-    LimCol 5
     IDE 1
-    GDX C:\GitHub\4002-LP-tool\Master\MECLpMain.gdx
-    SolPrint 0
-    SavePoint 0
-    PyMultInst 1
-    --oGurobiSolve 0
-    --AskScen 0
+    PyMultInst 0
 Licensee: Mogens Bech Laursen, Single User License       S220913|0002CN-WIN
           Added Values, Plant Modeling                              DC10662
           C:\Users\MogensBechLaursen\OneDrive - Added Values P S\Dokumenter\GAMS\gamslice.txt
           mbl@addedvalues.eu                                               
 Processor information: 1 socket(s), 4 core(s), and 8 thread(s) available
-GAMS 41.2.0   Copyright (C) 1987-2022 GAMS Development. All rights reserved
+GAMS 44.4.0   Copyright (C) 1987-2023 GAMS Development. All rights reserved
 --- Starting compilation
-Entering file: C:\GitHub\4002-LP-tool\Master\MECLpMain.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
 --- MECLpMain.gms(20) 2 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\GlobalSettings.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\GlobalSettings.gms
 --- . GlobalSettings.gms(72) 2 Mb
 --- MECLpMain.gms(21) 2 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\DeclareGlobalSets.gms
---- . DeclareGlobalSets.gms(618) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\DeclareGlobalSets.gms
+--- . DeclareGlobalSets.gms(728) 3 Mb
 --- MECLpMain.gms(22) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\Declarations.gms
---- . Declarations.gms(403) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\Declarations.gms
+--- . Declarations.gms(404) 3 Mb
 --- MECLpMain.gms(23) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\DeclareSlave.gms
---- . DeclareSlave.gms(746) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\DeclareSlave.gms
+--- . DeclareSlave.gms(747) 3 Mb
 --- MECLpMain.gms(24) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\ReadScenarios.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\ReadScenarios.gms
 --- . ReadScenarios.gms(25) 3 Mb
---- $echo File C:\GitHub\4002-LP-tool\Master\MecLPinput.txt
+--- $echo File C:\GitHub\23-4002-LPTool\Master\MecLPinput.txt
 --- . ReadScenarios.gms(55) 3 Mb
 --- call ERASE  MecLPinput.gdx
 --- . ReadScenarios.gms(56) 3 Mb
 --- call GDXXRW MecLPinput.xlsb RWait=1 Trace=3 @MecLPinput.txt
 
-GDXXRW           41.2.0 5110e5ff Nov 14, 2022          WEI x86 64bit/MS Window
+GDXXRW           44.4.0 06604687 Sep 19, 2023          WEI x86 64bit/MS Window
 Excel version 16.0
-Input file : C:\GitHub\4002-LP-tool\Master\MecLPinput.xlsb
-Output file: C:\GitHub\4002-LP-tool\Master\MecLPinput.gdx
+Input file : C:\GitHub\23-4002-LPTool\Master\MecLPinput.xlsb
+Output file: C:\GitHub\23-4002-LPTool\Master\MecLPinput.gdx
 Type Symbol       Dim      Sheet                Data          RowHeader     ColHeader     
 Loading sheet ScenMaster
 Reading data from Excel; Rng = A1:J100
@@ -71,8 +64,8 @@ Reading data from Excel; Rng = A8:D106
 Reading Slice: A8:D106
 Par  YS             1      ScenYear             B9:B106       A9:A106       --:--         
 Loading sheet Brandsel
-Reading data from Excel; Rng = A1:Y54
-Reading Slice: A1:Y54
+Reading data from Excel; Rng = A1:Z54
+Reading Slice: A1:Z54
 Par  Brandsel       2      Brandsel             C3:L17        B3:B17        C2:L2         
 Loading sheet DataU
 Reading data from Excel; Rng = A1:AN90
@@ -109,8 +102,8 @@ Reading data from Excel; Rng = A8:F23
 Reading Slice: A8:F23
 Par  Diverse        1      Diverse              B9:B23        A9:A23        --:--         
 Loading sheet PlantState
-Reading data from Excel; Rng = A1:C42
-Reading Slice: A1:C42
+Reading data from Excel; Rng = A1:I42
+Reading Slice: A1:I42
 Par  StateU         2      PlantState           B10:C42       A10:A42       B9:C9         
 Loading sheet Availabilities
 Reading data from Excel; Rng = A1:AO178
@@ -127,238 +120,60 @@ Reading Slice: A1:W34
 Par  CapEReservation   3      CapacAlloc           C11:H34       B11:B34       C9:H10        
 Par  CapEAvail      2      CapacAlloc           N11:O34       M11:M34       N10:O10       
 Par  DataElMarket   2      CapacAlloc           R11:T19       Q11:Q19       R10:T10       
-Total time = 4297 Ms
+Total time = 3797 Ms
 --- . ReadScenarios.gms(65) 3 Mb
---- GDXin=C:\GitHub\4002-LP-tool\Master\MecLPinput.gdx
---- GDX File ($gdxIn) C:\GitHub\4002-LP-tool\Master\MecLPinput.gdx
+--- GDXin=C:\GitHub\23-4002-LPTool\Master\MecLPinput.gdx
+--- GDX File ($gdxIn) C:\GitHub\23-4002-LPTool\Master\MecLPinput.gdx
 Finished loading data from GDXIN.
 --- . ReadScenarios.gms(96) 3 Mb
---- GDX File ($gdxOut) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
+--- GDX File ($gdxOut) C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
 --- . ReadScenarios.gms(341) 3 Mb
 --- MECLpMain.gms(25) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\PrepareSlave.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\PrepareSlave.gms
 --- . PrepareSlave.gms(488) 3 Mb
 --- MECLpMain.gms(30) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\LoopPeriodPre.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\LoopPeriodPre.gms
 --- . LoopPeriodPre.gms(155) 3 Mb
 --- MECLpMain.gms(35) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\PriceTaxTariffPeriod.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\PriceTaxTariffPeriod.gms
 --- . PriceTaxTariffPeriod.gms(143) 3 Mb
 --- MECLpMain.gms(38) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\TimeAggrPeriod.gms
---- . TimeAggrPeriod.gms(202) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\TimeAggrPeriod.gms
+--- . TimeAggrPeriod.gms(201) 3 Mb
 --- MECLpMain.gms(41) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\LoopRollHorizPre.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\LoopRollHorizPre.gms
 --- . LoopRollHorizPre.gms(162) 3 Mb
 --- MECLpMain.gms(45) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\SetupSlaveModel.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\SetupSlaveModel.gms
 --- . SetupSlaveModel.gms(11) 3 Mb
 --- MECLpMain.gms(48) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\SolveSlaveModel.gms
---- . SolveSlaveModel.gms(224) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\SolveSlaveModel.gms
+--- . SolveSlaveModel.gms(235) 3 Mb
 --- .. options.inc(15) 3 Mb
---- . SolveSlaveModel.gms(230) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\SaveSolverState.gms
+--- . SolveSlaveModel.gms(241) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\SaveSolverState.gms
 arg1 = modelSlave
 --- .. SaveSolverState.gms(34) 3 Mb
---- . SolveSlaveModel.gms(260) 3 Mb
+--- . SolveSlaveModel.gms(271) 3 Mb
 --- MECLpMain.gms(51) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\LoopRollHorizPost.gms
+Entering file: C:\GitHub\23-4002-LPTool\Master\LoopRollHorizPost.gms
 --- . LoopRollHorizPost.gms(94) 3 Mb
 --- MECLpMain.gms(54) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\LoopPeriodPost.gms
---- . LoopPeriodPost.gms(54) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\LoopPeriodPost.gms
+--- . LoopPeriodPost.gms(56) 3 Mb
 --- .. DumpPeriodsToExcel.gms(325) 3 Mb
---- $echo File C:\GitHub\4002-LP-tool\Master\MECoutput.txt
+--- $echo File C:\GitHub\23-4002-LPTool\Master\MECoutput.txt
 --- .. DumpPeriodsToExcel.gms(371) 3 Mb
---- . LoopPeriodPost.gms(64) 3 Mb
-Entering file: C:\GitHub\4002-LP-tool\Master\SavePeriodResults.gms
---- .. SavePeriodResults.gms(168) 3 Mb
 --- . LoopPeriodPost.gms(66) 3 Mb
+Entering file: C:\GitHub\23-4002-LPTool\Master\SavePeriodResults.gms
+--- .. SavePeriodResults.gms(168) 3 Mb
+--- . LoopPeriodPost.gms(68) 3 Mb
 --- MECLpMain.gms(58) 4 Mb
---- Starting execution: elapsed 0:00:04.792
---- MECLpMain.gms(2604) 6 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
---- MECLpMain.gms(2855) 7 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
---- MECLpMain.gms(3358) 12 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
---- MECLpMain.gms(3358) 15 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
---- Generating MIP model modelSlave
---- MECLpMain.gms(3630) 36 Mb
---- LOOPS rhStep = s1
----   92,983 rows  86,119 columns  212,781 non-zeroes
----   6,864 discrete-columns
---- Range statistics (absolute non-zero finite values)
---- RHS       [min, max] : [ 4.128E-03, 1.259E+02] - Zero values observed as well
---- Bound     [min, max] : [ 1.000E+00, 2.000E+01] - Zero values observed as well
---- Matrix    [min, max] : [ 7.500E-05, 3.200E+04]
---- Executing GUROBI (Solvelink=2): elapsed 0:00:05.244
-
-Gurobi           41.2.0 5110e5ff Nov 14, 2022          WEI x86 64bit/MS Window
-
-Gurobi full license.
-Set parameter OutputFlag to value 1
-Gurobi library version 9.5.2
-Reading parameter(s) from "C:\GitHub\4002-LP-tool\Master\gurobi.opt"
->>  iis=1
->>  rerun=1
->>  feasopt=0
->>  feasoptmode=1
->>  integralityfocus=1
->>  optimalitytol=1E-5 
->>  feasibilitytol=1.0E-5
->>  intfeastol=1.0E-5
->>  freegamsmodel=0
->>  heuristics=0.30
->>  mipgap=0.001 
->>  mipgapabs=1E-2
->>  mipstart=0
->>  numericfocus=2
->>  scaleflag=3
->>  seed=0
->>  sensitivity=1
->>  threads=2
->>  timelimit=60
->>  varhint=1
->>  barhomogeneous = -1
-Finished reading from "C:\GitHub\4002-LP-tool\Master\gurobi.opt"
-Set parameter TimeLimit to value 60
-Set parameter FeasibilityTol to value 1e-05
-Set parameter MIPGap to value 0.001
-Set parameter MIPGapAbs to value 0.01
-Set parameter OptimalityTol to value 1e-05
-Set parameter ScaleFlag to value 3
-Set parameter Heuristics to value 0.3
-Set parameter IntegralityFocus to value 1
-Set parameter NumericFocus to value 2
-Set parameter Threads to value 2
-Space for names approximately 5.52 Mb
-Use option 'names no' to turn use of names off
-Copy 6864 variables into Variable Hint.
-Starting Gurobi...
-Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (win64)
-Thread count: 4 physical cores, 8 logical processors, using up to 2 threads
-Optimize a model with 92982 rows, 86118 columns and 206540 nonzeros
-Model fingerprint: 0x71188f12
-Variable types: 79254 continuous, 6864 integer (6864 binary)
-Coefficient statistics:
-  Matrix range     [7e-05, 3e+04]
-  Objective range  [1e+00, 1e+00]
-  Bounds range     [1e+00, 2e+01]
-  RHS range        [4e-03, 1e+02]
-Presolve removed 86979 rows and 79230 columns
-Presolve time: 0.15s
-Presolved: 6003 rows, 6888 columns, 18654 nonzeros
-Variable types: 5448 continuous, 1440 integer (1440 binary)
-Found heuristic solution: objective -1738731.116
-
-Root relaxation: cutoff, 2007 iterations, 0.01 seconds (0.01 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0     cutoff    0      -1738731.1 -1738731.1  0.00%     -    0s
-
-Explored 1 nodes (2007 simplex iterations) in 0.38 seconds (0.31 work units)
-Thread count was 2 (of 8 available processors)
-
-Solution count 2: 1.73873e+06 -1.73873e+06 
-No other solutions better than -1.73873e+06
-
-Optimal solution found (tolerance 1.00e-03)
-Best objective -1.738731116060e+06, best bound -1.738731116060e+06, gap 0.0000%
-
-User-callback calls 563, time in user-callback 0.00 sec
-MIP status(2): Model was solved to optimality (subject to tolerances).
-
-Solving fixed MIP.
-Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (win64)
-Thread count: 4 physical cores, 8 logical processors, using up to 2 threads
-Optimize a model with 92982 rows, 86118 columns and 206540 nonzeros
-Model fingerprint: 0xbbb157fe
-Coefficient statistics:
-  Matrix range     [7e-05, 3e+04]
-  Objective range  [1e+00, 1e+00]
-  Bounds range     [1e+00, 2e+01]
-  RHS range        [4e-03, 1e+02]
-
-Concurrent LP optimizer: dual simplex and barrier
-Showing barrier log only...
-
-Presolve removed 90587 rows and 81155 columns
-Presolve time: 0.10s
-Presolved: 2395 rows, 5821 columns, 9389 nonzeros
-
-Ordering time: 0.00s
-
-Barrier statistics:
- AA' NZ     : 5.522e+03
- Factor NZ  : 2.710e+04 (roughly 4 MB of memory)
- Factor Ops : 3.640e+05 (less than 1 second per iteration)
- Threads    : 1
-
-                  Objective                Residual
-Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0  -2.09127764e+10  2.93641116e+08  2.73e+03 7.28e-12  4.22e+07     0s
-   1  -3.13097898e+09  3.29575351e+08  4.06e+02 3.64e-11  6.33e+06     0s
-   2  -3.25331962e+08  3.27695936e+08  4.06e+01 5.82e-11  6.55e+05     0s
-   3  -4.43744080e+07  2.84503028e+08  4.10e+00 3.64e-11  8.49e+04     0s
-   4  -1.43464381e+07  1.15095761e+08  4.12e-01 3.64e-11  1.47e+04     0s
-   5  -8.67349671e+06  2.18606256e+07  7.66e-02 1.64e-11  2.91e+03     0s
-   6  -3.08270092e+06  3.03094332e+06  7.65e-03 1.46e-11  5.58e+02     0s
-   7  -2.14667422e+06 -5.19502357e+05  2.39e-03 1.60e-11  1.48e+02     0s
-   8  -1.83672196e+06 -1.50150582e+06  3.95e-04 1.42e-11  3.04e+01     0s
-   9  -1.76560383e+06 -1.68769548e+06  1.00e-04 1.54e-11  7.07e+00     0s
-  10  -1.74396441e+06 -1.73167474e+06  1.91e-05 1.58e-11  1.12e+00     0s
-  11  -1.73930859e+06 -1.73701042e+06  2.00e-06 1.47e-11  2.09e-01     0s
-  12  -1.73879309e+06 -1.73851245e+06  2.06e-07 1.60e-11  2.55e-02     0s
-  13  -1.73873746e+06 -1.73870883e+06  2.04e-08 1.36e-11  2.60e-03     0s
-  14  -1.73873175e+06 -1.73872889e+06  2.02e-09 1.49e-11  2.60e-04     0s
-  15  -1.73873118e+06 -1.73873089e+06  2.02e-10 1.25e-11  2.60e-05     0s
-  16  -1.73873112e+06 -1.73873109e+06  2.01e-11 1.22e-11  2.60e-06     0s
-  17  -1.73873112e+06 -1.73873111e+06  2.01e-12 1.12e-11  2.60e-07     0s
-  18  -1.73873112e+06 -1.73873112e+06  1.98e-13 1.20e-11  2.60e-08     0s
-  19  -1.73873112e+06 -1.73873112e+06  2.13e-14 1.36e-11  2.60e-09     0s
-
-Barrier solved model in 19 iterations and 0.17 seconds (0.11 work units)
-Optimal objective -1.73873112e+06
-
-Crossover log...
-
-       0 DPushes remaining with DInf 0.0000000e+00                 0s
-
-     310 PPushes remaining with PInf 0.0000000e+00                 0s
-       0 PPushes remaining with PInf 0.0000000e+00                 0s
-
-  Push phase complete: Pinf 0.0000000e+00, Dinf 2.0463631e-12      0s
-
-Iteration    Objective       Primal Inf.    Dual Inf.      Time
-     313   -1.7387311e+06   0.000000e+00   0.000000e+00      0s
-
-Solved with dual simplex
-Solved in 972 iterations and 0.23 seconds (0.09 work units)
-Optimal objective -1.738731116e+06
-
-User-callback calls 1016, time in user-callback 0.00 sec
-Fixed MIP status(2): Model was solved to optimality (subject to tolerances).
-
-MIP   Solution:   -1738731.116060    (2007 iterations, 1 nodes)
-Final Solve:      -1738731.116060    (972 iterations)
-
-Best possible:    -1738731.116060
-Absolute gap:            0.000000
-Relative gap:            0.000000
-
---- Reading solution for model modelSlave
---- Executing after solve: elapsed 0:00:06.509
---- MECLpMain.gms(4162) 36 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MECoutput.gdx
---- MECLpMain.gms(4253) 36 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\Results actIter actPer.gdx
---- MECLpMain.gms(4405) 36 Mb
---- GDX File (execute_unload) C:\GitHub\4002-LP-tool\Master\MecLpMain.gdx
---- GDX File C:\GitHub\4002-LP-tool\Master\MECLpMain.gdx
-*** Status: Normal completion
---- Job MECLpMain.gms Stop 06/02/23 07:37:11 elapsed 0:00:06.644
+--- Starting execution: elapsed 0:00:04.065
+--- MECLpMain.gms(2097) 5 Mb
+--- GDX File (execute_unload) C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
+*** Error at line 2097: Execution halted: abort 'ERROR: Sum af række i CHP-tabellen er nul for mindst eet KV-anlæg.'
+--- MECLpMain.gms(2097) 5 Mb 1 Error
+*** Status: Execution error(s)
+--- Job MECLpMain.gms Stop 10/03/23 07:14:08 elapsed 0:00:04.070
+Exit code = 3

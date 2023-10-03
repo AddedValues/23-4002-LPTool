@@ -1,7 +1,7 @@
 $log Entering file: %system.incName%
 
 
-#begin GLOBALE PARAMETRE
+*begin GLOBALE PARAMETRE
 
 #--- Scalar tbeg;  # Bruges til ordinal for begyndelsestidspunkt.
 #--- Scalar tend;  # Bruges til ordinal for sluttidspunkt.
@@ -55,7 +55,7 @@ Parameter TimeResol(tt)              'Tidsopløsning [min] for hvert modeltidspu
 Parameter NblockHour(planZone)       'Antal tidsblokke i en time';
 
 
-#end   GLOBALE PARAMETRE
+*end   GLOBALE PARAMETRE
 
 Parameter Scenarios(lblScenMas, scmas)  'Masterscenarier';
 Parameter ScenYear(lblScenYear)         'Årsscenarier';
@@ -281,7 +281,7 @@ Parameter CO2emisFuelSum(f,co2kind)  'Sum af CO2-emission pr. drivmiddel [kg]';
 
 
 
-#begin Parametre for transmissionsledninger
+*begin Parametre for transmissionsledninger
 
 # Parametre, som er fælles for alle rør og installationer.
 scalar H                      'Dybde af rørcentre [m]';
@@ -336,9 +336,9 @@ parameter Pipes(pipe,lblpipe)         'Egenskaber for rådige rør';
 Parameter THav_hh(tt);
 Parameter THav(tt);
 
-#end
+*end
 
-#begin Parametre flyttet fra DeclareSlave.gms
+*begin Parametre flyttet fra DeclareSlave.gms
 
 Parameter Brandsel(f,lblBrandsel)         'Brændsels-egenskaber';
 
@@ -377,21 +377,21 @@ Parameter ElspotActual(tt)             'Actual elspot price';
 #--- Parameter GasPrice_hh(tt)           'Actual gas spot price';
 #--- Parameter GasPriceActual(tt)           'Actual gas spot price';
 Parameter AffAux(uaff)                 'Forhold mlm. varme- og total-virkningsgrad';
-Parameter uCC(cc)                      'Angiver om carbon capture er aktivt i den gældende periode';
+#--- Parameter uCC(cc)                      'Angiver om carbon capture er aktivt i den gældende periode';
 
 Parameter QmaxPtX_hh(tt)  'Max. varmeeffekt leveret fra PtX-anlæg';
 Parameter QmaxPtX(tt);
 
-#begin Parametre til diagnosticering
+*begin Parametre til diagnosticering
 
 Parameter QinfeasSum(net,infeasDir) 'Sum af Qinfeas';
 Parameter CostInfeasSum(net)        'CostInfeas for hver periode';
 
-#end Parametre til diagnosticering
+*end Parametre til diagnosticering
 
-#end  Parametre flyttet fra DeclareSlave.gms
+*end  Parametre flyttet fra DeclareSlave.gms
 
-#begin Kapacitets allokering til el-markeder
+*begin Kapacitets allokering til el-markeder
 
 Parameter CapEReservation(tbid,elmarket,updown)  'Kapacitetsreservationer til elmarkeder';
 Parameter CapEReservationSum(tbid,updown)        'Kapacitetsreservationer summeret over elmarkeder';
@@ -401,4 +401,4 @@ Parameter GradUCapE(tbid,uelec,updown)           'Følsomheder for CapE allokeri
 Parameter GradUCapESumU(tbid,updown)             'Sum af GradUCapE over uelec for hver budtime';
 Parameter GradUCapETotal(updown)                 'Sum af GradUCapESumU over buddøgnet';
 
-#end Kapacitets allokering til el-markeder
+*end Kapacitets allokering til el-markeder

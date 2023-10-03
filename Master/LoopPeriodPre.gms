@@ -3,7 +3,7 @@ $log Entering file: %system.incName%
 display '>>>>>>>>>>>>>>>>  ENTERING %system.incName%  <<<<<<<<<<<<<<<<<<<';
 
 
-#begin Opsætning af tidsaggregering for aktuelle periode.
+*begin Opsætning af tidsaggregering for aktuelle periode.
 
 if (abs(OnTimeAggr GT card(aggr)),
   execute_unload "MecLpMain.gdx";
@@ -95,7 +95,7 @@ if (NOT UseTimeAggr,
 elseif (UseTimeAggr AND NOT UseTimeExpansionAny),       # Tidsaggregering, men ingen tidsekspansion.
 
   abort "Tidsaggregering er p.t. deaktiveret";
-  #begin DISABLED
+*begin DISABLED
   # DISABLED   # Bestem antal tidsblokke i aggregeringen.
   # DISABLED   Nblock = 0;
   # DISABLED   loop (tt,
@@ -120,7 +120,7 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),       # Tidsaggregering, men i
   # DISABLED 
   # DISABLED   Bend(t) = Bbeg(t) + BLen(t) - 1;
   # DISABLED   NblockAggr = Nblock;
-  #end  
+*end  
 
 else                           # Denne else-blok skal ikke kunne nåes.
   abort "ERROR: Logisk fejl i LoopPeriodPre, da Else-blok aktiveret"
@@ -146,7 +146,7 @@ BLenRatio('t1') = BLen('t1');  # Antager at tilstande i tidspunktet lige før pl
 # REMOVE UseFullYear = (NOT UseTimeAggr AND DurationPeriod EQ card(tt)) OR (LenRHhoriz EQ card(tt));
 # REMOVE display UseFullYear;
 
-#end Opsætning af tidsaggregering for aktuelle periode.
+*end Opsætning af tidsaggregering for aktuelle periode.
 
 
 #--- execute_unload "MecLpMain.gdx";
