@@ -24,3 +24,27 @@ Test.log
 data.json
 
 *.pyc
+
+Software-Architecture-Patterns.pdf
+
+Why Do We Need a Message Queue.msg
+
+Master/~$MecLPinput.xlsb
+
+Master/MecLP.dat
+
+Master/Copy of MECLpOutput.xlsm
+
+*.lxi
+
+*.lst
+
+*.gch
+
+*.log
+
+Master/MECLpOutput.txt
+
+Master/~$MECLpOutput.xlsm
+
+Master/MecLPinput.txt

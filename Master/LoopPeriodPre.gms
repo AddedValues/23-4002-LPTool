@@ -129,7 +129,6 @@ else                           # Denne else-blok skal ikke kunne nåes.
 
 TimeResol(tt) = BLen(tt) * 60;   # Tidsopløsning [min] per tidspunkt t. Bruges ifm. rampetidsrestriktioner.
 BLen(tt) $(ord(tt) GT Nblock) = 0.0;
-
 display Nblock, NblockAggr, NblockHour, BLen;
 
 # Sæt tidspunkter t(tt) til aggregeret niveau.

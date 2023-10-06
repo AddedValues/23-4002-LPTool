@@ -31,10 +31,10 @@ $Include LoopPeriodPre.gms
 
 execute_unload "MecLpMain.gdx";
 
-# TODO PriceTaxTariffPeriod.gms skal omformes til at h√•ndtere en tabel (lblScenYear, tShift), hvor tShift angiver tidspunkter ord(t), hvorefter en kolonne er gyldig.
+# TODO PriceTaxTariffPeriod.gms skal omformes til at hÂndtere en tabel (lblScenYear, tShift), hvor tShift angiver tidspunkter ord(t), hvorefter en kolonne er gyldig.
 $Include PriceTaxTariffPeriod.gms   # Inkluderes aktuelt af LoopPeriodPre.gms
 
-# TODO TimeAggrPeriod.gms skal omformes til at h√•ndtere en enkelt k√∏rsel.
+# TODO TimeAggrPeriod.gms skal omformes til at hÂndtere en enkelt k¯rsel.
 $Include TimeAggrPeriod.gms
 
 # TODO LoopRollHorizPre.gms skal omformes, s√• RH-parametre indl√¶ses direkte.
@@ -52,6 +52,9 @@ $Include LoopRollHorizPost.gms
 $If not errorfree $exit
 
 $Include LoopPeriodPost.gms
+
+$include SaveResultsToExcel.gms
+$If not errorfree $exit
 
 execute_unload "MecLpMain.gdx";
 

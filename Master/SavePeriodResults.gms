@@ -124,9 +124,13 @@ QbasebOnSR                    #  (tt,netq)             'Product af Qbase og bOnS
 
 
 # Equations
-EQ_QProdUmax.m                #  (t,uq)                'Marginals of eqn: Q(t,upr)  =L=  BLen(t) * DataU(upr,'Fmax') * CapQU(upr) * [1 $(not hp(upr)) + sum(hp $sameas(hp,upr), QhpYield(t,hp))] * bOn(t,upr);'
+#--- EQ_QProdUqmax.m                #  (t,uq)                'Marginals of eqn: Q(t,upr)  =L=  BLen(t) * DataU(upr,'Fmax') * CapQU(upr) * [1 $(not hp(upr)) + sum(hp $sameas(hp,upr), QhpYield(t,hp))] * bOn(t,upr);'
+#--- EQ_QProdKVmax.m                #  (t,uq)                'Marginals of eqn: Q(t,upr)  =L=  BLen(t) * DataU(upr,'Fmax') * CapQU(upr) * [1 $(not hp(upr)) + sum(hp $sameas(hp,upr), QhpYield(t,hp))] * bOn(t,upr);'
 
-;
+GradUCapE                      #  (tbid,uelec,updown)   'Følsomheder for CapE allokeringer';
+GradUCapESumU                  #  (tbid,updown)         'Sum af GradUCapE over uelec for hver budtime';
+GradUCapETotal                 #  (updown)              'Sum af GradUCapESumU over buddøgnet';
+ ;
 
 );
 

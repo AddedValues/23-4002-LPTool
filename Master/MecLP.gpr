@@ -158,7 +158,7 @@ PlaneRownr=-1
 
 [GDXDISP: FuelMix Par 2]
 PlaneDim=0
-RowDim=2
+RowDim=1
 Squeeze=1
 SqTrail0=0
 Order=1,2
@@ -243,7 +243,7 @@ RowDim=1
 Squeeze=0
 SqTrail0=0
 Order=2,1
-Decim=7
+Decim=0
 PlaneRownr=-1
 
 [GDXDISP: OnUNet Par 2]
@@ -419,9 +419,6 @@ SqTrail0=0
 Order=
 Decim=7
 PlaneRownr=-1
-
-[RP:PREPARESLAVE]
-1=
 
 [GDXDISP: ElEgbrugOmkst Var 2]
 PlaneDim=0
@@ -678,9 +675,6 @@ SqTrail0=0
 Order=1,2
 Decim=7
 PlaneRownr=-1
-
-[RP:TIMEAGGRPERIOD]
-1=
 
 [GDXDISP: OnUGlobal Par 1]
 PlaneDim=0
@@ -1140,9 +1134,6 @@ Order=1,2
 Decim=7
 PlaneRownr=-1
 
-[RP:READSCENARIOS]
-1=
-
 [GDXDISP: StatsAll Par 1]
 PlaneDim=0
 RowDim=1
@@ -1233,9 +1224,6 @@ SqTrail0=0
 Order=3,1,2
 Decim=7
 PlaneRownr=-1
-
-[RP:LOOPROLLHORIZPOST]
-1=
 
 [GDXDISP: GradUCapESumU Par 2]
 PlaneDim=0
@@ -1337,9 +1325,6 @@ Order=3,1,2
 Decim=1
 PlaneRownr=-1
 
-[RP:SOLVESLAVEMODEL]
-1=
-
 [RP:DUMPPERIODSTOEXCEL]
 1=
 
@@ -1351,9 +1336,6 @@ SqTrail0=0
 Order=1
 Decim=7
 PlaneRownr=-1
-
-[RP:DECLARESLAVE]
-1=
 
 [GDXDISP: QT Var 2]
 PlaneDim=0
@@ -1382,12 +1364,6 @@ Order=1
 Decim=8
 PlaneRownr=-1
 
-[RP:LOOPPERIODPRE]
-1=
-
-[RP:DECLAREGLOBALSETS]
-1=
-
 [GDXDISP: THav Par 1]
 PlaneDim=0
 RowDim=1
@@ -1415,27 +1391,282 @@ Order=1,2
 Decim=7
 PlaneRownr=-1
 
+[GDXDISP: actBlock Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[RP:READSCENARIOS]
+1=
+
+[RP:DECLARATIONS]
+1=
+
+[RP:PREPARESLAVE]
+1=
+
+[RP:SOLVESLAVEMODEL]
+1=
+
+[RP:TIMEAGGRPERIOD]
+1=
+
+[RP:LOOPPERIODPRE]
+1=
+
+[GDXDISP: actU Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OmrCode Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[RP:DECLAREGLOBALSETS]
+1=
+
+[RP:DECLARESLAVE]
+1=
+
+[RP:LOOPROLLHORIZPOST]
+1=
+
+[RP:SAVEPERIODRESULTS]
+1=
+
+[GDXDISP: dso Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DsoCode Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: Availability_hh Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CHP Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=0
+SqTrail0=0
+Order=2,1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: AvailUNet Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OnNet Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: OnNetGlobal Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StateF Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StatsSolver Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: DataPtX Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StatsAll Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StatsMasOvwFuel Par 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StatsMecF Par 2]
+PlaneDim=0
+RowDim=2
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: StatsMecU Par 3]
+PlaneDim=1
+RowDim=1
+Squeeze=0
+SqTrail0=0
+Order=3,2,1
+Decim=0
+PlaneRownr=-1
+
+[GDXDISP: Qov Var 2]
+PlaneDim=1
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=3,1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: QovMax Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: onoff Set 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: CO2Emis Var 3]
+PlaneDim=0
+RowDim=3
+Squeeze=1
+SqTrail0=0
+Order=1,2,3,4
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: COP Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=2
+PlaneRownr=-1
+
+[GDXDISP: FuelPriceU Par 2]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1,2
+Decim=0
+PlaneRownr=-1
+
 [RP:MECLPMAIN]
 1=
 
+[GDXDISP: TKelvin Par 0]
+PlaneDim=0
+RowDim=0
+Squeeze=1
+SqTrail0=0
+Order=
+Decim=7
+PlaneRownr=-1
+
+[GDXDISP: TimeResolution Par 1]
+PlaneDim=0
+RowDim=1
+Squeeze=1
+SqTrail0=0
+Order=1
+Decim=7
+PlaneRownr=-1
+
 [MRUFILES]
-1=C:\GitHub\23-4002-LPTool\Master\DeclareGlobalSets.gms
-2=C:\GitHub\23-4002-LPTool\Master\LoopPeriodPre.gms
-3=C:\GitHub\23-4002-LPTool\Master\MecLpMain.LVak.gch
-4=C:\GitHub\23-4002-LPTool\Master\MecLpMain.ElspotActual.gch
-5=C:\GitHub\23-4002-LPTool\Master\DeclareSlave.gms
-6=C:\GitHub\23-4002-LPTool\Master\DumpPeriodsToExcel.gms
-7=C:\GitHub\23-4002-LPTool\Master\SolveSlaveModel.gms
-8=C:\GitHub\23-4002-LPTool\Kapac-optim\m11s02u31r00f00\MECmain_Scen_m11s02u31r00f00.gdx
+1=C:\GitHub\23-4002-LPTool\Master\MecLpMain.BLen.gch
+2=C:\GitHub\23-4002-LPTool\Master\MecLpMain.LVak.gch
+3=C:\GitHub\23-4002-LPTool\Master\MecLPinput.gdx
+4=C:\GitHub\23-4002-LPTool\Master\SavePeriodResults.gms
+5=C:\GitHub\23-4002-LPTool\Master\LoopRollHorizPost.gms
+6=C:\GitHub\23-4002-LPTool\Master\DeclareSlave.gms
+7=C:\GitHub\23-4002-LPTool\Master\DeclareGlobalSets.gms
 
 [OPENWINDOW_1]
-FILE0=C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
-FILE1=C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
-FILE2=C:\GitHub\23-4002-LPTool\Master\MECLpMain.lst
-FILE3=C:\GitHub\23-4002-LPTool\Master\MecLpMain.Q.gch
-FILE4=C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
+FILE0=C:\GitHub\23-1002 MEC FF\INVOPT\Master\MECmain.gdx
+FILE1=C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
+FILE2=C:\GitHub\23-4002-LPTool\Master\MECLpMain.gms
+FILE3=C:\GitHub\23-4002-LPTool\Master\MECLpMain.lst
+FILE4=C:\GitHub\23-4002-LPTool\Master\MecLpMain.Q.gch
+FILE5=C:\GitHub\23-4002-LPTool\Master\MecLpMain.gdx
 MAXIM=0
 TOP=2
 LEFT=3
 HEIGHT=1034
-WIDTH=1022
+WIDTH=971

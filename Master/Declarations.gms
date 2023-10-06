@@ -24,6 +24,7 @@ Scalar    ObjSumRH;
 Scalar    ObjSumRHreal;
 
 # Tidsekspansion (kort planperiode)
+Parameter TimestampStart           'Starttidspunkt for planperioden ÅÅÅÅMMDDHH (integer)';
 Parameter TimeResolution(planZone) 'Tidsopløsning for hver planlægningszone';
 Parameter TimeScale(planZone)      'Tidsskala 60 min / TimeResolution';
 Parameter TimeScaleInv(planZone)   '1 / TimeScale';
@@ -52,6 +53,7 @@ Parameter BLen(tt)                   'Antal tidspunkter t i blokke (brøk ifm. t
 Parameter BLenRatio(tt)              'Forholdet BLen(tt) / BLen(tt-1)';                           
 Parameter IsBidDay(tt)               'Angiver 0/1 at tidspunkt ligger i buddøgnet';
 Parameter TimeResol(tt)              'Tidsopløsning [min] for hvert modeltidspunkt';
+Parameter TimeVector(tt)             'Tidspunkter akkumuleret [min] for hvert modeltidspunkt (start=0)';
 Parameter NblockHour(planZone)       'Antal tidsblokke i en time';
 
 
@@ -132,12 +134,13 @@ Parameter OperHours(u)                 'Annual operating hours prod.unit';
 Parameter QMargPrice(u)                'Average marginal unit heat price [DKK/MWh]';
 Parameter QMargPrice_Hourly(tt,u);
 
-Scalar    iblock, ActualBlockLen, ElspotSum, GasPriceSum, TariffDsoLoadSum, TariffEigenPumpSum, QmaxPtXSum;
+Scalar    iblock, ActualBlockLen, ElspotSum, GasPriceSum, TariffDsoLoadSum, TariffEigenPumpSum; 
 Parameter QDemSum(net)                 'Mellemregning ifm tidsaggregering';
 Parameter dQExtSum(produExtR)          'Mellemregning ifm tidsaggregering';
+Parameter QovMax(tt,uov)               'Maxlast for overskudsvarme (MWqov)';
+Parameter QovMaxSum(uov)               'Mellemregning ifm tidsaggregering';
 Parameter TariffElecUSum(u)            'Mellemregning ifm tidsaggregering';
 Parameter TariffEigenUSum(u)           'Mellemregning ifm tidsaggregering';
-#--- Parameter AvailabilitySum(u)           'Mellemregning ifm tidsaggregering';
 Parameter OnUSum(u)                    'Mellemregning ifm tidsaggregering';
 Parameter CopSum(hp)                   'Mellemregning ifm tidsaggregering';
 Parameter QhpYieldSum(hp)              'Mellemregning ifm tidsaggregering';
@@ -153,6 +156,7 @@ Parameter MarginalsHour(unew)          'Timemiddel af rådige marginaler';
 Parameter bStartStop(tt,u,startstop)  'Angiver om start hhv. stop er on';
 
 Scalar QInfeasPenalty   'DKK/MWq'  / 5000.0 /;  # Penalty på forbrug af virtuel varme kilde-dræn.
+Scalar RewardWaste      'Belønning for at afbrænde affalde DKK/kg'  / +0.100 /;  # Skal sikre at mest muligt affald afbrændes indenfor den rådige tonnage.
 Scalar CapESlackPenalty 'DKK/MWe'  / 5000.0 /;  # Penalty på CapESlack.
 Scalar QSrPenalty       'DKK/MWq'  /    0.0 /;  # Penalty på forbrug af spidslastvarme.
 #--- Scalar bOnSRPenalty    'DKK/MWq'  / 0.00 /;   # Skal sikre at bOnSR holdes på nul, hvis ingen SR-anlæg er aktive.
@@ -176,7 +180,8 @@ Parameter Prognoses(tt,lblPrognoses)     'Prognoser på ekspanderet tidsniveau';
 
 Parameter THeatSource_hh(tt,hpSource)     'VP varmekilde temperaturer [°C]';
 Parameter THeatSource(tt,hpSource)        'VP varmekilde temperaturer [°C]';
-Parameter QmaxPtx_hh(tt)                  'MAx. effekt fra PtX';
+# REMOVE Parameter QmaxPtx_hh(tt)                  'Max. effekt fra PtX';
+Parameter QovMax_hh(tt,uov)               'Max. effekt fra OV-leverandører';
 
 Scalar    OnVakStartFix             'Switch for fix af vak niveau i t1 og t1--1'                  / 1 /;
 Scalar    OnStartCostSlk            'Switch til deaktivering af startomkostninger på SLK'         / 1 /;
@@ -248,6 +253,7 @@ Parameter DeprecExist(u)            'Afskrivning eksisterende anlæg [DKK/yr]';
 
 Parameter TotalSumCO2Emis(net,co2kind)  'Samlet CO2-emission fra alle anlæg';
 Parameter Diverse(lblDiverse)           'Parametre som ikke passer ind andre steder';
+Parameter DataPtX(lblDataPtX, uptx)     'Egenskaber for modellering af PtX-OV';
 Parameter OwnerShare(tr)                'Modtagers ejerandel af T-ledning tr';
 
 Parameter QDemandAnnualAvg(net)         'Annual nominal heat demand average [MW]';
@@ -260,7 +266,7 @@ Parameter LVakPrevious(vak)             'Tank level at end of previous rolling h
 Parameter LVakPreviousRH(vak,rhStep)    'Tank level at end of previous rolling horizon step';
                                         
 Parameter FuelMix(upr,f)                'Brændselssammensætning for hvert anlæg';     
-Parameter FuelPrice(upr,f)              'Specifik brændselspris for hvert anlæg';
+Parameter FuelPriceU(upr,f)              'Specifik brændselspris for hvert anlæg';
 Parameter FuelCode(f)                   'Fuel to Integer code';                          # Indlæses fra arket DataU. NB: FuelCode er uafh. af ordinal position i set fuel.
 Parameter OmrCode(net)                  'Område til Integer code';                       # Indlæses fra arket DataU. NB: OmrCode er uafh. af ordinal position i set net.
 Parameter DsoCode(net)                  'DSO til Integer code';                          # Indlæses fra arket DataU. NB: DsoCode er uafh. af ordinal position i set dso.
@@ -366,7 +372,7 @@ Parameter StateF(upr,fsto,startslut)     'Start- og slutlagerbeholdning i planpe
 
 # Normerede FJV-tidsserier
 Parameter QSalgspris(net)              'FJV-salgspris [DKK/MWh]';  QSalgspris(net) = 0.0;  #--- 300.00
-Parameter YS(lblScenYear)            'Markedspriser, afgifter, tariffer';
+Parameter YS(lblScenYear)              'Markedspriser, afgifter, tariffer';
 Parameter QDemandActual_hh(tt,net)     'Fjv-behov i forbrugsområder';
 Parameter QDemandActual(tt,net)        'Fjv-behov i forbrugsområder';
 Parameter QDemandSum(net)              'Sum af periodens fjv-behov over forbrugsområder';
@@ -374,13 +380,15 @@ Parameter QDemandSumRHfull(rhStep,net) 'Sum af fjv-behov indenfor hver fuld RH-l
 Scalar    QDemandTotal                 'Sum af fjv-behov over alle net og tidspunkter i perioden';
 Parameter ElspotActual_hh(tt)          'Actual elspot price';
 Parameter ElspotActual(tt)             'Actual elspot price';
+Parameter AffAux(uaff)                 'Forhold mlm. varme- og total-virkningsgrad';
 #--- Parameter GasPrice_hh(tt)           'Actual gas spot price';
 #--- Parameter GasPriceActual(tt)           'Actual gas spot price';
-Parameter AffAux(uaff)                 'Forhold mlm. varme- og total-virkningsgrad';
 #--- Parameter uCC(cc)                      'Angiver om carbon capture er aktivt i den gældende periode';
 
-Parameter QmaxPtX_hh(tt)  'Max. varmeeffekt leveret fra PtX-anlæg';
-Parameter QmaxPtX(tt);
+# REMOVE Parameter QmaxPtX_hh(tt)  'Max. varmeeffekt leveret fra PtX-anlæg';
+# REMOVE Parameter QmaxPtX(tt);
+Parameter QovMax_hh(tt,uov)  'Max. varmeeffekt leveret fra OV-leverandører';
+Parameter QovMaxx(tt,uov);
 
 *begin Parametre til diagnosticering
 

@@ -244,21 +244,6 @@ StatsOther('ucool','HeatVented') = max(tiny, sum(ucool $OnUGlobal(ucool), sum(t,
 
 *end 
 
-*begin
-
-#--- Q_L(tt,u)             = Q.L(tt,u);
-#--- QT_L(tt,tr)           = QT.L(tt,tr);
-#--- QRgk_L(tt,kv)         = QRgk.L(tt,kv);
-#--- Qbypass_L(tt,kv)      = Qbypass.L(tt,kv);
-#--- Qcool_L(tt,ucool)     = Qcool.L(tt,ucool);
-#--- Pnet_L(tt,kv)         = Pnet.L(tt,kv);
-#--- PowInU_L(tt,upr)      = PowInU.L(tt,upr);
-#--- bOn_L(tt,upr)         = bOn.L(tt,upr);
-#--- bOnSR_L(tt,netq)      = bOnSR.L(tt,netq);
-#--- LVak_L(tt,vak)        = LVak.L(tt,vak);
-
-*end     
-
 
 *begin Beregn hver ejers andel af grundlastvarmen i hvert tidspunkt.
 

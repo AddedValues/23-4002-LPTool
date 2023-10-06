@@ -39,6 +39,7 @@ AggrKind               = ActScen('AggrKind');
      
 UseTimeAggr            = (OnTimeAggr NE 0);
 
+TimestampStart             = ActScen('TimestampStart');
 TimeResolution('Default')  = ActScen('TimeResolutionDefault');
 TimeResolution('Bid')      = ActScen('TimeResolutionBid');
 TimeScale(planZone)        = 60 / TimeResolution(planZone);
@@ -218,7 +219,12 @@ display OnFuel, fActive;
 * Opstil parm FuelMix og omdan brændselsdata til MWh basis.
 * FuelMix er nødvendig for at håndtere afgifter på en struktureret måde.
 loop (f,
-  If (FuelCode(f) LE 0 OR FuelCode(f) GT card(f), execute_unload "MecLpMain.gdx"; abort "PrepareSlave: At least one fuel member is not valid");
+  If (FuelCode(f) LE 0 OR FuelCode(f) GT card(f), 
+    actF(f) = yes;
+    execute_unload "MecLpMain.gdx"; 
+    display "PrepareSlave: At least one fuel member (actF) is not valid", actF;
+    abort "PrepareSlave: At least one fuel member is not valid";
+  );
   LhvMWhPerUnitFuel(f)    = Brandsel(f,'LhvMWh');  # LHV pr brændselsenhed 
   CO2ProdTonMWh(f) = Brandsel(f,'CO2emisMWh') / 1000;  # Fra kg/MWh til ton/MWh.
 );
@@ -314,7 +320,10 @@ loop (ucool $OnUGlobal(ucool),
 
 QDemandActual_hh(tt,'netHo') = Prognoses_hh(tt,'QdemHo');
 QDemandActual_hh(tt,'netSt') = Prognoses_hh(tt,'QdemSt');
-QmaxPtx_hh(tt)               = Prognoses_hh(tt,'QmaxPtX');
+#--- QmaxPtx_hh(tt)               = Prognoses_hh(tt,'QmaxPtX');
+QovMax_hh(tt,'HoNhpArla')    = Prognoses_hh(tt,'QmaxArla');
+QovMax_hh(tt,'HoNhpBirn')    = Prognoses_hh(tt,'QmaxBirn');
+QovMax_hh(tt,'MaNhpPtX')     = Prognoses_hh(tt,'QmaxPtX');
                        
 ElspotActual_hh(tt)          = Prognoses_hh(tt,'Elspot');
 TariffDsoLoad_hh(tt)         = Prognoses_hh(tt,'TariffDsoLoad');

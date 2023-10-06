@@ -25,26 +25,28 @@ Parameter OnURevisionScen(u,scmas)                'Anlægsrevision aktiv 0/1';
 $onecho > MecLPinput.txt
 par=Scenarios              rng=ScenMaster!C9:F45         rdim=1 cdim=1
 par=OnNetGlobalScen        rng=ScenMaster!C47:F50        rdim=1 cdim=1
-par=OnUGlobalScen          rng=ScenMaster!C51:F90        rdim=1 cdim=1
-par=OnURevisionScen        rng=ScenMaster!C91:F99        rdim=1 cdim=1
+par=OnUGlobalScen          rng=ScenMaster!C51:F86        rdim=1 cdim=1
+par=OnURevisionScen        rng=ScenMaster!C87:F93        rdim=1 cdim=1
 par=YS                     rng=ScenYear!A9:B106          rdim=1 cdim=0
-par=Brandsel               rng=Brandsel!B2:L17           rdim=1 cdim=1
-par=DataU                  rng=DataU!A3:AD36             rdim=1 cdim=1
+par=Brandsel               rng=Brandsel!B2:L21           rdim=1 cdim=1
+par=DataU                  rng=DataU!A3:AD33             rdim=1 cdim=1
 par=FuelCode               rng=DataU!A42:B60             rdim=1 cdim=0
 par=OmrCode                rng=DataU!F42:G44             rdim=1 cdim=0
-par=DsoCode                rng=DataU!F50:G54             rdim=1 cdim=0
+par=DsoCode                rng=DataU!F50:G54	         rdim=1 cdim=0
 par=DataAff                rng=DataU!A65:D90             rdim=1 cdim=1
-par=FuelMix                rng=DataUFuel!A3:O36          rdim=1 cdim=1
-par=FuelPrice              rng=DataUFuel!S3:AG36         rdim=1 cdim=1
+par=FuelMix                rng=DataUFuel!A3:N33          rdim=1 cdim=1
+par=FuelPriceU             rng=DataUFuel!R3:AE33         rdim=1 cdim=1
 par=DataHpKind             rng=DataHP!A10:Q21            rdim=1 cdim=2
-par=CHP                    rng=CHP!A33:P39               rdim=1 cdim=1
+par=CHP                    rng=CHP!A33:P37               rdim=1 cdim=1
+par=DataPtX                rng=DataPtX!B9:C16            rdim=1 cdim=1
 par=DataTransm             rng=DataTransm!B11:D34        rdim=2 cdim=0
 par=TransmConfig           rng=DataTransm!G10:I16        rdim=1 cdim=1
 par=Pipes                  rng=Pipes!B4                  rdim=1 cdim=1
 par=Diverse                rng=Diverse!A9                rdim=1 cdim=0
-par=StateU                 rng=PlantState!A9             rdim=1 cdim=1
+par=StateU                 rng=PlantState!A10            rdim=1 cdim=1
+par=StateF                 rng=FuelState!A10             rdim=2 cdim=1
 par=Availability_hh        rng=Availabilities!A10        rdim=1 cdim=1
-par=Revision_hh            rng=Availabilities!AJ10       rdim=1 cdim=1
+par=Revision_hh            rng=Availabilities!AE10       rdim=1 cdim=1
 par=Prognoses_hh           rng=Prognoses!A10             rdim=1 cdim=1
 par=CapEReservation        rng=CapacAlloc!B9:H34         rdim=1 cdim=2
 par=CapEAvail              rng=CapacAlloc!M10:O34        rdim=1 cdim=1
@@ -75,9 +77,10 @@ $LOAD   OmrCode
 $LOAD   DsoCode
 $LOAD   DataAff
 $LOAD   FuelMix
-$LOAD   FuelPrice
+$LOAD   FuelPriceU
 $LOAD   DataHpKind
 $LOAD   CHP
+$LOAD   DataPtX
 $LOAD   DataTransm
 $LOAD   TransmConfig
 $LOAD   Pipes
@@ -300,9 +303,9 @@ if (OnUGlobal('MaNVak1') AND OnUGlobal('MaNVak2'),
 
 *end   QA på DataU
 
-*begin QA på FuelMix og FuelPrice
+*begin QA på FuelMix og FuelPriceU
 
-loop (upr $OnUGlobal(upr), 
+loop (upr $(OnUGlobal(upr) AND NOT ucool(upr)), 
   actUpr(upr) = yes;
   tmp = sum(f, FuelMix(upr,f));
   if (abs(tmp - 1.0) GT 1E-5,
@@ -312,7 +315,7 @@ loop (upr $OnUGlobal(upr),
   );
 );
 
-*end  QA på FuelMix og FuelPrice
+*end  QA på FuelMix og FuelPriceU
 
 *begin Kapacitetsreservation
 
