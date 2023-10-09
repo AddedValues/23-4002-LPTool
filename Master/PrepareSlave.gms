@@ -81,7 +81,7 @@ loop (planZone,
 
 *begin Overfør scenarieparametre fælles for anlæg.
 
-QInfeasMax        = ActScen('QInfeasMax');
+QfInfeasMax       = ActScen('QfInfeasMax');
 OnVakStartFix     = ActScen('OnVakStartFix');
 OnStartCostSlk    = ActScen('OnStartCostSlk');
 OnRampConstraints = ActScen('OnRampConstraints');
@@ -410,9 +410,9 @@ execute_unload "MecLpMain.gdx";
 
 *begin Initialisering af max. indfyret effekt.
 CapQU(u)       = DataU(u,'CapacQ');
-PowInUMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
-PowInUMax(kv)  = CHP(kv,'Fmax') $OnUGlobal(kv);
-PowInUMax(hp)  = PowInUMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
+FinFMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
+FinFMax(kv)  = CHP(kv,'Fmax') $OnUGlobal(kv);
+FinFMax(hp)  = FinFMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
 
 *end Initialisering af max. indfyret effekt.
 
@@ -436,7 +436,7 @@ PowInUMax(hp)  = PowInUMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);
 # Grundlastvarmen er den øjeblikkelige sum af KV-anlæggenes modtryks-, røggas- og bypass-varme.
 # Grundlastvarmen dynamisk, og dermed påvirkelig, så den kan øges fx ved aktivering af bypass.
 
-QbaseMaxAll = sum(kv $OnUGlobal(kv), CHP(kv,'Qmax') + CHP(kv,'QRgkMax') + CHP(kv,'Qbypass')) 
+QfBaseMaxAll = sum(kv $OnUGlobal(kv), CHP(kv,'Qmax') + CHP(kv,'QRgkMax') + CHP(kv,'QfBypass')) 
               + sum(upr $(uprbase(upr) AND NOT kv(upr)), DataU(upr,'Fmax') * DataU(upr,'EtaQ'));       
 
 *end 

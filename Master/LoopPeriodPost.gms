@@ -16,10 +16,10 @@ t(tt) = ord(tt) LE NblockActual;
 
 *begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
 
-PowInUSum(upr) = sum(t, PowInU.L(t,upr));
+FinSum(upr) = sum(t, FF.L(t,upr));
 
 CO2emisFuelSum(f,co2kind) = sum(upr $(OnUGlobal(upr) AND (FuelMix(upr,f) GT 0)), 
-                                PowInUSum(upr) *  
+                                FinSum(upr) *  
                                   [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * 
                                     #--- [Brandsel(f,'FossilAndel') * (1-sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'regul') 
                                     #--- + (1.0 - 0.8 * sum(cc $sameas(upr,cc), uCC(cc))) $sameas(co2kind,'phys')]

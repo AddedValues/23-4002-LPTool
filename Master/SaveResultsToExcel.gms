@@ -27,7 +27,7 @@ Parameter OnUGlobal_L(u)        'Rådig status for hvert anlæg';
 Parameter OnUprGlobal_L(upr)    'Rådig status for hvert produktionsanlæg';
 Parameter OnVakGlobal_L(vak)    'Rådig status for hver VAK';
 Parameter Q_L(tt,u)             'Varmeproduktion for hvert anlæg [MWhq]';
-Parameter PowInU_L(tt,upr)      'Indgivet energi for hvert anlæg [MWh]';
+Parameter Fin_L(tt,upr)      'Indgivet energi for hvert anlæg [MWh]';
 Parameter LVak_L(tt,vak)        'Lagerstand for hver VAK [MWhq]';
 
 TimeVector('t1') = 0;
@@ -43,17 +43,17 @@ OnUGlobal_L(u)     = max(tiny, OnUGlobal(u));
 OnUprGlobal_L(upr) = max(tiny, OnUGlobal(upr));
 OnVakGlobal_L(vak) = max(tiny, OnUGlobal(vak));
 
-Q_L(tt,u) $(TimeResol(tt) GT 0) = Q.L(tt,u) * 60 / TimeResol(tt);
+Q_L(tt,u) $(TimeResol(tt) GT 0) = QF.L(tt,u) * 60 / TimeResol(tt);
 Q_L(tt,u) $(Q_L(tt,u) EQ 0.0)   = tiny;
 
-PowInU_L(tt,upr) $(TimeResol(tt) GT 0) = max(tiny, PowInU.L(tt,upr) * 60 / TimeResol(tt));
+Fin_L(tt,upr) $(TimeResol(tt) GT 0) = max(tiny, FF.L(tt,upr) * 60 / TimeResol(tt));
 LVak_L(tt,vak) = max(tiny, LVak.L(tt,vak));
 
-#--- QT_L(tt,tr)           = QT.L(tt,tr);
+#--- QT_L(tt,tr)           = QTF.L(tt,tr);
 #--- QRgk_L(tt,kv)         = QRgk.L(tt,kv);
-#--- Qbypass_L(tt,kv)      = Qbypass.L(tt,kv);
+#--- Qbypass_L(tt,kv)      = QfBypass.L(tt,kv);
 #--- Qcool_L(tt,ucool)     = Qcool.L(tt,ucool);
-#--- Pnet_L(tt,kv)         = Pnet.L(tt,kv);
+#--- Pnet_L(tt,kv)         = PfNet.L(tt,kv);
 #--- bOn_L(tt,upr)         = bOn.L(tt,upr);
 #--- bOnSR_L(tt,netq)      = bOnSR.L(tt,netq);
 
@@ -73,13 +73,13 @@ text="Timestamp(min)"                rng=VarmeProd!B10:B10
 par=QDemandActual                    rng=VarmeProd!D10         cdim=1 rdim=1
 text="Qdemand (MWhq)"                rng=VarmeProd!D10:D10
 par=Q_L                              rng=VarmeProd!H10         cdim=1 rdim=1
-text="Q (MWhq)"                      rng=VarmeProd!H10:H10
+text="QF (MWhq)"                      rng=VarmeProd!H10:H10
 
-par=OnUprGlobal_L squeeze=N          rng=PowInU!E8             cdim=1 rdim=0
-par=TimeVector                       rng=PowInU!B11            cdim=0 rdim=1
-text="Timestamp(min)"                rng=PowInU!B10:B10
-par=PowInU_L                         rng=PowInU!D10            cdim=1 rdim=1
-text="PowInU (MWh)"                  rng=PowInU!D10:D10
+par=OnUprGlobal_L squeeze=N          rng=FF!E8             cdim=1 rdim=0
+par=TimeVector                       rng=FF!B11            cdim=0 rdim=1
+text="Timestamp(min)"                rng=FF!B10:B10
+par=Fin_L                         rng=FF!D10            cdim=1 rdim=1
+text="FF (MWh)"                  rng=FF!D10:D10
 
 par=OnVakGlobal_L squeeze=N          rng=LVak!E8             cdim=1 rdim=0
 par=TimeVector                       rng=LVak!B11            cdim=0 rdim=1
@@ -91,7 +91,7 @@ $offecho
 
 execute_unload "MECLpOutput.gdx" 
 tt, t, uall, u, upr, uq, 
-ActScen, OnUGlobal_L, OnUprGlobal_L, OnVakGlobal_L, TimeVector, QdemandActual, Q_L, PowInU_L, LVak_L
+ActScen, OnUGlobal_L, OnUprGlobal_L, OnVakGlobal_L, TimeVector, QdemandActual, Q_L, Fin_L, LVak_L
 ;
 
 execute "gdxxrw.exe MECLpOutput.gdx o=MECLpOutput.xlsm trace=1 @MECLpOutput.txt";

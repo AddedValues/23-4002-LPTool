@@ -5,7 +5,7 @@ $log Entering file: %system.incName%
 
 #--- Scalar tbeg;  # Bruges til ordinal for begyndelsestidspunkt.
 #--- Scalar tend;  # Bruges til ordinal for sluttidspunkt.
-Scalar QInfeasMax         'Øvre grænse for varme-infeasibility (source/drain)';
+Scalar QfInfeasMax        'Øvre grænse for varme-infeasibility (source/drain) [MWq]';
 Scalar ElspotYear         'Elspot årsprofil anvendt';
 Scalar QDemandYear        'FJV årsprofil anvendt';
 Scalar ActualMasterScen   'Nr. på aktuel masterscenarie indlæst fra arket ScenMaster';
@@ -186,7 +186,7 @@ Parameter QovMax_hh(tt,uov)               'Max. effekt fra OV-leverandører';
 Scalar    OnVakStartFix             'Switch for fix af vak niveau i t1 og t1--1'                  / 1 /;
 Scalar    OnStartCostSlk            'Switch til deaktivering af startomkostninger på SLK'         / 1 /;
 Scalar    OnRampConstraints         '0/1 om rampetider skal respekteres';
-Scalar    QbaseMaxAll               'Max. grundlastvarme som er til rådighed';
+Scalar    QfBaseMaxAll              'Max. grundlastvarme som er til rådighed';
 
 Parameter CostHeatProducExt(produExt) 'Købspris for eksterne varmeleverance [DKK/MWhq]';
 
@@ -215,7 +215,7 @@ Parameter TariffDsoFeedIn(dso)          'DSO eltarif for indfødning';
 Parameter TariffElRaadighed(dso)        'Rådighedstarif';
 Parameter TariffElEffekt(dso)           'Effektbetaling';
 
-Parameter PowInUMax(u)                  'Nominal max. fuel input [MW]';
+Parameter FinFMax(u)                    'Nominal max. fuel input [MW]';
 Parameter CapEU(tt,uelec)               'Time-varying power capacity of electric plants';
 Parameter CapQU(u)                      'Heat capacity of plants';
 Parameter CapacP(u)                     'Elkapacitet MWe';
@@ -260,8 +260,8 @@ Parameter QDemandAnnualAvg(net)         'Annual nominal heat demand average [MW]
 Parameter QDemandAnnualSum(net)         'Total nominal heat demand [MWh/yr]';
 Parameter bOnPrevious(upr)              'Plant activity at end of previous rolling horizon step';
 Parameter bOnPreviousRH(upr,rhStep)     'Plant activity at end of previous rolling horizon step';
-Parameter PowInUPrevious(upr)           'Plant activity at end of previous rolling horizon step';
-Parameter PowInUPreviousRH(upr,rhStep)  'Plant activity at end of previous rolling horizon step';
+Parameter FinPrevious(upr)           'Plant activity at end of previous rolling horizon step';
+Parameter FinPreviousRH(upr,rhStep)  'Plant activity at end of previous rolling horizon step';
 Parameter LVakPrevious(vak)             'Tank level at end of previous rolling horizon step';
 Parameter LVakPreviousRH(vak,rhStep)    'Tank level at end of previous rolling horizon step';
                                         
@@ -282,7 +282,7 @@ Parameter COPmin(hp)                                     'Mindste COP henover å
 Parameter YieldMin(hp)                                   'Mindste VP ydelse henover året';
 Parameter CHP(kv,lblCHP);
 Parameter DeprecCost(u)              'Afskrivninger i aktuel periode  for hvert anlæg';
-Parameter PowInUSum(upr)             'Sum af indgivet effekt over en periode';
+Parameter FinSum(upr)             'Sum af indgivet effekt over en periode';
 Parameter CO2emisFuelSum(f,co2kind)  'Sum af CO2-emission pr. drivmiddel [kg]';
 
 
@@ -371,29 +371,28 @@ Parameter StateF(upr,fsto,startslut)     'Start- og slutlagerbeholdning i planpe
 # Erklæring af nominelt og aktuelt fjv-behov, elspotpris og brændselspriser
 
 # Normerede FJV-tidsserier
-Parameter QSalgspris(net)              'FJV-salgspris [DKK/MWh]';  QSalgspris(net) = 0.0;  #--- 300.00
-Parameter YS(lblScenYear)              'Markedspriser, afgifter, tariffer';
-Parameter QDemandActual_hh(tt,net)     'Fjv-behov i forbrugsområder';
-Parameter QDemandActual(tt,net)        'Fjv-behov i forbrugsområder';
-Parameter QDemandSum(net)              'Sum af periodens fjv-behov over forbrugsområder';
-Parameter QDemandSumRHfull(rhStep,net) 'Sum af fjv-behov indenfor hver fuld RH-længde';
-Scalar    QDemandTotal                 'Sum af fjv-behov over alle net og tidspunkter i perioden';
-Parameter ElspotActual_hh(tt)          'Actual elspot price';
-Parameter ElspotActual(tt)             'Actual elspot price';
-Parameter AffAux(uaff)                 'Forhold mlm. varme- og total-virkningsgrad';
-#--- Parameter GasPrice_hh(tt)           'Actual gas spot price';
+Parameter QSalgspris(net)                'FJV-salgspris [DKK/MWh]';  QSalgspris(net) = 0.0;  #--- 300.00
+Parameter YS(lblScenYear)                'Markedspriser, afgifter, tariffer';
+Parameter QDemandActual_hh(tt,net)       'Fjv-behov i forbrugsområder';
+Parameter QDemandActual(tt,net)          'Fjv-behov i forbrugsområder';
+Parameter QDemandSum(net)                'Sum af periodens fjv-behov over forbrugsområder';
+Parameter QDemandSumRHfull(rhStep,net)   'Sum af fjv-behov indenfor hver fuld RH-længde';
+Scalar    QDemandTotal                   'Sum af fjv-behov over alle net og tidspunkter i perioden';
+Parameter ElspotActual_hh(tt)            'Actual elspot price';
+Parameter ElspotActual(tt)               'Actual elspot price';
+Parameter AffAux(uaff)                   'Forhold mlm. varme- og total-virkningsgrad';
+#--- Parameter GasPrice_hh(tt)              'Actual gas spot price';
 #--- Parameter GasPriceActual(tt)           'Actual gas spot price';
 #--- Parameter uCC(cc)                      'Angiver om carbon capture er aktivt i den gældende periode';
 
-# REMOVE Parameter QmaxPtX_hh(tt)  'Max. varmeeffekt leveret fra PtX-anlæg';
+# REMOVE Parameter QmaxPtX_hh(tt)        'Max. varmeeffekt leveret fra PtX-anlæg';
 # REMOVE Parameter QmaxPtX(tt);
-Parameter QovMax_hh(tt,uov)  'Max. varmeeffekt leveret fra OV-leverandører';
-Parameter QovMaxx(tt,uov);
+Parameter QovMax_hh(tt,uov)              'Max. varmeeffekt leveret fra OV-leverandører';
 
 *begin Parametre til diagnosticering
 
-Parameter QinfeasSum(net,infeasDir) 'Sum af Qinfeas';
-Parameter CostInfeasSum(net)        'CostInfeas for hver periode';
+Parameter QinfeasSum(net,infeasDir)      'Sum af QEInfeas';
+Parameter CostInfeasSum(net)             'CostInfeas for hver periode';
 
 *end Parametre til diagnosticering
 

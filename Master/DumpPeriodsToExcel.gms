@@ -63,7 +63,7 @@ zNormalized = zSlave.L * PeriodObjScale;
 zNormalizedReal = zNormalized + sum(net, sum(t, CostInfeas.L(t,net)));
 
 loop (upr, 
-    tmp = sum(t, Q.L(t,upr));
+    tmp = sum(t, QF.L(t,upr));
     if (tmp > 0.1, 
         OperHours(upr) = sum(t, BLen(t) * bOn.L(t,upr)); 
     );
@@ -71,27 +71,27 @@ loop (upr,
 
 # Varmeprod. omkostning for alle pånær centrale anlæg.
 loop (upr $(OnUGlobal(upr) and NOT kv(upr)),
-  if (OperHours(upr) GT 0 AND smax(t, Q.L(t,upr)) > tiny, 
-    QMargPrice(upr) = sum(t, TotalCostU.L(t,upr)) / sum(t,Q.L(t,upr));  
+  if (OperHours(upr) GT 0 AND smax(t, QF.L(t,upr)) > tiny, 
+    QMargPrice(upr) = sum(t, TotalCostU.L(t,upr)) / sum(t,QF.L(t,upr));  
   );
 );
 # Varmeprod. omkostning for KV-anlæg (kv), som er en delmængde af cp, som kendetegnes ved at have elproduktion.
 loop (kv $OnUGlobal(kv),
-  if (OperHours(kv) GT 0 AND smax(t, Q.L(t,kv)) GT tiny, 
-      QMargPrice(kv) = sum(t, [TotalCostU.L(t,kv) - TotalElIncome.L(t,kv)]) / sum(t, Q.L(t,kv)); 
+  if (OperHours(kv) GT 0 AND smax(t, QF.L(t,kv)) GT tiny, 
+      QMargPrice(kv) = sum(t, [TotalCostU.L(t,kv) - TotalElIncome.L(t,kv)]) / sum(t, QF.L(t,kv)); 
   );
 );
 
 loop (upr $(OnUGlobal(upr) and NOT kv(upr)),
-  if (OperHours(upr) GT 0 AND smax(t, Q.L(t,upr)) > tiny, 
-    QMargPrice_Hourly(t,upr) = TotalCostU.L(t,upr) / max(0.01,Q.L(t,upr));  
+  if (OperHours(upr) GT 0 AND smax(t, QF.L(t,upr)) > tiny, 
+    QMargPrice_Hourly(t,upr) = TotalCostU.L(t,upr) / max(0.01,QF.L(t,upr));  
   );
 );
 
 
 loop (kv $OnUGlobal(kv),
-  if (OperHours(kv) GT 0 AND smax(t, Q.L(t,kv)) GT tiny, 
-      QMargPrice_Hourly(t,kv) = [TotalCostU.L(t,kv) - TotalElIncome.L(t,kv)] / max(0.01,Q.L(t,kv)); 
+  if (OperHours(kv) GT 0 AND smax(t, QF.L(t,kv)) GT tiny, 
+      QMargPrice_Hourly(t,kv) = [TotalCostU.L(t,kv) - TotalElIncome.L(t,kv)] / max(0.01,QF.L(t,kv)); 
   );
 );
 display OperHours, QMargPrice; 
@@ -102,8 +102,8 @@ $if not errorfree $exit
 
 StatsT(tr,topicT)     = 0.0;
 loop (tr $OnTrans(tr),
-  StatsT(tr,'QSent')    = sum(t, QT.L(t,tr));
-  StatsT(tr,'QLost')    = sum(t, QTloss.L(t,tr));
+  StatsT(tr,'QSent')    = sum(t, QTF.L(t,tr));
+  StatsT(tr,'QLost')    = sum(t, QTeLoss.L(t,tr));
   StatsT(tr,'CostPump') = sum(t, CostPump.L(t,tr));
 );
 
@@ -113,7 +113,7 @@ loop (tr $OnTrans(tr),
 
 #--- Set topicU     'Prod unit stats' /
 #---    FullLoadHours, OperHours, BypassHours, RGKhours,
-#---    NStart, CO2QtyPhys, CO2QtyRegul, PowInU, FuelQty,
+#---    NStart, CO2QtyPhys, CO2QtyRegul, FF, FuelQty,
 #---    FuelConsumed, PowerGen, PowerNet, HeatGen, HeatCool, HeatBypass, HeatRGK,
 #---    RGKshare,
 #---    ElEgbrug,
@@ -128,16 +128,16 @@ loop (tr $OnTrans(tr),
 StatsU(upr,topicU)     = 0.0;
 StatsVak(vak,topicVak) = 0.0;
 
-StatsU(upr,'PowInMax') = PowInUMax(upr);
+StatsU(upr,'PowInMax') = FinFMax(upr);
 StatsU(upr,'EtaPower') = EtaPU(upr) $OnUGlobal(upr);
 StatsU(upr,'EtaHeat')  = EtaQU(upr) $OnUGlobal(upr);
 
 * Varmepumpers fuldlasttimer skal opgøres efter varmeproduktion, da deres kapacitet er baseret på varmeoutput.
-#--- StatsU(cp,'FullLoadHours') = [sum(t, PowInU.L(t,cp)) / Max(1, PowInUMax(cp))] $OnUGlobal(cp);
-#--- StatsU(hp,'FullLoadHours') = [sum(t, Q.L(t,hp)) / Max(1, PowInUMax(hp))] $OnUGlobal(hp);
+#--- StatsU(cp,'FullLoadHours') = [sum(t, FF.L(t,cp)) / Max(1, FinFMax(cp))] $OnUGlobal(cp);
+#--- StatsU(hp,'FullLoadHours') = [sum(t, QF.L(t,hp)) / Max(1, FinFMax(hp))] $OnUGlobal(hp);
 
 loop (upr $(OnUGlobal(upr)),
-  StatsU(upr,'FullLoadHours') = sum(t, PowInU.L(t,upr)) / Max(1, PowInUMax(upr));
+  StatsU(upr,'FullLoadHours') = sum(t, FF.L(t,upr)) / Max(1, FinFMax(upr));
 );
 
 StatsU(upr,   'OperHours')        = OperHours(upr);
@@ -145,12 +145,12 @@ StatsU(upr,   'NStart')           = sum(t, bStart.L(t,upr));
 StatsU(upr,   'CO2QtyRegul')      = sum(t, CO2Emis.L(t,upr,'regul'));
 StatsU(upr,   'CO2QtyPhys')       = sum(t, CO2Emis.L(t,upr,'phys'));
 StatsU(upr,   'CO2QtyRegul')      = sum(t, CO2Emis.L(t,upr,'regul'));
-StatsU(upr,   'PowInU')           = sum(t, PowInU.L(t,upr));
+StatsU(upr,   'FF')           = sum(t, FF.L(t,upr));
 StatsU(upr,   'FuelQty')          = sum(t, FuelQty.L(t,upr));
-StatsU(upr,   'FuelConsumed')     = sum(t, PowInU.L(t,upr));
-StatsU(upr,   'HeatGen')          = sum(t, Q.L(t,upr))           $OnUGlobal(upr);
+StatsU(upr,   'FuelConsumed')     = sum(t, FF.L(t,upr));
+StatsU(upr,   'HeatGen')          = sum(t, QF.L(t,upr))           $OnUGlobal(upr);
 StatsU(kv,    'HeatRGK')          = sum(t, QRgk.L(t,kv))         $OnUGlobal(kv);
-StatsU(kv,    'HeatBypass')       = sum(t, Qbypass.L(t,kv))      $OnUGlobal(kv);
+StatsU(kv,    'HeatBypass')       = sum(t, QfBypass.L(t,kv))      $OnUGlobal(kv);
 StatsU(u,     'TotalCost')        = sum(t, TotalCostU.L(t,u))    $OnUGlobal(u);
 StatsU(upr,   'TotalTax')         = sum(t, TotalTaxUpr.L(t,upr)) $OnUGlobal(upr);
 StatsU(upr,   'FuelCost')         = sum(t, FuelCost.L(t,upr))    $OnUGlobal(upr);
@@ -158,17 +158,17 @@ StatsU(u,     'DVCost')           = sum(t, VarDVOmkst.L(t,u))    $OnUGlobal(u);
 StatsU(upr,   'StartCost')        = sum(t, StartOmkst.L(t,upr))  $OnUGlobal(upr);
 StatsU(upr,   'ElCost')           = sum(t, ElEgbrugOmkst.L(t,upr));
 StatsU(kv,    'TotalElIncome')    = sum(t, TotalElIncome.L(t,kv));
-StatsU(kv,    'ElSpotIncome')     = sum(t, Pnet.L(t,kv) * ElspotActual(t));
+StatsU(kv,    'ElSpotIncome')     = sum(t, PfNet.L(t,kv) * ElspotActual(t));
 StatsU(upr,   'CO2Kvote')         = sum(t, TaxProdU.L(t,upr,'ets'));   # NB: Udtræk af TaxProdU, skal ikke medregnes to gange.
 StatsU(upr,   'PowerNet')         = tiny $OnUGlobal(upr);
 StatsU(upr,   'PowerGen')         = tiny $OnUGlobal(upr);
-StatsU(upr,   'ElEgbrug')         = sum(t, ElEigen.L(t,upr));
+StatsU(upr,   'ElEgbrug')         = sum(t, ElEigenE.L(t,upr));
 StatsU(uelec, 'CapEAllocMWhUp')   = sum(tt2tbid(tt,tbid), CapEAlloc.L(tt,uelec,'up')); 
 StatsU(uelec, 'CapEAllocMWhDown') = sum(tt2tbid(tt,tbid), CapEAlloc.L(tt,uelec,'down')); 
 
 loop (kv $(OnUGlobal(kv)),
-  StatsU(kv,'PowerNet')   = sum(t, Pnet.L(t,kv));
-  StatsU(kv,'PowerGen')   = sum(t, Pbrut.L(t,kv));
+  StatsU(kv,'PowerNet')   = sum(t, PfNet.L(t,kv));
+  StatsU(kv,'PowerGen')   = sum(t, PfBrut.L(t,kv));
   StatsU(kv,'SalesPower') = sum(t, ElSales.L(t,kv));
   #--- StatsU(kv,'ElTilskud')  = sum(t, ElTilskud.L(t,kv));
 
@@ -208,7 +208,7 @@ loop (u $OnUGlobal(u),
 *end Beregning af StatsVak
 
 StatsVak(vak,'TurnOver') $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum(tt, QVakAbs.L(tt,vak)) / CapQU(vak)) $OnUGlobal(vak);
-StatsVak(vak,'QLoss')    $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum(tt, VakLoss.L(tt,vak))) $OnUGlobal(vak);
+StatsVak(vak,'QLoss')    $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum(tt, VakLossE.L(tt,vak))) $OnUGlobal(vak);
 
 *end Beregning af StatsVak
 
@@ -233,7 +233,7 @@ loop (upr $OnUGlobal(upr),
 
 StatsFuel(f,'CO2QtyPhys')  = CO2emisFuelSum(f,'phys');
 StatsFuel(f,'CO2QtyRegul') = CO2emisFuelSum(f,'regul');
-StatsFuel(f,'Qty')         = sum(upr $(OnUGlobal(upr) AND FuelMix(upr,f) GT 0.0), FuelMix(upr,f) * PowInUSum(upr) / LhvMWhPerUnitFuel(f) );
+StatsFuel(f,'Qty')         = sum(upr $(OnUGlobal(upr) AND FuelMix(upr,f) GT 0.0), FuelMix(upr,f) * FinSum(upr) / LhvMWhPerUnitFuel(f) );
 
 *end
 
@@ -250,11 +250,11 @@ StatsOther('ucool','HeatVented') = max(tiny, sum(ucool $OnUGlobal(ucool), sum(t,
 # Først beregnes den samlede grundlast fra BHP (netMa og netHo).
 
 BaseLoadSum                = sum(t, Qbase.L(t));
-QTransSum(tr) $OnTrans(tr) = sum(t, QT.L(t,tr));
+QTransSum(tr) $OnTrans(tr) = sum(t, QTF.L(t,tr));
 
 # Dernæst beregnes andelen for hver time, hvor SR-anlæg var aktive.
-BaseLoadShare(t,'netHo') = QT.L(t,'tr2') / Qbase.L(t);
-BaseLoadShare(t,'netSt') = QT.L(t,'tr1') / Qbase.L(t);
+BaseLoadShare(t,'netHo') = QTF.L(t,'tr2') / Qbase.L(t);
+BaseLoadShare(t,'netSt') = QTF.L(t,'tr1') / Qbase.L(t);
 
 #--- abort.noerror "BEVIDST STOP i DumpPeriodsToExcel.gms";
 #--- execute_unload "MecLpMain.gdx";
@@ -301,7 +301,7 @@ tt, t, net, netq, u, upr, ucool, hp, vak, urHo, urSt, tr, f,
 OnTimeAggr, UseTimeAggr, UseTimeExpansion, BLen, Nblock,
 topicAll, topicSolver, topicU, topicVak, topicT, 
 OnUGlobal, OnU, OnTrans,
-#--- Q_L, QT_L, QRgk_L, Qbypass_L, Qcool_L, LVak_L, PowInU_L, bOn_L, bOnSR_L,             
+#--- Q_L, QT_L, QRgk_L, Qbypass_L, Qcool_L, LVak_L, Fin_L, bOn_L, bOnSR_L,             
 BaseLoad, BaseLoadSum, QTransSum, BaseLoadShare, CountViolationOwnerShare,
 StatsSolver, StatsAll, StatsU, StatsVak, StatsT, StatsFuel, StatsOther;
 

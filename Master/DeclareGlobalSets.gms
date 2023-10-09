@@ -91,7 +91,7 @@ Set lblScenMas 'ScenMaster labels' /
                   OnCapacityReservation, DurationPeriod, HourBegin, HourEnd, HourBeginBidDay, HoursBidDay, 
                   TimestampStart, TimeResolutionDefault, TimeResolutionBid, OnTimeAggr, AggrKind, 
               # Misc. controls.
-                  QInfeasMax, OnVakStartFix, OnStartCostSlk, OnRampConstraints, ElspotYear, QdemandYear,
+                  QfInfeasMax, OnVakStartFix, OnStartCostSlk, OnRampConstraints, ElspotYear, QdemandYear,
                   BottomLineScenMaster /;
 
 *end Define label Set for ScenMaster
@@ -597,7 +597,7 @@ Set m                 'Machine kind'            / kedel, motor, kv, vp /;
 
 Set lblDataU          'Labels for DataU'        / Idriftsat, Omraade, KvoteOmfattet, Aggregat, CapacQ, ModuleSize, Fmin, Fmax, EtaQ, EtaP, ElEig0, ElEig1, 
                                                   DSO, RampUp, RampDown, StartOmkst, StopOmkst, VarDVOmkst, 
-                                                  LoadRateVak, VAKChargeCost, VAKLossRate, LossGain, DoFixVak, FracFixVAK, VakMin, VakMax, SR /;
+                                                  LoadRateVak, VAKChargeCost, VakLossERate, LossGain, DoFixVak, FracFixVAK, VakMin, VakMax, SR /;
 
 Set lblDataAff        'Labels for DataAff'      / FrakAux, FrakBio, FrakTLafgift, FrakCO2Afgift, FrakNOxAfgift, FrakSOxAfgift, FrakVETilskud,
                                                   CO2Emission, NOxEmission, SOxEmission, HKCO2vsLHV, KstCO2vsLHV,
@@ -608,7 +608,7 @@ Set lblDataAff        'Labels for DataAff'      / FrakAux, FrakBio, FrakTLafgift
 
 Set lblTaxes          'Labels for afgifter'      / TaxNoxFlis, TaxNOxHalm, TaxNOxFGO, TaxCO2FGO, TaxEnergiFGO, TaxElvarme, TariffDSO, TariffTSO, TariffTrade,
                                                    TaxQEl, TaxNOxAffald, TaxCO2Affald, TaxEnergiAffald, TaxtillaegAffald, TaxtillaegRabat,TaxCO2KvoteNgas /;
-set lblCHP                                       / a1_PQ, a0_PQ, Pmax, Pmin, Eformel, EtaQ, Fmin, Fmax, EtaP, Qbypass, OnRGK, QRGKMax, VarDVOmkstRgk, Qmax, DVBypass /;
+set lblCHP                                       / a1_PQ, a0_PQ, Pmax, Pmin, Eformel, EtaQ, Fmin, Fmax, EtaP, QfBypass, OnRGK, QRGKMax, VarDVOmkstRgk, Qmax, DVBypass /;
 
 Set lblBrandsel       'Drivmiddel parms'         / PrisEnhed, PrisGJ, PrisMWh, Densitet, LHV, FossilAndel, CO2emis, SOXemis, CO2emisMWh, LhvMWh /;
 
@@ -674,7 +674,7 @@ set uov2fov(uov,fov) 'Relation mellem OV-kilder og OV-varmepumper' /
 #     En besynderlighed ved GAMS er, at rækkefølgen af Set-members fastlægges i den rækkefølge, hvori de defineres på tværs af sets.
 #     Og dermed bliver rækkefølge af udskrivning af stats vha. GDXXRW afhængig af rækkefølgen for definition af sets.
 
-Set cpStatType 'Stats typer for centrale anlæg' / QRGK, Pbrut, Pnet, Q, QRGKShare /;
+Set cpStatType 'Stats typer for centrale anlæg' / QRGK, PfBrut, PfNet, QF, QRGKShare /;
 
 Set topicAll 'Overall statistics' /
     ElspotPrice, SlaveObj, VPO, 
@@ -689,7 +689,7 @@ Set topicSolver 'GAMS Solver stats' /
     
 Set topicU     'Prod unit stats' /
     FullLoadHours, OperHours, BypassHours, RGKhours,
-    NStart, CO2QtyPhys, CO2QtyRegul, PowInU, FuelQty,
+    NStart, CO2QtyPhys, CO2QtyRegul, FF, FuelQty,
     FuelConsumed, PowerGen, PowerNet, HeatGen, HeatCool, HeatBypass, HeatRGK,
     RGKshare,
     ElEgbrug,
@@ -703,7 +703,7 @@ Set topicU     'Prod unit stats' /
 Set topicMecU     'MEC anlægs-stats' /
     OperHours, BypassHours, Rgkhours,
     TurnOver, RealPowerPriceBuy, RealPowerPriceSell,
-    NStart, CO2QtyPhys, CO2QtyRegul, PowInU, FuelQty,
+    NStart, CO2QtyPhys, CO2QtyRegul, FF, FuelQty,
     PowerNet, HeatGen, HeatCool, HeatSent, HeatBackPressure, HeatBypass, HeatRGK, HeatMargPrice,
     PowerSales,
     FixCostTotal, FixCostElTariff, DeprecCost,
@@ -729,7 +729,7 @@ Set topicMasOvwPer      'Master overview topics for periods'    / MargObjOptim, 
                                                                   HeatCostAllOptim, HeatCostNewOptim, HeatSentOptim /;
 Set topicMasOvwNet      'Master overview topics for nets'       / QDemandAnnual, QDemandPeak, QDemandAvg, NProjNet, CapUExcess /;
 Set topicMasOvwUNew     'Master overview topics for units unew' / CapU, dCapU, dCapUOfz, NProjU, bOnInvestU /;
-Set topicMasOvwU        'Master overview topics for units u'    / CapUCost, HeatCapCostU, HeatMargCostU, HeatCostU, HeatGenU, FLH, PowInU, OperHours,
+Set topicMasOvwU        'Master overview topics for units u'    / CapUCost, HeatCapCostU, HeatMargCostU, HeatCostU, HeatGenU, FLH, FF, OperHours,
                                                                   FuelQtys, CO2QtyPhys, CO2QtyRegul, Power, ElEgbrug /;
 Set topicMasOvwT        'Master overview topics for T-lines'    / HeatSent, HeatLost,CostPump /;
 Set topicMasOvwFuel     'Master overview topics for periods'    / CO2QtyPhys, CO2QtyRegul /;
