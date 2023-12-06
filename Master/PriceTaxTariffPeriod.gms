@@ -1,6 +1,6 @@
 $log Entering file: %system.incName%
 $OnText
-Projekt:        23-1002 MEC Mulighedsanalyse FF.
+Projekt:        23-1002 MEC Mulighedsanalyse Ff.
 Filnavn:        PriceTaxTariffPeriod.gms
 Scope:          Overfører indlæste data for mastermodel.
 Inkluderes af:  MecLpMain.gms

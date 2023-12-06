@@ -1,8 +1,8 @@
 $log Entering file: %system.incName%
 #(
 $OnText
-Projekt:    20-1001 MEC BHP - Fremtidens fjernvarmeproduktion
-Filnavn:    DeclareSlaveCommon.gms
+Projekt:    23-4002 LP MEC BHP - Fremtidens fjernvarmeproduktion
+Filnavn:    DeclareSlave.gms
 Scope:      Definerer fælles / tværgående sets, parameters, variables, equations for slavemodellen.
 Kaldes af:  gams.exe
 Dato:       2020-01-18 13:09
@@ -17,16 +17,16 @@ $OffText
 
 Free     variable       zSlave                       'Slave objective';
 Positive variable       QSales(tt)                   'Varmesalg [DKK]';
-Positive variable       QEInfeas(tt,net,InfeasDir)    'Virtuelle varmekilder og -dræn [MW]';
+Positive variable       QeInfeas(tt,net,InfeasDir)    'Virtuelle varmekilder og -dræn [MW]';
                         
 Positive variable       TotalCO2Emis(tt,net,co2kind) 'Samlede regulatoriske CO2-emission [ton/h]';
 Positive variable       TotalCO2EmisSum(net,co2kind) 'Sum af regulatorisk CO2-emission [ton]';
 Positive variable       CO2KvoteOmkst(tt,upr)        'CO2 kvote omkostning [DKK]';
 
-# TODO For samme type flow, fx QF, VarDVOmkst, skal der ikke skelnes mellem produktionsanlæg og KV-anlæg på variabel-siden.
+# TODO For samme type flow, fx Qf, VarDVOmkst, skal der ikke skelnes mellem produktionsanlæg og KV-anlæg på variabel-siden.
 
-Free variable           QE(tt,u)                     'Heat energy from unit u [MWhq]';
-Free variable           QF(tt,u)                     'Heat flow from unit u [MWq]';
+Free variable           Qe(tt,u)                     'Heat energy from unit u [MWhq]';
+Free variable           Qf(tt,u)                     'Heat flow from unit u [MWq]';
 Free variable           FuelCost(tt,upr)             'Fuel cost til el bliver negativ, hvis elprisen gaar i negativ';
 Free variable           TariffCost(tt,upr)           'Fuel tarif cost';
 Free variable           TotalCostU(tt,u);        
@@ -37,8 +37,8 @@ Free variable           ElSales(tt,kv)               'Indtægt fra elsalg';
 
 *begin Transmission
 
-Positive variable       QTE(tt,tr)                  'Transmitteret varmeenergi [MWhq]';
-Positive variable       QTF(tt,tr)                  'Transmitteret varmeeffekt [MWq]';
+Positive variable       QTe(tt,tr)                  'Transmitteret varmeenergi [MWhq]';
+Positive variable       QTf(tt,tr)                  'Transmitteret varmeeffekt [MWq]';
 Positive variable       QTeLoss(tt,tr)               'Transmissionsvarmetab [MWq]';
 # remove Positive variable       QTransOmkst(tt,netF,netT);
 
@@ -48,26 +48,24 @@ Binary   variable       bOnTAll(tr)                 'On/off årstilstand for T-l
 
 *end
 
-# remove Positive variable       QCool(tt,ucool);
-Positive variable       FE(tt,upr)                 'Indgivet energi [MWhf]';
-Positive variable       FF(tt,upr)                 'Indgivet effekt [MWf]';
-#--- Positive variable       FinSum(upr)                'Sum af indgivet effekt [MWhf]';
+Positive variable       Fe(tt,upr)                 'Indgivet energi [MWhf]';
+Positive variable       Ff(tt,upr)                 'Indgivet effekt [MWf]';
 Positive variable       StartOmkst(tt,upr)         'Startomkostning [DKK]';
 
 Positive variable       CostPurchaseOV(tt,uov)     'Købsomkostning OV [DKK]';
 Free     variable       ElEgbrugOmkst(tt,upr)      'Egetforbrugsomkostning [DKK]';
 Positive variable       VarDVOmkst(tt,u);
 Positive variable       DVOmkstRGK(tt,kv)          'D&V omkostning relateret til RGK [DKK]';
+Positive variable       DVOmkstBypass(tt,kv)       'D&V omkostning relateret til bypass [DKK]';
 Positive variable       CostInfeas(tt,net)         'Infeasibility omkostn. [DKK]';
 Positive variable       CostSrPenalty(tt,net)      'Penalty paa SR-varme [DKK]';
 Positive variable       RewardBurnWaste(tt)        'Belønning for afbrændt affald [DKK]';
 Positive variable       TaxProdU(tt,upr,tax);
 Positive variable       TotalTaxUpr(tt, upr);
 Positive variable       CO2Emis(tt,upr,co2kind)    'CO2 emission [kg]';
-#--- Positive variable       CO2emisFuelSum(f,co2kind)  'Sum af CO2-emission pr. drivmiddel [kg]';
 
 Positive variable       FuelQty(tt,upr)            'Drivmiddelmængde [ton]';
-Positive variable       FuelHeat(tt,kv)            'Brændsel knyttet til varmeproduktion i KV-anlæg';
+Positive variable       FeHeat(tt,kv)            'Brændselsenergi knyttet til varmeproduktion i KV-anlæg [MWhf]';
 Positive variabLe       ElEigenE(tt,upr)            'El-egetforbrug for hvert anlæg';
 
 Positive variable       PfBrut(tt,kv)              'Brutto elproduktion på kraftvarmeværker [MWhe]';
@@ -90,25 +88,29 @@ Binary   variable       bOnRGK(tt,kv)              'Angiver om RGK-anlæg er i d
 Binary   variable       bOnSR(tt,netq)             'On/off på SR-anlæg i reale forsyningsområder';
 
 # Overskudsvarme
-Positive variable QeOV(tt,uov)      'Kølevarme fra OV-kilder';
+Positive variable QfOV(tt,uov) 'Kølevarmeeffekt fra OV-kilder [MWqo]';
+Positive variable QeOV(tt,uov) 'Kølevarmeenergi fra OV-kilder [MWhqo]';
 
 # VAK
-Positive variable       LVak(tt,vak)               'Ladning på vak [MWh]';
-Positive variable       QfMaxVak(tt,vak)            'Øvre grænse på opladningseffekt';
-Positive variable       VakLossE(tt,vak)            'Storage loss per hour';
-Positive variable       QVakAbs(tt,vak)            'Absolut laderate for beregning af ladeomkostninger [MW]';
+Positive variable       Evak(tt,vak)               'Ladning på vak [MWh]';
+Positive variable       EvakLoss(tt,vak)           'Storage loss per hour';
+Positive variable       QfMaxVak(tt,vak)           'Øvre grænse på opladningseffekt';
+Positive variable       QfVakAbs(tt,vak)            'Absolut laderate for beregning af ladeomkostninger [MW]';
 #--- Positive variable       QUpr2Vak(tt,vak)           'Indfødet varme fra alle prod-anlæg til vak';
 #--- Positive variable       QT2Vak(tt,tr,vak)          'Indfødet varme fra hver T-ledning til vak';
 
 # Begrænsning på ejerandel af grundlastvarmen.
-Positive variable       QfBase(tt)                  'Grundlastvarmeproduktion';
+Positive variable       QeBase(tt)                  'Grundlastvarmeproduktion energi';
+Positive variable       QfBase(tt)                  'Grundlastvarmeproduktion effekt';
 Positive variable       QfBasebOnSR(tt,netq)        'Product af QfBase og bOnSR';
 
+
+
 *begin Kapacitetsallokeringer
-Positive variable       CapEAlloc(tt,uelec,updown)    'Kapacitetsallokeringer på anlægsbasis';
-Positive variable       CapESlack(tt,updown)          'Kapacitetsallokerings slack ift. diskret størrelse';
-Positive variable       CapEAllocSumU(tt,updown)      'Kapacitetsallokering summeret over anlæg';
-Positive variable       CostCapESlack(tt,updown)      'Penalty cost på CapESlack';
+Positive variable       CapEAlloc(tt,uelec,dirResv)    'Kapacitetsallokeringer på anlægsbasis';
+Positive variable       CapESlack(tt,dirResv)          'Kapacitetsallokerings slack ift. diskret størrelse';
+Positive variable       CapEAllocSumU(tt,dirResv)      'Kapacitetsallokering summeret over anlæg';
+Positive variable       CostCapESlack(tt,dirResv)      'Penalty cost på CapESlack';
 
 Equation EQ_CapEAllocConsDown(tt,uelcons) 'Reserverer nedregul. kapac. for elforbrug. anlæg';
 Equation EQ_CapEAllocConsUp(tt,uelcons)   'Reserverer opregul.  kapac. for elforbrug. anlæg';
@@ -116,25 +118,26 @@ Equation EQ_CapEAllocProdDown(tt,uelprod) 'Reserverer nedregul. kapac. for elpro
 Equation EQ_CapEAllocProdUp(tt,uelprod)   'Reserverer opregul.  kapac. for elprod. anlæg';
 
 # CapEU er den øjeblikkelige max. kapacitet: FinFMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
-# remove EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. FF(t,uelcons)                            =G=  BLen(t) * CapEAlloc(t,uelcons,'up');
-# remove EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. FF(t,uelcons)                            =L=  BLen(t) * (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
+# remove EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                            =G=  BLen(t) * CapEAlloc(t,uelcons,'up');
+# remove EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                            =L=  BLen(t) * (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
 # remove EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  BLen(t) * (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));
 # remove EQ_CapEAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  BLen(t) * CapEAlloc(t,uelprod,'down');
-EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. FF(t,uelcons)                           =G=  CapEAlloc(t,uelcons,'up');
-EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. FF(t,uelcons)                           =L=  (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
+
+EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                           =G=  CapEAlloc(t,uelcons,'up');
+EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                           =L=  (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
 EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));
 EQ_CapEAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  CapEAlloc(t,uelprod,'down');
 
-Equation EQ_CapEAllocSum(tt,updown)       'Beregner CapEAllocSumU';
-EQ_CapEAllocSum(t,updown) $(OnCapacityReservation AND IsBidDay(t)) .. CapEAllocSumU(t,updown)  =E=  sum(uelec $OnU(t,uelec), CapEAlloc(t,uelec,updown));
+Equation EQ_CapEAllocSum(tt,dirResv)       'Beregner CapEAllocSumU';
+EQ_CapEAllocSum(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CapEAllocSumU(t,dirResv)  =E=  sum(uelec $OnU(t,uelec), CapEAlloc(t,uelec,dirResv));
 
-Equation EQ_AllocReservMatch(tbid,tt,updown)  'Sikrer match mellem allok. og reservation';
+Equation EQ_AllocReservMatch(tbid,tt,dirResv)  'Sikrer match mellem allok. og reservation';
 # TODO CHECK om skalering med BLen er korrekt her.
-EQ_AllocReservMatch(tbid,tt,updown) $(OnCapacityReservation AND ord(tbid) LE HoursBidDay AND IsBidDay(tt) AND tt2tbid(tt,tbid)) .. 
-                                         CapEAllocSumU(tt,updown) + CapESlack(tt,updown)  =E=  BLen(tt) * sum(elmarket $DataElMarket('Active',elmarket), CapEReservation(tbid,elmarket,updown));
+EQ_AllocReservMatch(tbid,tt,dirResv) $(OnCapacityReservation AND ord(tbid) LE HoursBidDay AND IsBidDay(tt) AND tt2tbid(tt,tbid)) .. 
+                                         CapEAllocSumU(tt,dirResv) + CapESlack(tt,dirResv)  =E=  BLen(tt) * sum(elmarket $DataElMarket('Active',elmarket), CapEResv(tbid,elmarket,dirResv));
 
-Equation EQ_CostCapESlack(tt,updown)      'Beregner penalty på CapESlack';
-EQ_CostCapESlack(t,updown) $(OnCapacityReservation AND IsBidDay(t)) .. CostCapESlack(t,updown)  =E=  CapESlackPenalty * CapESlack(t,updown);
+Equation EQ_CostCapESlack(tt,dirResv)      'Beregner penalty på CapESlack';
+EQ_CostCapESlack(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CostCapESlack(t,dirResv)  =E=  CapESlackPenalty * CapESlack(t,dirResv);
 
 *end Kapacitetsallokeringer
 
@@ -158,27 +161,27 @@ Equation EQ_TotalCO2Emis(tt,net,co2kind);
 
 #OBS Genberegning af slave objective efter hver rullende horisont skal opdateres hvis EQ_ObjSlave opdateres.
 
-EQ_ObjSlave .. zSlave  =E=  ( sum (t,
-                               + QSales(t)
-                               + sum (tr  $OnTrans(tr),    -CostPump(t,tr))
-                               + sum (u   $OnU(t,u),       -TotalCostU(t,u))
-                               + sum (kv  $OnU(t,kv),      +TotalElIncome(t,kv))
-                               #--- + sum (vak $OnU(t,vak),   -CostVak(t,vak))
-                               + sum (net $OnNet(net),     -CostInfeas(t,net))
-                               + sum (net $OnNet(net),     -CostSrPenalty(t,net))
-                               + sum (updown,              -CostCapESlack(t,updown))
-                               +                           RewardBurnWaste(t)
-                               )
+EQ_ObjSlave .. zSlave  =E=  ( GainCapETotal
+                              + sum (t,
+                                + QSales(t)
+                                + sum (tr  $OnTrans(tr),    -CostPump(t,tr))
+                                + sum (u   $OnU(t,u),       -TotalCostU(t,u))
+                                + sum (kv  $OnU(t,kv),      +TotalElIncome(t,kv))
+                                + sum (net $OnNet(net),     -CostInfeas(t,net))
+                                + sum (net $OnNet(net),     -CostSrPenalty(t,net))
+                                + sum (dirResv,             -CostCapESlack(t,dirResv))
+                                +                            RewardBurnWaste(t)
+                                )
                              ) / PeriodObjScale;      # Total cost in MDKK.
 
-EQ_CostInfeas(t,net) $OnNet(net) .. CostInfeas(t,net)  =E=  sum(infeasDir, QEInfeas(t,net,infeasDir)) * QInfeasPenalty;   #---  + sum(netq $OnNet(netq), sum(t, bOnSR(t,netq))) * bOnSRPenalty;
+EQ_CostInfeas(t,net) $OnNet(net) .. CostInfeas(t,net)  =E=  sum(infeasDir, QeInfeas(t,net,infeasDir)) * QInfeasPenalty;   #---  + sum(netq $OnNet(netq), sum(t, bOnSR(t,netq))) * bOnSRPenalty;
 
-# remove EQ_CostSrPenalty(t,net) .. CostSrPenalty(t,net)  =E=  sum(upsr $(OnU(t,upsr) AND AvailUNet(upsr,net)), QF(t,upsr) * QSrPenalty) $OnNet(net);
-EQ_CostSrPenalty(t,net) .. CostSrPenalty(t,net)  =E=  sum(upsr $(OnU(t,upsr) AND AvailUNet(upsr,net)), QE(t,upsr) * QSrPenalty) $OnNet(net);
+# remove EQ_CostSrPenalty(t,net) .. CostSrPenalty(t,net)  =E=  sum(upsr $(OnU(t,upsr) AND AvailUNet(upsr,net)), Qf(t,upsr) * QSrPenalty) $OnNet(net);
+EQ_CostSrPenalty(t,net) .. CostSrPenalty(t,net)  =E=  sum(upsr $(OnU(t,upsr) AND AvailUNet(upsr,net)), Qe(t,upsr) * QSrPenalty) $OnNet(net);
 
 EQ_RewardBurnWaste(t)   .. RewardBurnWaste(t)  =E=  RewardWaste * sum(uaff $OnU(t,uaff), FuelQty(t,uaff));
 
-EQ_QSales(t) ..  QSales(t)  =E=  sum(net $(OnNet(net) AND QSalgspris(net) GT 0.0), QSalgspris(net) * QDemandActual(t,net));
+EQ_QSales(t) ..  QSales(t)  =E=  sum(net $(OnNet(net) AND QSalgspris(net) GT 0.0), QSalgspris(net) * QeDemandActual(t,net));
 
 $OffOrder
 # bStart gøres ikke-cirkulær ifm. rolling horizon og itererer over tt fremfor t.
@@ -219,81 +222,77 @@ Equation EQ_QProdKVmax(tt,kv)      'Max. modtryks-varmeproduktion for KV-anlaeg 
 
 # Indgiven effekt afledes af varmeeffekten, som er den styrende variabel, som igen er underlagt kapacitetsgrænser.
 # Denne ligning gælder kun for rene varmeproducerende anlæg, ikke KV-anlæg.
-EQ_PowInProdU(t,upr) $(OnU(t,upr) AND uq(upr)) .. FF(t,upr)  =E= (QF(t,upr) / EtaQU(upr)) $(NOT hp(upr)) + sum(hp $sameas(hp,upr), (QF(t,hp) / COP(t,hp)));
+EQ_PowInProdU(t,upr) $(OnU(t,upr) AND uq(upr)) .. Ff(t,upr)  =E= (Qf(t,upr) / EtaQU(upr)) $(NOT hp(upr)) + sum(hp $sameas(hp,upr), (Qf(t,hp) / COP(t,hp)));
 
 # Hensyntagen til modulstørrelse i beregning af mindstelast (kun for rene varmeproducerende anlaeg, ikke KV-anlaeg): EQ_QProdUmin:     
 # BUGFIX : Nye KV-anlaeg var udelukket fra EQ_QProdUmin/-max, og dermed ville marginalen blive nul for disse og dermed igen en nulvaerdi for GradUMarg.    
-# OBS Graenserne er for KV-anlaeg baseret på modtryksproduktion, da QF kan indeholde RGK-varme og bypass-varme.
-# remove EQ_QProdUqmin(t,uq) $(OnU(t,uq)) .. QF(t,uq)  =G=  BLen(t) * DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
-# remove EQ_QProdUqmax(t,uq) $(OnU(t,uq)) .. QF(t,uq)  =L=  BLen(t) * DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
-EQ_QProdUqmin(t,uq) $(OnU(t,uq)) .. QF(t,uq)  =G=  DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
-EQ_QProdUqmax(t,uq) $(OnU(t,uq)) .. QF(t,uq)  =L=  DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+# OBS Graenserne er for KV-anlaeg baseret på modtryksproduktion, da Qf kan indeholde RGK-varme og bypass-varme.
+# remove EQ_QProdUqmin(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =G=  BLen(t) * DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+# remove EQ_QProdUqmax(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =L=  BLen(t) * DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+EQ_QProdUqMin(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =G=  DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+EQ_QProdUqMax(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =L=  DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
 
 # remove EQ_QProdKVmin(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =G=  BLen(t) * DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv); 
 # remove EQ_QProdKVmax(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =L=  BLen(t) * DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
 EQ_QProdKVmin(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =G=  DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv); 
 EQ_QProdKVmax(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =L=  DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
 
-# TODO marginaler skal nu skaleres med Blen(t)
-																   
-Equation EQ_QfRgk2QeRgk(tt,kv) 'Beregning af RGK varmeenergi fra unit kv [MWhq]';
-Equation EQ_QF2QE(tt,u)        'Beregning af varmeenergi fra unit u [MWhq]';
-Equation EQ_QF2QE(tt,u)        'Beregning af varmeenergi fra unit u [MWhq]';
-Equation EQ_QTF2QTE(tt,tr)     'Beregning af transmitteret energi i ledning tr [MWhq]';
-Equation EQ_FinF2FinE(tt,upr)  'Beregning af indgivet energi til unit upr [MWhf]';
+# TODO marginaler skal nu skaleres med Blen(t), hvis det er relevant at bruge dem.
+                      
+Equation EQ_QfBack2QeBack(tt,kv)     'Beregning af modtryksvarmeenergi fra unit kv [MWhq]';
+Equation EQ_QfRgk2QeRgk(tt,kv)       'Beregning af RGK varmeenergi fra unit kv [MWhq]';
+Equation EQ_QfBypass2QeBypass(tt,kv) 'Beregning af bypass varmeenergi fra unit kv [MWhq]';
+Equation EQ_QF2QE(tt,u)              'Beregning af varmeenergi fra unit u [MWhq]';
+Equation EQ_QTF2QTE(tt,tr)           'Beregning af transmitteret energi i ledning tr [MWhq]';
+Equation EQ_FinF2FinE(tt,upr)        'Beregning af indgivet energi til unit upr [MWhf]';
 Equation EQ_HeatBalance(tt,net);
 
-EQ_QF2QE(t,u)              $(OnU(t,u))   .. QE(t,u)         =E=  BLen(t) * QF(t,u);
-EQ_FinF2FinE(t,upr)        $(OnU(t,upr)) .. FE(t,upr)     =E=  BLen(t) * FF(t,upr);
+EQ_QF2QE(t,u)              $(OnU(t,u))   .. Qe(t,u)         =E=  BLen(t) * Qf(t,u);
+EQ_FinF2FinE(t,upr)        $(OnU(t,upr)) .. Fe(t,upr)       =E=  BLen(t) * Ff(t,upr);
 EQ_QfRgk2QeRgk(t,kv)       $(OnU(t,kv))  .. QeRgk(t,kv)     =E=  BLen(t) * QfRgk(t,kv);
 EQ_QfBypass2QeBypass(t,kv) $(OnU(t,kv))  .. QeBypass(t,kv)  =E=  BLen(t) * QfBypass(t,kv);
 EQ_QfBack2QeBack(t,kv)     $(OnU(t,kv))  .. QeBack(t,kv)    =E=  BLen(t) * QfBack(t,kv);
-EQ_QTF2QTE(t,tr)           $(OnT(t,tr))  .. QTE(t,tr)       =E=  BLen(t) * QTF(t,tr);
+EQ_QTF2QTE(t,tr)           $(OnT(t,tr))  .. QTe(t,tr)       =E=  BLen(t) * QTf(t,tr);
 
 # TODO Varmetabet i retur-retningen bæres reelt af netF i modsætning til tabet i frem-retningen. Brug trkind til at skelne og revidere EQ_Heat_Balance.
 
-# TODO QDemandActual skal være på energibasis.
+# TODO QeDemandActual skal være på energibasis.
 
-EQ_HeatBalance(t,net) $OnNet(net) .. QDemandActual(t,net) =E=
-# remove                                      sum(uq $(OnUNet(uq,net)),            QF(t,uq))
-# remove                                    + sum(kv $(OnUNet(kv,net)),            QF(t,kv))
-# remove                                    + sum(vak $OnUNet(vak,net),            QF(t,vak))
-                                     sum(uq $(OnUNet(uq,net)),              QE(t,uq))
-                                   + sum(kv $(OnUNet(kv,net)),              QE(t,kv))
-                                   + sum(vak $OnUNet(vak,net),              QE(t,vak))
-                                   - sum(cool2net(ucool,net) $OnU(t,ucool), QE(t,ucool))
+EQ_HeatBalance(t,net) $OnNet(net) .. QeDemandActual(t,net) =E=
+                                     sum(uq $(OnUNet(uq,net)),              Qe(t,uq))
+                                   + sum(kv $(OnUNet(kv,net)),              Qe(t,kv))
+                                   + sum(vak $OnUNet(vak,net),              Qe(t,vak))
+                                   - sum(cool2net(ucool,net) $OnU(t,ucool), Qe(t,ucool))
                                    
-                                   #--- # Fratræk varme, som er brugt til opladning af tanke, da den allerede er indeholdt i QF(t,vak).
-                                   #--- - sum(tr $(OnTrans(tr)), sum(vak $(OnU(t,vak) and tr2vak(tr,vak)), QT2Vak(t,tr,vak)))
-                                   #--- - sum(vak $OnU(t,vak), QUpr2Vak(t,vak))
-
                                    # DirTrans er +1 for nominel flowretning og -1 for modsat flowretning.
                                    + sum(netT $OnNet(netT),
-# remove                                          - sum(tr $OnTransNet(tr,net,netT), DirTrans(tr) * [QTF(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) - 1) / 2 ])    # Varme nominelt afsendt  til netT.
-# remove                                          + sum(tr $OnTransNet(tr,netT,net), DirTrans(tr) * [QTF(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) + 1) / 2 ])    # Varme nominelt modtaget fra netT.
-                                         - sum(tr $OnTransNet(tr,net,netT), DirTrans(tr) * [QTE(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) - 1) / 2 ])    # Varme nominelt afsendt  til netT.
-                                         + sum(tr $OnTransNet(tr,netT,net), DirTrans(tr) * [QTE(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) + 1) / 2 ])    # Varme nominelt modtaget fra netT.
+                                         - sum(tr $OnTransNet(tr,net,netT), DirTrans(tr) * [QTe(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) - 1) / 2 ])    # Varme nominelt afsendt  til netT.
+                                         + sum(tr $OnTransNet(tr,netT,net), DirTrans(tr) * [QTe(t,tr) - QTeLoss(t,tr) * (DirTrans(tr) + 1) / 2 ])    # Varme nominelt modtaget fra netT.
                                          )
-                                   + (QEInfeas(t,net,'source') - QEInfeas(t,net,'drain')) $(QfInfeasMax GT 0);
+                                   + (QeInfeas(t,net,'source') - QeInfeas(t,net,'drain')) $(QeInfeasMax GT 0);
 
-
-# Restriktioner på rampetid
+# Restriktioner på rampetid. Ramperestriktioner er effektbaseret.
 
 Equation EQ_RampUpMax(tt,upr)   'RampUp begrænsning';
 Equation EQ_RampDownMax(tt,upr) 'RampDown begrænsning';
 
 $OffOrder    
-# OBS FinPrevious er ligesom FF angivet i foregående tidspunkts tidsopløsning
+# OBS FfInPrevious er ligesom Ff angivet i foregående tidspunkts tidsopløsning
 #     Tilstande i tidspunktet før planperioden angives på timebasis. BLenRatio(t) afspejler dette, hvor BLenRatio(t) = BLen(t) / BLen(t-1).
-#--- EQ_RampUpMax(t,upr)   $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampUp')   LT (1.0 - tiny)) .. FF(t,upr) - BLenRatio(t) * [FinPrevious(upr) $(ord(t) EQ 1) + FF(t-1,upr) $(ord(t) GT 1)]  =L=  +1.01 * min(1.0, 1E-3 + DataU(upr,'RampUp')   * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
-#--- EQ_RampDownMax(t,upr) $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampDown') LT (1.0 - tiny)) .. FF(t,upr) - BLenRatio(t) * [FinPrevious(upr) $(ord(t) EQ 1) + FF(t-1,upr) $(ord(t) GT 1)]  =G=  -1.01 * min(1.0, 1E-3 + DataU(upr,'RampDown') * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+#--- EQ_RampUpMax(t,upr)   $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampUp')   LT (1.0 - tiny)) .. Ff(t,upr) - BLenRatio(t) * [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)]  =L=  +1.01 * min(1.0, 1E-3 + DataU(upr,'RampUp')   * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+#--- EQ_RampDownMax(t,upr) $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampDown') LT (1.0 - tiny)) .. Ff(t,upr) - BLenRatio(t) * [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)]  =G=  -1.01 * min(1.0, 1E-3 + DataU(upr,'RampDown') * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
 
-# TODO CHECK AT BLenRation er korrekt anvendt her:
+# TODO CHECK AT BLenRatio er korrekt anvendt her:
+#--- EQ_RampUpMax(t,upr)   $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampUp')   LT (1.0 - tiny)) 
+#---                .. Ff(t,upr) - BLenRatio(t) * [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)]  =L=  +min(1.0, 1E-3 + DataU(upr,'RampUp')   * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+#--- EQ_RampDownMax(t,upr) $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampDown') LT (1.0 - tiny)) 
+#---                .. Ff(t,upr) - BLenRatio(t) * [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)]  =G=  -min(1.0, 1E-3 + DataU(upr,'RampDown') * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+
 EQ_RampUpMax(t,upr)   $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampUp')   LT (1.0 - tiny)) 
-               .. FF(t,upr) - BLenRatio(t) * [FinPrevious(upr) $(ord(t) EQ 1) + FF(t-1,upr) $(ord(t) GT 1)]  =L=  +min(1.0, 1E-3 + DataU(upr,'RampUp')   * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+               .. Ff(t,upr)  =L=  [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)] + min(1.0, 1E-4 + DataU(upr,'RampUp')   * TimeResol(t)) * FinFMax(upr) * bOn(t,upr);
 
 EQ_RampDownMax(t,upr) $(OnU(t,upr) AND OnRampConstraints AND DataU(upr,'RampDown') LT (1.0 - tiny)) 
-               .. FF(t,upr) - BLenRatio(t) * [FinPrevious(upr) $(ord(t) EQ 1) + FF(t-1,upr) $(ord(t) GT 1)]  =G=  -min(1.0, 1E-3 + DataU(upr,'RampDown') * TimeResol(t)) * BLen(t) * FinFMax(upr) * bOn(t,upr);
+               .. Ff(t,upr)  =G=  [FfInPrevious(upr) $(ord(t) EQ 1) + Ff(t-1,upr) $(ord(t) GT 1)] - min(1.0, 1E-4 + DataU(upr,'RampDown') * TimeResol(t)) * FinFMax(upr) * bOn(t,upr);
 $OnOrder
 
 # TODO Skift ved ramper mv. skal checkes for tidsskalering.
@@ -302,8 +301,6 @@ $OnOrder
 
 *begin Produktionsomkostninger
 
-#--- Equation EQ_FixedDVCostTotal;
-#--- Equation EQ_FixedDVCost(upr);
 Equation EQ_TaxUpr(tt,upr,tax);
 Equation EQ_TaxUpr2(tt,upr,tax);
 Equation EQ_TotalTaxUpr(tt,upr);
@@ -312,43 +309,41 @@ Equation EQ_FuelCost(tt,upr);
 Equation EQ_TariffCost(tt,upr);
 Equation EQ_VarDVCostUq(tt,uq);
 Equation EQ_VarDVCostKV(tt,kv);
+Equation EQ_DVOmkstRGK(tt,kv);
+Equation EQ_DVOmkstBypass(tt,kv);
 Equation EQ_VarDVCostVAK(tt,vak);
 Equation EQ_StartOmkstUpr(tt,upr);
-Equation EQ_ElEigenE(tt,upr)            'Beregner el-egetforbruget af hver anlæg';
+Equation EQ_ElEigenE(tt,upr)            'Beregner el-egetforbruget af hver anlæg [MWhe]';
 Equation EQ_ElEgbrugOmkst(tt,upr); 
 Equation EQ_CO2KvoteOmkst(tt,upr);
 Equation EQ_CO2emisUpr(tt,upr,co2kind) 'CO2 emission [kg/h]';
-#--- Equation EQ_CO2EmisFuelSum             'Beregner sum af CO2-emission for hvert drivmiddel';
 Equation EQ_FuelQty(tt,upr)            'Brændselsmængde [selektiv enhed: L|m3|kg]';
 
-#--- EQ_FixedDVCostTotal ..  FixedDVCostTotal  =E=  sum(u $OnU(t,u), FixedDVCost(u));
-#--- EQ_FixedDVCost(upr) ..  FixedDVCost(upr)  =E=  CapQU(upr) * Capex(upr,'fixcost') $OnU(t,upr);
 
 EQ_TotalTaxUpr(t,upr) $(OnU(t,upr)) .. TotalTaxUpr(t,upr)  =E=  sum(tax, TaxProdU(t,upr,tax));
 
 # OBS CO2-kvoteomkostning er ikke en afgift, og håndteres derfor særskilt, også fordi kun samlede anlæg over 20 MWf på samme site er omfattet.
 EQ_TaxUpr(t,uq,tax) $(NOT sameas(tax,'ets') AND OnU(t,uq)) ..
-              TaxProdU(t,uq,tax)  =E=    sum(f, FuelMix(uq,f) * TaxRateMWh(f,tax,'kedel'))  * FF(t,uq) $(NOT hp(uq))
-                                       + sum(hp $sameas(hp,uq), TaxRateMWh('Elec',tax,'vp') * FF(t,hp)) ;
+              TaxProdU(t,uq,tax)  =E=    sum(f, FuelMix(uq,f) * TaxRateMWh(f,tax,'kedel'))  * Fe(t,uq) $(NOT hp(uq))
+                                       + sum(hp $sameas(hp,uq), TaxRateMWh('Elec',tax,'vp') * Fe(t,hp)) ;
 
 # Overskudsvarme afgift betales af input-varmen.
-EQ_TaxUpr2(t,hp_OV,tax) .. TaxProdU(t,hp_OV,'Oversk') =E= (YS('TaxOverskudsVarme') * 3.6 * FF(t,hp_OV) * (COP(t,hp_OV)-1.0)) $OnU(t,hp_OV) ; 
+EQ_TaxUpr2(t,hp_OV,tax) .. TaxProdU(t,hp_OV,'Oversk') =E= (YS('TaxOverskudsVarme') * 3.6 * Ff(t,hp_OV) * (COP(t,hp_OV)-1.0)) $OnU(t,hp_OV) ; 
 
 
 EQ_CO2KvoteOmkst(t,upr) $OnU(t,upr)    ..  CO2KvoteOmkst(t,upr)  =E=  CO2emis(t,upr,'regul') * YS('TaxCO2Kvote') $DataU(upr,'Kvoteomfattet');
 
 
-# TODO Indsæt bidrag fra overskudsvarmeafgift hvor relevant:  + (YS('TaxOverskudsVarme') * 3.6 * FF(t,hp) * (COP(t,hp)-1.0));
+# TODO Indsæt bidrag fra overskudsvarmeafgift hvor relevant:  + (YS('TaxOverskudsVarme') * 3.6 * Ff(t,hp) * (COP(t,hp)-1.0));
 
 
 # OBS: Variable DV-omkostninger bør beregnes ift. indfyret effekt, som er uafh. af driftsmodus, da fx KV-anlæg har to energi-outputs, men kun ét energi-input. Men her beregnes på basis af varmeproduktionen.
-# remove EQ_VarDVCostUq(t,uq)  $(OnU(t,uq))  .. VarDVOmkst(t,uq)   =E=  QF(t,uq) * DataU(uq,'VarDVOmkst');
-EQ_VarDVCostUq(t,uq)  $(OnU(t,uq))  .. VarDVOmkst(t,uq)   =E=  QE(t,uq) * DataU(uq,'VarDVOmkst');
-EQ_VarDVCostVAK(t,vak)                 .. VarDVOmkst(t,vak)  =E=  [DataU(vak,'VAKChargeCost') * QVakAbs(t,vak)]  $OnU(t,vak) ;
+EQ_VarDVCostUq(t,uq)  $(OnU(t,uq))  .. VarDVOmkst(t,uq)   =E=  Qe(t,uq) * DataU(uq,'VarDVOmkst');
+EQ_VarDVCostVAK(t,vak)              .. VarDVOmkst(t,vak)  =E=  [DataU(vak,'VAKChargeCost') * BLen(t) * QfVakAbs(t,vak)]  $OnU(t,vak) ;
 
 # OBS Indført forskel på hvor brændselsprisen hentes. SR-anlæg henter fra Brandsel, mens øvrige termiske anlæg henter prisen fra DataU, fordi prisen kan være anlægsafhængig.
 
-EQ_FuelCostSR(t,upsr) $OnU(t,upsr)     .. FuelCost(t,upsr)   =E=  FF(t,upsr) * [sum(f, FuelMix(upsr,f) * (FuelPriceU(upsr,f) + TariffFuelMWh(f))       ) $(NOT uelec(upsr))
+EQ_FuelCostSR(t,upsr) $OnU(t,upsr)     .. FuelCost(t,upsr)   =E=  Fe(t,upsr) * [sum(f, FuelMix(upsr,f) * (FuelPriceU(upsr,f) + TariffFuelMWh(f))       ) $(NOT uelec(upsr))
                                                                                 + sum(uelec$sameas(uelec,upsr), TariffElecU(t,uelec) + ElspotActual(t)) $uelec(upsr)   
                                                                                  ];
 
@@ -358,21 +353,20 @@ EQ_FuelCostSR(t,upsr) $OnU(t,upsr)     .. FuelCost(t,upsr)   =E=  FF(t,upsr) * [
 # Denne kølevarmepris er indsat i tabellen FuelPriceU(upr,f) for VP-anlæg, som fødes med OV.
 # Dermed kan kølevarmeprisen inddrages, idet den kun gælder for eldrevne anlæg.
 
-# Beregning af kølevarmen fra OV-kilder:  QeOV = QF(upr) * (COP - 1) / COP
-Positive variable QeOV(tt,uov) 'Kølevarme fra OV-kilder';
-Equation EQ_QOV(tt,uov)       'Beregning af kølevarme fra OV-kilder';
-Equation EQ_bOnOV(tt,uov)     'Øvre graense for bOn af OV-anlæg';
-Equation EQ_QovMax(tt,uov) 'Max. last paa OV';
+# Beregning af kølevarmen fra OV-kilder:  QeOV = Qf(upr) * (COP - 1) / COP
+# Overskudsvarmen QfOV er før opgradering til FJV-niveau.
+Equation EQ_QfOV(tt,uov)       'Beregning af kølevarmeeffekt fra OV-kilder';
+Equation EQ_QeOV(tt,uov)       'Beregning af kølevarmeenergi fra OV-kilder';
+Equation EQ_bOnOV(tt,uov)      'Øvre graense for bOn af OV-anlæg';
+Equation EQ_QfOvMax(tt,uov)    'Max. last paa OV';
 
 # OBS Restriktionerne herunder tillader at aftage ingen OV, selvom den er til rådighed.
 #     QeOV beregnes indirekte fra aftaget af den opgraderede OV.
-# remove EQ_QOV(t,uov) ..  QF(t,uov)    =E=  QeOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
-EQ_QOV(t,uov) ..  QE(t,uov)    =E=  QeOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
-
+# remove EQ_QOV(t,uov) ..  Qf(t,uov)    =E=  QeOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
+EQ_QfOV(t,uov)  $OnU(t,uov) ..  Qf(t,uov)   =E=  QfOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
+EQ_QeOV(t,uov)  $OnU(t,uov) ..  Qe(t,uov)   =E=  BLen(t) * QfOV(t,uov);
 EQ_bOnOV(t,uov) $OnU(t,uov) ..  bOn(t,uov)  =L=  OnU(t,uov);
-
-#--- EQ_MinLoadOV(t,uov) $OnU(t,uov) ..  QeOV(t,uov)  =G=  QovMax(t,uov) * DataU(uov,'Fmin') * bOn(t,uov);      # Partielle aktiv-status tillades ifm. tidsaggregering.
-EQ_QovMax(t,uov) $OnU(t,uov) ..  QeOV(t,uov)  =L=  BLen(t) * QovMax(t,uov) * DataU(uov,'Fmax') * bOn(t,uov) ;   # Partielle aktiv-status tillades ifm. tidsaggregering.
+EQ_QfOvMax(t,uov) $OnU(t,uov) ..  QfOV(t,uov)  =L=  QfOVmax(t,uov) * DataU(uov,'Fmax') * bOn(t,uov) ;   # Partielle aktiv-status tillades ifm. tidsaggregering.
 
 
 # OBS Prioritering er overflødig, idet affaldslinjer har en meget lav marginalpris.
@@ -384,33 +378,33 @@ EQ_QovMax(t,uov) $OnU(t,uov) ..  QeOV(t,uov)  =L=  BLen(t) * QovMax(t,uov) * Dat
 Equation EQ_CostPurchaseOV(tt,uov) 'koebsomkostning OV';
 EQ_CostPurchaseOV(t,uov) $OnU(t,uov) .. CostPurchaseOV(t,uov)  =E=  sum(fov $uov2fov(uov,fov), FuelMix(uov,fov) * FuelPriceU(uov,fov) * QeOV(t,uov)) $uov(uov);
 
-EQ_FuelCost(t,upr) $(OnU(t,upr) AND NOT upsr(upr)) .. FuelCost(t,upr) =E=  FF(t,upr) * [ sum(f, FuelMix(upr,f) * (FuelPriceU(upr,f) + TariffFuelMWh(f)) ) $(NOT uelec(upr))
-                                                                                           + sum(uelec $sameas(uelec,upr), TariffElecU(t,uelec) + ElspotActual(t) ) $uelec(upr)
-                                                                                           ]
+EQ_FuelCost(t,upr) $(OnU(t,upr) AND NOT upsr(upr)) .. FuelCost(t,upr) =E=  Fe(t,upr) * [ sum(f, FuelMix(upr,f) * (FuelPriceU(upr,f) + TariffFuelMWh(f)) ) $(NOT uelec(upr))
+                                                                                       + sum(uelec $sameas(uelec,upr), TariffElecU(t,uelec) + ElspotActual(t) ) $uelec(upr)
+                                                                                       ]
                                                                            + sum(uov $(OnU(t,uov) AND sameas(upr,uov)), CostPurchaseOV(t,uov)) $uov(upr);
 
 EQ_StartOmkstUpr(t,upr) $(OnU(t,upr)) .. StartOmkst(t,upr)   =E=  bStart(t,upr) * DataU(upr,'StartOmkst');
            
 # TariffCost beregnes for alle anlaeg og anvendes kun til StatsMecU.
-EQ_TariffCost(t,upr) $(OnU(t,upr))    .. TariffCost(t,upr) =E=  FF(t,upr) * [sum(f, FuelMix(upr,f) * TariffFuelMWh(f)) $(NOT uelec(upr)) + sum(uelec $sameas(uelec,upr), TariffElecU(t,uelec))];
+EQ_TariffCost(t,upr) $(OnU(t,upr))    .. TariffCost(t,upr) =E=  Fe(t,upr) * [sum(f, FuelMix(upr,f) * TariffFuelMWh(f)) $(NOT uelec(upr)) + sum(uelec $sameas(uelec,upr), TariffElecU(t,uelec))];
 
 # OBS El-egetforbruget sættes til nul (forsimpling) for små anlæg, og for KV-anlæg antages egetforbruget dækkes af egenproduktion.
 #     Der skal betales rådighedstarif af egetforbruget.
 #     Det antages for centrale anlæg, at egetforbruget er aktivt, selvom anlægget ikke producerer i en given time, men er til rådighed (startklar).
 #     For øvrige anlæg antages, at egetforbruget kun er aktivt, når anlægget er i drift.
 
-EQ_ElEigenE(t,upr)      ..  ElEigenE(t,upr)       =E=  [BLen(t) * DataU(upr,'ElEig0') * bOn(t,upr) + DataU(upr,'ElEig1') * FF(t,upr)] $OnU(t,upr);
+EQ_ElEigenE(t,upr)      ..  ElEigenE(t,upr)       =E=  [BLen(t) * DataU(upr,'ElEig0') * bOn(t,upr) + DataU(upr,'ElEig1') * Fe(t,upr)] $OnU(t,upr);
 EQ_ElEgbrugOmkst(t,upr) ..  ElEgbrugOmkst(t,upr)  =E=  ElEigenE(t,upr) * TariffElRaadighedU(upr);
 
 # Regulatorisk og fysisk CO2-emission beregnes for alle produktionsanlæg.
 # CO2-indholdet af elektrictet varierer med årsfremskrivningerne.
-EQ_CO2emisUpr(t,upr,co2kind) $OnU(t,upr) ..  CO2emis(t,upr,co2kind)   =E=  FF(t,upr) * sum(f $(FuelMix(upr,f) GT 0),
+EQ_CO2emisUpr(t,upr,co2kind) $OnU(t,upr) ..  CO2emis(t,upr,co2kind)   =E=  Fe(t,upr) * sum(f $(FuelMix(upr,f) GT 0),
                                                                            [FuelMix(upr,f) * Brandsel(f,'CO2EmisMWh') * [Brandsel(f,'FossilAndel') * (1-0) $sameas(co2kind,'regul') + (1.0 - 0.8 * (0)) $sameas(co2kind,'phys')]]  
                                                                            + [YS('CO2ElecMix') $(sameas(f,'elec') AND sameas(co2kind,'phys'))]                  #
                                                                          ) / 1000;
 
 # FuelQty er i mængdetype, som er specifik for hvert brændsel: L for olier, m3 for Ngas, kg for faste brændsler, MWh for varme,el.
-EQ_FuelQty(t,upr) $OnU(t,upr)  ..  FuelQty(t,upr)  =E=  FF(t,upr) / sum(f, FuelMix(upr,f) * LhvMWhPerUnitFuel(f)); 
+EQ_FuelQty(t,upr) $OnU(t,upr)  ..  FuelQty(t,upr)  =E=  Ff(t,upr) / sum(f, FuelMix(upr,f) * LhvMWhPerUnitFuel(f)); 
 
 *end Produktionsomkostninger
 
@@ -418,7 +412,7 @@ EQ_FuelQty(t,upr) $OnU(t,upr)  ..  FuelQty(t,upr)  =E=  FF(t,upr) / sum(f, FuelM
 #--- *begin Solvarme
 #--- Equation EQ_Sol(tt,usol);
 #--- # TODO Solvarme kan ikke undertrykkes i praksis, kun i en model. Det skal være en =E= restriktion, men det kræver både lager og bortkølingsfacilitet for at undgå infeasibility.
-#--- EQ_Sol(t,usol)  $OnU(t,usol)  .. QF(t,usol)  =L=  BLen(t) * Solvarme(t,usol) ;     # Den maksimale solvarmeproduktion i modellen følger tidsserien for den virkelige solvarmeproduktion.
+#--- EQ_Sol(t,usol)  $OnU(t,usol)  .. Qf(t,usol)  =L=  BLen(t) * Solvarme(t,usol) ;     # Den maksimale solvarmeproduktion i modellen følger tidsserien for den virkelige solvarmeproduktion.
 #--- 
 #--- *end Solvarme
 
@@ -429,10 +423,10 @@ Equation EQ_Pbrut(tt,kv);
 Equation EQ_Pnet(tt,kv);
 Equation EQ_PfBack(tt,kv);
 Equation EQ_PfBypass(tt,kv);
-#--- Equation EQ_QbackMin(tt,kv);
-#--- Equation EQ_QbackMax(tt,kv);
-Equation EQ_QbackMin(tt,uaff);  # Nedre graense haandteres af EQ_QProdKVmax.
-Equation EQ_QbackMax(tt,uaff);  # Oevre graense haandteres af EQ_QProdKVmax.
+#--- Equation EQ_QfBackMin(tt,kv);
+#--- Equation EQ_QfBackMax(tt,kv);
+Equation EQ_QfBackMin(tt,uaff);  # Nedre graense haandteres af EQ_QProdKVmax.
+Equation EQ_QfBackMax(tt,uaff);  # Oevre graense haandteres af EQ_QProdKVmax.
 Equation EQ_QfBypassMin(tt,kv);
 Equation EQ_QfBypassMax(tt,kv);
 #--- Equation EQ_QfBypassMaxMin(tt,kv);
@@ -440,7 +434,6 @@ Equation EQ_QfBypassMax(tt,kv);
 Equation EQ_QBypassMaxCost(tt,kv);
 Equation EQ_QfRgk(tt,kv);
 Equation EQ_Qkv(tt,kv);
-Equation EQ_QfRgk2(tt,kv);
 
 # PQ-punktet modelleres vha. PQ-linjen for modtryk, og mindstelasten fastlægges af Qmin = EtaQ * Fmin.
 # Turbine-bypass modelleres som variabelt med en mindstelast på 30 pct.
@@ -449,62 +442,57 @@ EQ_BypassMax(t) .. sum(kv $OnU(t,kv), bBypass(t,kv))  =L=  2;
 
 # OBS PQ-diagrammet for KV-anlæggene er givet ved brutto elproduktion PfBrut.
 
-#---EQ_Pbrut(t,kv)           .. PfBrut(t,kv)    =E=  PfBack(t,kv) - PfBypass(t,kv) - DataU(kv,'ElEig1') * FF(t,kv);  # Proportional-delen af egetforbruget fratrækkes netto-produktionen.
+#---EQ_Pbrut(t,kv)           .. PfBrut(t,kv)    =E=  PfBack(t,kv) - PfBypass(t,kv) - DataU(kv,'ElEig1') * Ff(t,kv);  # Proportional-delen af egetforbruget fratrækkes netto-produktionen.
 EQ_Pbrut(t,kv)           .. PfBrut(t,kv)    =E=  PfBack(t,kv) - PfBypass(t,kv);
 EQ_Pnet(t,kv)            .. PfNet(t,kv)     =E=  PfBrut(t,kv) - ElEigenE(t,kv);
 
-# remove EQ_PfBack(t,kv)           .. PfBack(t,kv)    =E=  (BLen(t) * CHP(kv,'a0_PQ') * bOn(t,kv) + CHP(kv,'a1_PQ') * QfBack(t,kv)) $OnU(t,kv);
-EQ_PfBack(t,kv)          .. PfBack(t,kv)    =E=  (CHP(kv,'a0_PQ') * bOn(t,kv) + CHP(kv,'a1_PQ') * QfBack(t,kv)) $OnU(t,kv);
+# remove EQ_PfBack(t,kv)           .. PfBack(t,kv)    =E=  (BLen(t) * DataU(kv,'a0_PQ') * bOn(t,kv) + DataU(kv,'a1_PQ') * QfBack(t,kv)) $OnU(t,kv);
+EQ_PfBack(t,kv)          .. PfBack(t,kv)    =E=  (DataU(kv,'a0_PQ') * bOn(t,kv) + DataU(kv,'a1_PQ') * QfBack(t,kv)) $OnU(t,kv);
 EQ_PfBypass(t,kv)        .. PfBypass(t,kv)  =E=  QfBypass(t,kv);
             
 # Back pressure (modtryk) for Affaldsanlaeg er opadtil begraenset af braendselsmaengden typisk affaldstonnagen.             
-# remove EQ_QbackMin(t,uaff)      .. QfBack(t,uaff)  =G=  BLen(t) * CHP(uaff,'EtaQ') * CHP(uaff,'Fmin') * bOn(t,uaff) $OnU(t,uaff);
-# remove EQ_QbackMax(t,uaff)      .. QfBack(t,uaff)  =L=  BLen(t) * CHP(uaff,'EtaQ') * CHP(uaff,'Fmax') * bOn(t,uaff) $OnU(t,uaff);
-EQ_QbackMin(t,uaff)      .. QfBack(t,uaff)  =G=  CHP(uaff,'EtaQ') * CHP(uaff,'Fmin') * bOn(t,uaff) $OnU(t,uaff);
-EQ_QbackMax(t,uaff)      .. QfBack(t,uaff)  =L=  CHP(uaff,'EtaQ') * CHP(uaff,'Fmax') * bOn(t,uaff) $OnU(t,uaff);
+# remove EQ_QfBackMin(t,uaff)      .. QfBack(t,uaff)  =G=  BLen(t) * DataU(uaff,'EtaQ') * DataU(uaff,'Fmin') * bOn(t,uaff) $OnU(t,uaff);
+# remove EQ_QfBackMax(t,uaff)      .. QfBack(t,uaff)  =L=  BLen(t) * DataU(uaff,'EtaQ') * DataU(uaff,'Fmax') * bOn(t,uaff) $OnU(t,uaff);
+EQ_QfBackMin(t,uaff)      .. QfBack(t,uaff)  =G=  DataU(uaff,'Fmin') * CapQU(uaff) * bOn(t,uaff) $OnU(t,uaff);
+EQ_QfBackMax(t,uaff)      .. QfBack(t,uaff)  =L=  DataU(uaff,'Fmax') * CapQU(uaff) * bOn(t,uaff) $OnU(t,uaff);
                                                 
-# remove EQ_QfBypassMin(t,kv)      .. QfBypass(t,kv)  =G=  0.20 * BLen(t) * CHP(kv,'QfBypass') * bBypass(t,kv) $OnU(t,kv);
-# remove EQ_QfBypassMax(t,kv)      .. QfBypass(t,kv)  =L=  1.00 * BLen(t) * CHP(kv,'QfBypass') * bBypass(t,kv) $OnU(t,kv);
-EQ_QfBypassMin(t,kv)     .. QfBypass(t,kv)  =G=  0.20 * CHP(kv,'QfBypass') * bBypass(t,kv) $OnU(t,kv);
-EQ_QfBypassMax(t,kv)     .. QfBypass(t,kv)  =L=  1.00 * CHP(kv,'QfBypass') * bBypass(t,kv) $OnU(t,kv);
+# remove EQ_QfBypassMin(t,kv)      .. QfBypass(t,kv)  =G=  0.20 * BLen(t) * DataU(kv,'Qbypass') * bBypass(t,kv) $OnU(t,kv);
+# remove EQ_QfBypassMax(t,kv)      .. QfBypass(t,kv)  =L=  1.00 * BLen(t) * DataU(kv,'Qbypass') * bBypass(t,kv) $OnU(t,kv);
+EQ_QfBypassMin(t,kv)     .. QfBypass(t,kv)  =G=  0.20 * DataU(kv,'Qbypass') * bBypass(t,kv) $OnU(t,kv);
+EQ_QfBypassMax(t,kv)     .. QfBypass(t,kv)  =L=  1.00 * DataU(kv,'Qbypass') * bBypass(t,kv) $OnU(t,kv);
 
-EQ_QBypassMaxCost(t,kv)  .. QbypassCost(t,kv) =E= QfBypass(t,kv) * CHP(kv,'DVbypass') $OnU(t,kv);
+EQ_QBypassMaxCost(t,kv)  .. QbypassCost(t,kv) =E= QeBypass(t,kv) * DataU(kv,'VarDVomkstBypass') $OnU(t,kv);
 
-EQ_QfRgk(t,kv) ..  QfRgk(t,kv)  =L=  CHP(kv,'QRGKMax') * bRgk(t,kv) $(OnU(t,kv) AND CHP(kv,'OnRGK'));
-EQ_QfRgk2(t,kv) .. QfRgk(t,kv)  =L=  CHP(kv,'QrgkMax') * bRgk(t,kv);
+EQ_QfRgk(t,kv) ..  QfRgk(t,kv)  =L=  DataU(kv,'QRgkMax') * bRgk(t,kv) $(OnU(t,kv));
 
 # TODO QfBack -> QbackF, QfBypass -> QbypassF, QRgk -> QRgkF (effekter)
 
-# remove EQ_Qkv(t,kv)  .. QF(t,kv)  =E= QfBack(t,kv) + QfBypass(t,kv) + QRgk(t,kv);
-EQ_Qkv(t,kv)  .. QF(t,kv)  =E= QfBack(t,kv) + QfBypass(t,kv) + QfRgk(t,kv);
+# remove EQ_Qkv(t,kv)  .. Qf(t,kv)  =E= QfBack(t,kv) + QfBypass(t,kv) + QRgk(t,kv);
+EQ_Qkv(t,kv)  .. Qf(t,kv)  =E= QfBack(t,kv) + QfRgk(t,kv) + QfBypass(t,kv) ;
 
-Equation EQ_FinCHP(tt,kv);
-EQ_FinCHP(t,kv)    $(OnU(t,kv))  .. FF(t,kv)  =E=  QfBack(t,kv) / CHP(kv,'EtaQ');
+Equation EQ_FfInCHP(tt,kv);
+EQ_FfInCHP(t,kv) $(OnU(t,kv))  .. Ff(t,kv)  =E=  QfBack(t,kv) / DataU(kv,'EtaQ');
 
 Equation EQ_ElSales(tt,kv);
 EQ_ElSales(t,kv) .. ElSales(t,kv)  =E=  PfNet(t,kv) * (ElspotActual(t) + TariffElSellU(kv)) $ OnU(t,kv);
 
+EQ_VarDVCostKV(t,kv)   $OnU(t,kv)  .. VarDVOmkst(t,kv)    =E=  Fe(t,kv) * DataU(kv,'VarDVOmkst') + DVOmkstRGK(t,kv) + DVOmkstBypass(t,kv);
+EQ_DVOmkstRGK(t,kv)    $OnU(t,kv)  .. DVOmkstRGK(t,kv)    =E=  QeRgk(t,kv)    * DataU(kv,'VarDVomkstRgk');
+EQ_DVOmkstBypass(t,kv) $OnU(t,kv)  .. DVOmkstBypass(t,kv) =E=  QeBypass(t,kv) * DataU(kv,'VarDVomkstBypass');
 
-EQ_VarDVCostKV(t,kv)  $OnU(t,kv)  .. VarDVOmkst(t,kv)   =E=  FF(t,kv) * DataU(kv,'VarDVOmkst') + DVOmkstRGK(t,kv);
 
 Equation EQ_TaxProdCHP(tt,kv,tax);
 Equation EQ_TaxTotalCHP(tt,kv);
-Equation EQ_FuelHeat(tt,kv);
+Equation EQ_FeHeat(tt,kv) 'Brændsel medgået til varmeproduktion [MWhf]';
 
 EQ_TaxTotalCHP(t,kv) $(OnU(t,kv))  ..  TotalTaxUpr(t,kv)  =E=  sum(tax, TaxProdU(t,kv,tax));
 
 # Afgiftsberegning for KV-anlæg pånær affaldsanlæg.
-EQ_TaxProdCHP(t,kv,tax) $(OnU(t,kv) AND NOT uaff(kv))  ..  TaxProdU(t,kv,tax)   =E=  sum(f, Fuelmix(kv,f) * TaxRateMWh(f,tax,'kv') * FF(t,kv)) $taxkv(tax)
-                                                                                 + sum(f, Fuelmix(kv,f) * TaxRateMWh(f,tax,'kv') * FuelHeat(t,kv)) $taxkv2(tax);
+EQ_TaxProdCHP(t,kv,tax) $(OnU(t,kv) AND NOT uaff(kv))  ..  TaxProdU(t,kv,tax)  =E=  sum(f, Fuelmix(kv,f) * TaxRateMWh(f,tax,'kv') * Fe(t,kv)) $taxkv(tax)
+                                                                                  + sum(f, Fuelmix(kv,f) * TaxRateMWh(f,tax,'kv') * FeHeat(t,kv)) $taxkv2(tax);
                                                                                  
-#--- E- eller V-formel bruges for KV-anlæg pånær affaldsanlæg.
-#--- EQ_FuelHeat(t,kv) $(OnU(t,kv) AND NOT uaff(kv))  .. FuelHeat(t,kv)  =E=  (FF(t,kv) - PfNet(t,kv)/0.67) $(TaxEForm(kv) EQ 1) + (QF(t,kv)/1.2) $(TaxEForm(kv) EQ 0);
-
 # E- eller V-formel bruges for KV-anlæg.
-EQ_FuelHeat(t,kv) .. FuelHeat(t,kv)  =E=  [(FF(t,kv) - PfNet(t,kv)/0.67) $(TaxEForm(kv) EQ 1) + (QF(t,kv)/1.2) $(TaxEForm(kv) EQ 0)] $OnU(t,kv)  ;
-
-Equation EQ_DVOmkstRGK(tt,kv);
-EQ_DVOmkstRGK(t,kv) $OnU(t,kv)  .. DVOmkstRGK(t,kv) =E=  QRgk(t,kv) * CHP(kv,'VarDVOmkstRgk');
+EQ_FeHeat(t,kv) .. FeHeat(t,kv)  =E=  [(Fe(t,kv) - BLen(t) * PfNet(t,kv)/0.67) $(TaxEForm(kv) EQ 1) + (Qe(t,kv) / 1.2) $(TaxEForm(kv) EQ 0)] $OnU(t,kv);
 
 
 *begin Gasmotorer
@@ -512,9 +500,9 @@ Equation EQ_Taxes1Gm(tt,taxkv,gm);
 Equation EQ_Taxes2Gm(tt,gm);
 Equation EQ_Taxes3Gm(tt,gm);
 
-EQ_Taxes1Gm(t,taxkv,gm) $OnU(t,gm) ..  TaxProdU(t,gm,taxkv)   =E=  TaxRateMWh('NGas',taxkv,'kv') * FF(t,gm);
-EQ_Taxes2Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'enr')   =E=  TaxRateMWh('NGas','enr','kv') * sum(kv $sameas(kv,gm), FuelHeat(t,kv));
-EQ_Taxes3Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'co2')   =E=  TaxRateMWh('NGas','co2','kv') * sum(kv $sameas(kv,gm), FuelHeat(t,kv));
+EQ_Taxes1Gm(t,taxkv,gm) $OnU(t,gm) ..  TaxProdU(t,gm,taxkv)   =E=  TaxRateMWh('NGas',taxkv,'kv') * Ff(t,gm);
+EQ_Taxes2Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'enr')   =E=  TaxRateMWh('NGas','enr','kv') * sum(kv $sameas(kv,gm), FeHeat(t,kv));
+EQ_Taxes3Gm(t,gm) $OnU(t,gm)       ..  TaxProdU(t,gm,'co2')   =E=  TaxRateMWh('NGas','co2','kv') * sum(kv $sameas(kv,gm), FeHeat(t,kv));
 *end Gasmotorer
 
 
@@ -570,10 +558,10 @@ Equation EQ_AffTax(tt,uaff,tax)                'Afgiftselementer for affaldsanl�
 EQ_AffTotalTax(t,uaff) $OnU(t,uaff)  .. TotalTaxUpr(t,uaff)    =E=  [AffTaxVarme(t,uaff) + AffTaxTill(t,uaff) + AffTaxCO2(t,uaff) + AffTaxNOx(t,uaff) + AffTaxSOx(t,uaff)];
 
 EQ_AffTax(t,uaff,tax) $OnU(t,uaff) .. TaxProdU(t,uaff,tax)  =E=  AffTaxVarme(t,uaff) $sameas(tax,'afv') +
-                                                               AffTaxTill(t,uaff)  $sameas(tax,'atl') +
-                                                               AffTaxCO2(t,uaff)   $sameas(tax,'co2') +
-                                                               AffTaxNOx(t,uaff)   $sameas(tax,'nox') +
-                                                               AffTaxSOx(t,uaff)   $sameas(tax,'sox') ;
+                                                                 AffTaxTill(t,uaff)  $sameas(tax,'atl') +
+                                                                 AffTaxCO2(t,uaff)   $sameas(tax,'co2') +
+                                                                 AffTaxNOx(t,uaff)   $sameas(tax,'nox') +
+                                                                 AffTaxSOx(t,uaff)   $sameas(tax,'sox') ;
 
 
 #--- EQ_AffCostShared(t,uaff) $OnU(t,uaff) ..  AffCostShared(t,uaff)  =E= [ VarDVOmkst(t,uaff) + StartOmkst(t,uaff)   #---  + ElEgbrugOmkst(t,uaff)  - ElEgbrugOmkstRGK(t,uaff)
@@ -595,20 +583,20 @@ Equation EQ_AffQP(tt,uaff);
 Equation EQ_AffF(tt,uaff);
 Equation EQ_QCoolMax(tt,ucool);
 
-# remove EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  QF(t,uaff) - AffQcool(t,uaff);
-# remove EQ_QAffTaxVarme(t,uaff) $OnU(t,uaff) .. AffQVarmeAfg(t,uaff)  =E=  AffQLev(t,uaff) - DataAff('FrakAux',uaff) * 0.85 * AffAux(uaff) * FF(t,uaff);
-# remove EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  QE(t,uaff) - AffQcool(t,uaff);
-EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  QE(t,uaff) - sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), QE(t,ucool));
-EQ_QAffTaxVarme(t,uaff) $OnU(t,uaff) .. AffQVarmeAfg(t,uaff)  =E=  AffQLev(t,uaff) - DataAff('FrakAux',uaff) * 0.85 * AffAux(uaff) * FE(t,uaff);
+# remove EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  Qf(t,uaff) - AffQcool(t,uaff);
+# remove EQ_QAffTaxVarme(t,uaff) $OnU(t,uaff) .. AffQVarmeAfg(t,uaff)  =E=  AffQLev(t,uaff) - DataAff('FrakAux',uaff) * 0.85 * AffAux(uaff) * Ff(t,uaff);
+# remove EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  Qe(t,uaff) - AffQcool(t,uaff);
+EQ_QAffLev(t,uaff) $OnU(t,uaff)      .. AffQLev(t,uaff)       =E=  Qe(t,uaff) - sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), Qe(t,ucool));
+EQ_QAffTaxVarme(t,uaff) $OnU(t,uaff) .. AffQVarmeAfg(t,uaff)  =E=  AffQLev(t,uaff) - DataAff('FrakAux',uaff) * 0.85 * AffAux(uaff) * Fe(t,uaff);
 
 # TODO Qcool flyttes over i Q
 
-# remove EQ_AffQcool(t,uaff) $OnU(t,uaff)     .. AffQcool(t,uaff)      =E=  sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), QF(t,ucool));
-# remove EQ_AffQcool(t,uaff) $OnU(t,uaff)     .. AffQcool(t,uaff)      =E=  sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), QF(t,ucool));
-EQ_QCoolMax(t,ucool) $OnU(t,ucool)   .. QF(t,ucool)           =L=  CapQU(ucool) $OnU(t,ucool);
+# remove EQ_AffQcool(t,uaff) $OnU(t,uaff)     .. AffQcool(t,uaff)      =E=  sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), Qe(t,ucool));
+# remove EQ_AffQcool(t,uaff) $OnU(t,uaff)     .. AffQcool(t,uaff)      =E=  sum(ucool $(OnU(t,ucool) AND aff2cool(uaff,ucool)), Qe(t,ucool));
+EQ_QCoolMax(t,ucool) $OnU(t,ucool)   .. Qf(t,ucool)           =L=  CapQU(ucool) $OnU(t,ucool);
 
-EQ_AffQP(t,uaff) $OnU(t,uaff)        .. AffQP(t,uaff)         =E=  QF(t,uaff) + PfNet(t,uaff); # remove  + sum(urgk $aff2rgk(uaff,urgk), QF(t,urgk));
-EQ_AffF(t,uaff)  $OnU(t,uaff)        .. AffF(t,uaff)          =E=  QF(t,uaff) * (1 - DataAff('FrakAux',uaff));                                          # Tillægsafgift beregnes kun af QF, hvorimod rabat regnes på QF+PfBrut (EY).
+EQ_AffQP(t,uaff) $OnU(t,uaff)        .. AffQP(t,uaff)         =E=  Qf(t,uaff) + PfNet(t,uaff);        # remove  + sum(urgk $aff2rgk(uaff,urgk), Qf(t,urgk));
+EQ_AffF(t,uaff)  $OnU(t,uaff)        .. AffF(t,uaff)          =E=  Qf(t,uaff) * (1 - DataAff('FrakAux',uaff));                                          # Tillægsafgift beregnes kun af Qf, hvorimod rabat regnes på Qf+PfBrut (EY).
 EQ_AffTaxVarme(t,uaff) $OnU(t,uaff)  .. AffTaxVarme(t,uaff)   =E=  AffQVarmeAfg(t,uaff) * TaxRateMWh('Affald','afv','kv');
 
 # OBS Tillægsafgiften refererer til brutto-elproduktion. I nærværende model beregnes kun netto elproduktion, idet egetforbruget ignoreres.
@@ -631,8 +619,8 @@ EQ_AffTaxCO2(t,uaff) $OnU(t,uaff)  .. AffTaxCO2(t,uaff)  =E=  YS('TaxAffaldCO2')
 EQ_AffTaxNOx(t,uaff) $OnU(t,uaff)  .. AffTaxNOx(t,uaff)  =E=  YS('TaxNOx') * FuelQty(t,uaff) / 1000 * DataAff('NOxEmission',uaff) * DataAff('FrakNOxAfgift',uaff);
 EQ_AffTaxSOx(t,uaff) $OnU(t,uaff)  .. AffTaxSOx(t,uaff)  =E=  YS('TaxSOx') * FuelQty(t,uaff) / 1000 * DataAff('SOxEmission',uaff) * DataAff('FrakSOxAfgift',uaff);
 
-EQ_AffCO2emisHeat(t,uaff) $OnU(t,uaff) .. CO2emisHeat(t,uaff)  =E=  FuelHeat(t,uaff) * Brandsel('Affald','CO2EmisMWh') / 1000;  # Omregning fra kgCO2/MWf til tonCO2/MWf.
-EQ_AffFuelQtyHeat(t,uaff) $OnU(t,uaff) .. FuelQtyHeat(t,uaff)  =E=  FuelHeat(t,uaff) / [Brandsel('Affald','LHV') / 3.6];  # FuelQtyHeat er ton affald medgået til varmeproduktion.
+EQ_AffCO2emisHeat(t,uaff) $OnU(t,uaff) .. CO2emisHeat(t,uaff)  =E=  FeHeat(t,uaff) * Brandsel('Affald','CO2EmisMWh') / 1000;  # Omregning fra kgCO2/MWf til tonCO2/MWf.
+EQ_AffFuelQtyHeat(t,uaff) $OnU(t,uaff) .. FuelQtyHeat(t,uaff)  =E=  FeHeat(t,uaff) / [Brandsel('Affald','LHV') / 3.6];  # FuelQtyHeat er ton affald medgået til varmeproduktion i tidsrum t.
 
 * Beregning af CO2-kvoteomkostninger pålagt ved indvejning af affaldet.
 EQ_AffCO2KvoteOmkst(t,uaff) $OnU(t,uaff)     .. AffCO2KvoteOmkst(t,uaff)      =E=  YS('TaxCO2Kvote') * CO2emis(t,uaff,'regul');
@@ -644,60 +632,57 @@ EQ_AffCO2KvoteOmkstHeat(t,uaff) $OnU(t,uaff) .. AffCO2KvoteOmkstHeat(t,uaff)  =E
 
 *begin Ligninger for VAK
 
-Equation EQ_QVakAbs1(tt,vak);
-Equation EQ_QVakAbs2(tt,vak);
+Equation EQ_QfVakAbs1(tt,vak);
+Equation EQ_QfVakAbs2(tt,vak);
 Equation EQ_QvakMinSR(tt,netq,vak);
-Equation EQ_VakLossE(tt,vak);
-Equation EQ_LVak(tt,vak);
+Equation EQ_EvakLoss(tt,vak);
+Equation EQ_Evak(tt,vak);
 Equation EQ_LoadMinVak(tt,vak);
 Equation EQ_LoadMaxVak(tt,vak);
 Equation EQ_MinVak(tt,vak);
 Equation EQ_MaxVak(tt,vak);
 #remove Equation EQ_FixVak(tt,vak);
 
-Equation EQ_LVakMax(tt,vak);
-Equation EQ_dLVakMax(tt,vak);
+Equation EQ_EvakMax(tt,vak);
+Equation EQ_dEvakMax(tt,vak);
 
-* Først beregnes den absolutte laderate QVakAbs.
-EQ_QVakAbs1(t,vak) ..   QF(t,vak)  =L=  QVakAbs(t,vak) $(OnU(t,vak));
-EQ_QVakAbs2(t,vak) ..  -QF(t,vak)  =L=  QVakAbs(t,vak) $(OnU(t,vak));
+* Først beregnes den absolutte laderate QfVakAbs.
+EQ_QfVakAbs1(t,vak) ..   Qf(t,vak)  =L=  QfVakAbs(t,vak) $(OnU(t,vak));
+EQ_QfVakAbs2(t,vak) ..  -Qf(t,vak)  =L=  QfVakAbs(t,vak) $(OnU(t,vak));
 
 # Forebyg opladning af decentrale tanke, når spidslastanlæg er aktive.
-# remove EQ_QvakMinSR(t,netq,vak) $(OnNet(netq) AND OnU(t,vak) AND vaknet(vak,netq)) .. QF(t,vak)  =G=  - BLen(t) * CapQU(vak) * (1 - bOnSR(t,netq));
-EQ_QvakMinSR(t,netq,vak) $(OnNet(netq) AND OnU(t,vak) AND vaknet(vak,netq)) .. QF(t,vak)  =G=  -CapQU(vak) * (1 - bOnSR(t,netq));
+# remove EQ_QvakMinSR(t,netq,vak) $(OnNet(netq) AND OnU(t,vak) AND vaknet(vak,netq)) .. Qf(t,vak)  =G=  - BLen(t) * CapQU(vak) * (1 - bOnSR(t,netq));
+EQ_QvakMinSR(t,netq,vak) $(OnNet(netq) AND OnU(t,vak) AND vaknet(vak,netq)) .. Qf(t,vak)  =G=  -CapQU(vak) * (1 - bOnSR(t,netq));
 
-* Beregning af QF lagret i VAK
+* Beregning af Qf lagret i VAK
 $OffOrder
 
-EQ_VakLossE(t,vak) $(OnU(t,vak))  .. VakLossE(t,vak)  =E=  BLen(t) * DataU(vak,'VakLossERate') * DataU(vak,'LossGain') * LVak(t,vak);
-# remove EQ_LVak(t,vak)    $(OnU(t,vak))  .. LVak(t,vak)     =E=  [LVakPrevious(vak) $(ord(t) EQ 1) + LVak(t--1,vak) $(ord(t) GT 1)] - QF(t,vak) - VakLossE(t,vak);
-EQ_LVak(t,vak)     $(OnU(t,vak))  .. LVak(t,vak)      =E=  [LVakPrevious(vak) $(ord(t) EQ 1) + LVak(t--1,vak) $(ord(t) GT 1)] - QE(t,vak) - VakLossE(t,vak);
+EQ_EvakLoss(t,vak) $(OnU(t,vak))  .. EvakLoss(t,vak)  =E=  BLen(t) * DataU(vak,'EvakLossRate') * DataU(vak,'LossGain') * Evak(t,vak);
+EQ_Evak(t,vak)     $(OnU(t,vak))  .. Evak(t,vak)      =E=  [EvakPrevious(vak) $(ord(t) EQ 1) + Evak(t--1,vak) $(ord(t) GT 1)] - Qe(t,vak) - EvakLoss(t,vak);
 
 $OnOrder
 
 * Max/min lade-/afladegradient i VAK
-# remove EQ_LoadMinVak(t,vak) $OnU(t,vak)  .. QF(t,vak)   =G=  - BLen(t) * CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
-# remove EQ_LoadMaxVak(t,vak) $OnU(t,vak)  .. QF(t,vak)   =L=    BLen(t) * CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
-EQ_LoadMinVak(t,vak) $OnU(t,vak)  .. QF(t,vak)   =G=  - CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
-EQ_LoadMaxVak(t,vak) $OnU(t,vak)  .. QF(t,vak)   =L=    CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
+EQ_LoadMinVak(t,vak) $OnU(t,vak)  .. Qf(t,vak)   =G=  - CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
+EQ_LoadMaxVak(t,vak) $OnU(t,vak)  .. Qf(t,vak)   =L=    CapQU(vak) * DataU(vak,'LoadRateVak')  $(OnU(t,vak))  ;
 
 * Max VAK-energiindhold
-EQ_MaxVak(t,vak)  $(OnU(t,vak))   .. LVak(t,vak)  =L=  CapQU(vak) * DataU(vak,'VakMax');
-EQ_MinVak(t,vak)  $(OnU(t,vak))   .. LVak(t,vak)  =G=  CapQU(vak) * DataU(vak,'VakMin');
+EQ_MaxVak(t,vak)  $(OnU(t,vak))   .. Evak(t,vak)  =L=  CapQU(vak) * DataU(vak,'VakMax');
+EQ_MinVak(t,vak)  $(OnU(t,vak))   .. Evak(t,vak)  =G=  CapQU(vak) * DataU(vak,'VakMin');
 
 # Bestemmelse af hvem der må lade på tanken:
-# Settet upr2vak fastlægger hvilke anlæg som kan lade på hvilke vak.
-# Settet tr2vak  fastlægger hvilke T-ledninger som kan lade på hvilke vak.
+# Set upr2vak fastlægger hvilke anlæg som kan lade på hvilke vak.
+# Set tr2vak  fastlægger hvilke T-ledninger som kan lade på hvilke vak.
 
-#--- EQ_LVakMax(t,vak)  $OnU(t,vak)  ..  QfMaxVak(t,vak)  =E=  sum(upr2vak(upr,vak) $OnU(t,upr), QF(t,upr));
+#--- EQ_EvakMax(t,vak)  $OnU(t,vak)  ..  QfMaxVak(t,vak)  =E=  sum(upr2vak(upr,vak) $OnU(t,upr), Qf(t,upr));
 
 # OBS Hver T-ledning kan kun lade på een vak jf. nedenstående ligning:
-EQ_LVakMax(t,vak)  $OnU(t,vak)  ..  QfMaxVak(t,vak)  =E=  sum(upr2vak(upr,vak) $OnU(t,upr),  QF(t,upr)) + 
-                                                          sum(tr2vak(tr,vak)   $OnTrans(tr), QTF(t,tr));
+EQ_EvakMax(t,vak)  $OnU(t,vak)  ..  QfMaxVak(t,vak)  =E=  sum(upr2vak(upr,vak) $OnU(t,upr),  Qf(t,upr)) + 
+                                                          sum(tr2vak(tr,vak)   $OnTrans(tr), QTf(t,tr));
 $OffOrder
 
 # VAK-beholdningens tilvækst er begrænset af den maksimale laderate.
-EQ_dLVakMax(t,vak) $(OnU(t,vak))  ..  LVak(t,vak)  =L=  [LVakPrevious(vak) $(ord(t) EQ 1) + LVak(t--1,vak) $(ord(t) GT 1)] + QfMaxVak(t,vak);
+EQ_dEvakMax(t,vak) $(OnU(t,vak))  ..  Evak(t,vak)  =L=  [EvakPrevious(vak) $(ord(t) EQ 1) + Evak(t--1,vak) $(ord(t) GT 1)] + BLen(t) * QfMaxVak(t,vak);
 
 $OnOrder
 
@@ -745,13 +730,15 @@ EQ_bOnSRHoMax(t)                      .. bOnSR(t,'netHo')  =L=  sum(urHo $OnU(t,
 EQ_bOnSRStMax(t)                      .. bOnSR(t,'netSt')  =L=  sum(urSt $OnU(t,urSt), bOn(t,urSt));
 
 
-Equation EQ_QfBase(tt)                    'Beregner Grundlastvarmeproduktion';
+Equation EQ_QeBase(tt)                    'Beregner Grundlastvarmeproduktion energi';
+Equation EQ_QfBase(tt)                    'Beregner Grundlastvarmeproduktion effekt';
 Equation EQ_QfBase_bOnSr_2_Min(tt,netq)   'Bruges til at danne produktet QfBase * bOnSR';
 Equation EQ_QfBase_bOnSr_2_Max(tt,netq)   'Bruges til at danne produktet QfBase * bOnSR';
 Equation EQ_QfBase_bOnSr_1_Max(tt,netq)   'Bruges til at danne produktet QfBase * bOnSR';
 
 # QfBase har en øvre grænse QfBaseMaxAll.
-EQ_QfBase(t)                   ..  QfBase(t)                        =E=  sum(uprbase $(OnU(t,uprbase) AND DataU(uprbase,'Omraade') EQ NetId('netMa')), QF(t,uprbase));
+EQ_QeBase(t)                   ..  QeBase(t)                        =E=  BLen(t) * QfBase(t);
+EQ_QfBase(t)                   ..  QfBase(t)                        =E=  sum(uprbase $(OnU(t,uprbase) AND DataU(uprbase,'Omraade') EQ NetId('netMa')), Qf(t,uprbase));
 EQ_QfBase_bOnSr_1_Max(t,netq)  ..  QfBasebOnSR(t,netq)              =L=  QfBaseMaxAll * bOnSR(t,netq);
 EQ_QfBase_bOnSr_2_Min(t,netq)  ..  0                                =L=  QfBase(t) - QfBasebOnSR(t,netq);
 EQ_QfBase_bOnSr_2_Max(t,netq)  ..  QfBase(t) - QfBasebOnSR(t,netq)  =L=  QfBaseMaxAll * (1 - bOnSR(t,netq));
@@ -761,45 +748,26 @@ EQ_QfBase_bOnSr_2_Max(t,netq)  ..  QfBase(t) - QfBasebOnSR(t,netq)  =L=  QfBaseM
 
 
 # TODO Feature med OnTrans (se nedenfor) skal indlægges her.
-# QTF ved aktive SR-anlæg er begrænset af ejerandel af grundlastvarmeproduktion tillagt afladeraten fra tilsluttede tanke.
+# QTf ved aktive SR-anlæg er begrænset af ejerandel af grundlastvarmeproduktion tillagt afladeraten fra tilsluttede tanke.
 # Derudover er der en flowbetinget grænse og begge grænser skal være aktive.
 
-# remove EQ_QTmaxHo(t) $OnOwnerShare   ..  QTF(t,'tr2')  =L=  (1 - Diverse('StruerAndel')) * QfBasebOnSR(t,'netSt') 
+# remove EQ_QTmaxHo(t) $OnOwnerShare   ..  QTf(t,'tr2')  =L=  (1 - Diverse('StruerAndel')) * QfBasebOnSR(t,'netSt') 
 # remove                                                     + BLen(t) * sum(vak $(OnU(t,vak) AND vak2tr(vak,'tr2')), CapQU(vak) * DataU(vak,'LoadRateVak')) 
-# remove                                                     + BLen(t) * QTmax('tr2') * (1 - bOnSR(t,'netSt'));
+# remove                                                     + BLen(t) * QTfMax('tr2') * (1 - bOnSR(t,'netSt'));
 
-EQ_QTmaxHo(t) $OnOwnerShare   ..  QTF(t,'tr2')  =L=  (1 - Diverse('StruerAndel')) * QfBasebOnSR(t,'netSt') 
+EQ_QTmaxHo(t) $OnOwnerShare   ..  QTf(t,'tr2')  =L=  (1 - Diverse('StruerAndel')) * QfBasebOnSR(t,'netSt') 
                                                     + sum(vak $(OnU(t,vak) AND vak2tr(vak,'tr2')), CapQU(vak) * DataU(vak,'LoadRateVak')) 
-                                                    + QTmax('tr2') * (1 - bOnSR(t,'netSt'));
+                                                    + QTfMax('tr2') * (1 - bOnSR(t,'netSt'));
                                                     
-EQ_QTmaxSt(t) $OnOwnerShare   ..  QTF(t,'tr1')  =L=  (    Diverse('StruerAndel')) * QfBasebOnSR(t,'netHo') 
+EQ_QTmaxSt(t) $OnOwnerShare   ..  QTf(t,'tr1')  =L=  (    Diverse('StruerAndel')) * QfBasebOnSR(t,'netHo') 
                                                     + sum(vak $(OnU(t,vak) AND vak2tr(vak,'tr1')), CapQU(vak) * DataU(vak,'LoadRateVak')) 
-                                                    + QTmax('tr1') * (1 - bOnSR(t,'netHo'));
+                                                    + QTfMax('tr1') * (1 - bOnSR(t,'netHo'));
 
 # OBS En T-ledning hvor OnTrans er forskellig fra 1.0 (én), skal anvende tallet i OnTrans som nedre kapacitetsgrænse [MWq].
-# remove EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTF(t,tr)  =G=  BLen(t) * min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
-# remove EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTF(t,tr)  =L=  BLen(t) * QTmax(tr) * bOnT(t,tr) $OnTrans(tr);
-EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTF(t,tr)  =G=  min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
-EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTF(t,tr)  =L=  QTmax(tr) * bOnT(t,tr) $OnTrans(tr);
-
-
-# Rådig grundlastvarme gøres afhængig af SR-aktivitet og ejerandel.
-#--- Positive variable QfBase(tt)      'Grundlastvarme fra KV-anlæg';
-#--- Positive variable QfBaseHo(tt)    'Grundlastvarme til rådighed for Holstebro';
-#--- Positive variable QfBaseSt(tt)    'Grundlastvarme til rådighed for Struer';
-#--- Equation EQ_QfBase(tt)            'Bestem fælles rådig grundlastvarme';
-#--- Equation EQ_QfBaseHo(tt)          'Bestem loft for rådig grundlastvarme for Ho';
-#--- Equation EQ_QfBaseSt(tt)          'Bestem loft for rådig grundlastvarme for St';
-#--- Equation EQ_QfBaseMaxHo(tt)       'Begræns rådig grundlastvarme hvis SR-aktive i St';
-#--- Equation EQ_QfBaseMaxSt(tt)       'Begræns rådig grundlastvarme hvis SR-aktive i Ho';
-#--- EQ_QfBase(t)      ..  QfBase(t)       =E=  sum(kv $OnU(t,kv), QF(t,kv));
-#--- EQ_QfBaseHo(t)    ..  QfBaseMaxHo(t)  =L=  (1 - Diverse('StruerAndel')) * QfBase(t); 
-#--- EQ_QfBaseSt(t)    ..  QfBaseMaxSt(t)  =L=  Diverse('StruerAndel') * QfBase(t); 
-#--- EQ_QfBaseMaxHo(t) ..  QfBaseMaxHo(t)  =L=  QfBaseMaxAll * bOnSR(t,'netSt');
-#--- EQ_QfBaseMaxSt(t) ..  QfBaseMaxSt(t)  =L=  QfBaseMaxAll * bOnSR(t,'netHo');
-#--- EQ_QTmaxHo(t)    ..  QTF(t,'tr2')    =L=  QfBaseMaxHo(t) + QTmax('tr2') * (1 - bOnSR(t,'netSt'));
-#--- EQ_QTmaxSt(t)    ..  QTF(t,'tr1')    =L=  QfBaseMaxSt(t) + QTmax('tr1') * (1 - bOnSR(t,'netHo'));
-
+# remove EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  BLen(t) * min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
+# remove EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTf(t,tr)  =L=  BLen(t) * QTfMax(tr) * bOnT(t,tr) $OnTrans(tr);
+EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
+EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTf(t,tr)  =L=  QTfMax(tr) * bOnT(t,tr) $OnTrans(tr);
 
 Equation EQ_varmetabT(tt,tr)  'Varmetab i T-ledning';
 Equation EQ_CostPump(tt,tr)   'Pumpeomkostninger [DKK]';
@@ -808,11 +776,11 @@ Equation EQ_CostPump(tt,tr)   'Pumpeomkostninger [DKK]';
 
 # Varmetabs-eksempel på Aa til Ha med DN250: Cirka 0,43 MW for fremløb og 0,17 MW for retur.
 # Varmetabet er domineret af temperaturer, flowets indflydelse er af 2. orden og negligeres her.
-EQ_varmetabT(t,tr)  $(OnTrans(tr)) .. QTeLoss(t,tr)   =E=  BLen(t) * ([1.0 - exp(-alphaT(t,tr,'frem'))] * QTmax(tr) +  [1.0 - exp(-alphaT(t,tr,'retur'))] * QTmax(tr));
+EQ_varmetabT(t,tr)  $(OnTrans(tr)) .. QTeLoss(t,tr)   =E=  BLen(t) * ([1.0 - exp(-alphaT(t,tr,'frem'))] * QTfMax(tr) +  [1.0 - exp(-alphaT(t,tr,'retur'))] * QTfMax(tr));
 
-#OBS  Pumpearbejdet er reelt proportionalt med QTF^2, hvis modstandsfaktoren fD antages konstant (forudsætter højt minimum på QTF).
-#HACK Linearisering af pumpeomkostninger: WpumpActual(t,tr) := Wpump(tr) * CostElecT(t) * QTF(t,tr) / QTmax(tr);
-EQ_CostPump(t,tr)   $OnTrans(tr)   .. CostPump(t,tr)  =E=  Wpump(tr) * [ ElspotActual(t) + TariffEigenPump(t) ] * QTF(t,tr) / QTmax(tr);   # [DKK]
+#OBS  Pumpearbejdet er reelt proportionalt med QTf^2, hvis modstandsfaktoren fD antages konstant (forudsætter højt minimum på QTf).
+#HACK Linearisering af pumpeomkostninger: WpumpActual(t,tr) := Wpump(tr) * CostElecT(t) * QTf(t,tr) / QTfMax(tr);
+EQ_CostPump(t,tr)   $OnTrans(tr)   .. CostPump(t,tr)  =E=  Wpump(tr) * [ ElspotActual(t) + TariffEigenPump(t) ] * QTf(t,tr) / QTfMax(tr);   # [DKK]
 
 *end
 

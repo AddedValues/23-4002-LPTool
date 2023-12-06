@@ -35,8 +35,8 @@ hpSource, lblHpCop, lblCOPyield,
 ActScen, HourBegin, HourEnd, HourBeginBidDay, DurationPeriod, BLen, Bbeg, Bend, RhIntv, 
 OnTimeAggr, UseTimeAggr, UseTimeExpansion, Nblock, NblockActual, 
 OnNet, OnU, OnTrans, 
-QDemandActual_hh, ElspotActual_hh, DataU, DataAff, DataHp, DataTransm, QTmin, QTmax, Brandsel,
-CapQU, CapQU, QTmax,  
+QeDemandActual_hh, ElspotActual_hh, DataU, DataAff, DataHp, DataTransm, QTmin, QTfMax, Brandsel,
+CapQU, CapQU, QTfMax,  
 StatsAll, StatsSolver, StatsRH, StatsU,  #--- StatsMecU, 
 StatsT, StatsVak, StatsFuel, StatsOther, StatsTax, 
 zNormalized, zNormalizedReal, CostInfeas, InfeasTotal,
@@ -45,26 +45,15 @@ zNormalized, zNormalizedReal, CostInfeas, InfeasTotal,
 
 zSlave,                       #                        'Slave objective'
 QSales,                       #  (tt)                  'Varmesalg [DKK]'
-QEInfeas,                      #  (tt,net,InfeasDir)    'Virtuelle varmekilder og -dræn [MW]'
+QeInfeas,                     #  (tt,net,InfeasDir)    'Virtuelle varmekilder og -dræn [MW]'
                         
 TotalCO2Emis,                 #  (tt,net,co2kind)      'Samlede regulatoriske CO2-emission [ton/h]'
 TotalCO2EmisSum,              #  (net,co2kind)         'Sum af regulatorisk CO2-emission [ton]'
 CO2KvoteOmkst,                #  (tt,upr)              'CO2 kvote omkostning [DKK]'
 #--- TariffEl,                     #  (tt,upr)              'Eltarif på elektrisk drevne anlæg'
 
-#--- Q_L, 
-#--- QT_L, 
-#--- QRgk_L, 
-#--- Qbypass_L, 
-#--- Qcool_L, 
-#--- Fin_L, 
-#--- Pnet_L,
-#--- bOn_L, 
-#--- bOnSR_L,             
-#--- LVak_L, 
-
-
-#--- QF,                            #  (tt,u)                'Heat delivery from unit u'
+Qe,                           #  (tt,u)                'Heat delivery from unit u'
+Qf,                           #  (tt,u)                'Heat delivery from unit u'
 FuelCost,                     #  (tt,upr)              'Fuel cost til el bliver negativ, hvis elprisen går i negativ'
 TotalCostU,                   #  (tt,u)
 TotalElIncome,                #  (tt,kv)
@@ -72,16 +61,13 @@ ElSales,                      #  (tt,kv)               'Indtægt fra elsalg'
 #--- ElTilskud,                    #  (tt,kv)
 
 # Transmission
-QTF,                           #  (tt,tr)               'Transmitteret varme [MWq]'
-QTeLoss,                       #  (tt,tr)               'Transmissionsvarmetab [MWq]'
+QTf,                          #  (tt,tr)               'Transmitteret varme [MWq]'
+QTeLoss,                      #  (tt,tr)               'Transmissionsvarmetab [MWq]'
 CostPump,                     #  (tt,tr)               'Pumpeomkostninger'
 bOnT,                         #  (tt,tr)               'On/off timetilstand for T-ledninger'
 bOnTAll,                      #  (tr)                  'On/off årstilstand for T-ledninger'
 
-#--- FixedDVCost,                  #  (u)                   'Faste DV omk. [DKK/MWf/år]'
-#--- FixedDVCostTotal,             #              
-
-#--- FF,                       #  (tt,upr)              'Indgivet effekt [MW]'
+Ff,                           #  (tt,upr)              'Indgivet effekt [MW]'
 StartOmkst,                   #  (tt,upr)              'Startomkostning [DKK]'
 ElEgbrugOmkst,                #  (tt,upr)              'Egetforbrugsomkostning [DKK]'
 VarDVOmkst,                   #  (tt,u)
@@ -92,44 +78,37 @@ TaxProdU,                     #  (tt,upr,tax)
 TotalTaxUpr,                  #  (tt, upr)
 CO2Emis,                      #  (tt,upr,co2kind)      'CO2 emission [kg]'
 CO2emisFuelSum,               #  (f,co2kind)           'Sum af CO2-emission pr. drivmiddel [kg]'
-#--- FuelQty,                      #  (tt,upr)              'Drivmiddelmængde [ton]'
-FuelHeat,                     #  (tt,kv)               'Brændsel knyttet til varmeproduktion i KV-anlæg'
+FuelQty,                      #  (tt,upr)              'Drivmiddelmængde [ton]'
+FeHeat,                       #  (tt,kv)               'Brændsel knyttet til varmeproduktion i KV-anlæg [MWhf]'
                                                        
-#--- PfNet,                         #  (tt,kv)               'Elproduktion af kraftvarmeværker'
-PfBack,                        #  (tt,kv)              
-PfBypass,                      #  (tt,kv)              
-QfBack,                        #  (tt,kv)              
-QfBypass,                      #  (tt,kv)              
-QRgk,                         #  (tt,kv)               'RGK varme fra KV-anlæg'
+PfNet,                        #  (tt,kv)               'Elproduktion af kraftvarmeværker'
+PfBack,                       #  (tt,kv)              
+PfBypass,                     #  (tt,kv)              
+QfBack,                       #  (tt,kv)              
+QfBypass,                     #  (tt,kv)              
+QeRgk,                        #  (tt,kv)               'RGK varme fra KV-anlæg'
 QbypassCost,                  #  (tt,kv)              
-QCool,                        #  (tt,ucool)           
                                                        
 bBypass,                      #  (tt,kv)              
 bRgk,                         #  (tt,kv)              
-#--- bOn,                          #  (tt,upr)              'On/off variable for all units'
+bOn,                          #  (tt,upr)              'On/off variable for all units'
 bStart,                       #  (tt,upr)              'Indikator for start af prod unit'
 bOnRGK,                       #  (tt,kv)               'Angiver om RGK-anlæg er i drift'
 bOnSR,                        #  (tt,netq)             'On/off på SR-anlæg i reale forsyningsområder'
-                                                       
-# VAK                                                  
-#--- LVak,                         #  (tt,vak)              'Ladning på vak [MWh]'
-QMaxVak,                      #  (tt,vak)              'Øvre grænse på opladningseffekt'
-VakLossE,                      #  (tt,vak)              'Storage loss per hour'
-#--- CostVak,                      #  (tt,vak)              'Ladeomkostninger for vak'
-#--- QVakAbs,                      #  (tt,vak)         'Absolut laderate for beregning af ladeomkostninger [MW]'
+                                                      
+# VAK                                                 
+Evak,                         #  (tt,vak)              'Ladning på vak [MWh]'
+QfMaxVak,                     #  (tt,vak)              'Øvre grænse på opladningseffekt'
+EvakLoss,                     #  (tt,vak)              'Storage loss per hour'
 
 # Begrænsning på ejerandel af grundlastvarmen.
-Qbase,                        #  (tt)                  'Grundlastvarmeproduktion'
-QbasebOnSR                    #  (tt,netq)             'Product af Qbase og bOnSR'
-
-
-# Equations
-#--- EQ_QProdUqmax.m                #  (t,uq)                'Marginals of eqn: QF(t,upr)  =L=  BLen(t) * DataU(upr,'Fmax') * CapQU(upr) * [1 $(not hp(upr)) + sum(hp $sameas(hp,upr), QhpYield(t,hp))] * bOn(t,upr);'
-#--- EQ_QProdKVmax.m                #  (t,uq)                'Marginals of eqn: QF(t,upr)  =L=  BLen(t) * DataU(upr,'Fmax') * CapQU(upr) * [1 $(not hp(upr)) + sum(hp $sameas(hp,upr), QhpYield(t,hp))] * bOn(t,upr);'
-
-GradUCapE                      #  (tbid,uelec,updown)   'Følsomheder for CapE allokeringer';
-GradUCapESumU                  #  (tbid,updown)         'Sum af GradUCapE over uelec for hver budtime';
-GradUCapETotal                 #  (updown)              'Sum af GradUCapESumU over buddøgnet';
+QeBase,                       #  (tt)                  'Grundlastvarmeproduktion'
+QfBase,                       #  (tt)                  'Grundlastvarmeproduktion'
+                              
+# Equations                   
+GradUCapE                     #  (tbid,uelec,dirResv)   'Følsomheder for CapE allokeringer';
+GradUCapESumU                 #  (tbid,dirResv)         'Sum af GradUCapE over uelec for hver budtime';
+GradUCapETotal                #  (dirResv)              'Sum af GradUCapESumU over buddøgnet';
  ;
 
 );

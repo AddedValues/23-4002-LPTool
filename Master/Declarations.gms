@@ -5,7 +5,7 @@ $log Entering file: %system.incName%
 
 #--- Scalar tbeg;  # Bruges til ordinal for begyndelsestidspunkt.
 #--- Scalar tend;  # Bruges til ordinal for sluttidspunkt.
-Scalar QfInfeasMax        'Øvre grænse for varme-infeasibility (source/drain) [MWq]';
+Scalar QeInfeasMax        'Øvre grænse for varme-infeasibility (source/drain) [MWq]';
 Scalar ElspotYear         'Elspot årsprofil anvendt';
 Scalar QDemandYear        'FJV årsprofil anvendt';
 Scalar ActualMasterScen   'Nr. på aktuel masterscenarie indlæst fra arket ScenMaster';
@@ -137,8 +137,8 @@ Parameter QMargPrice_Hourly(tt,u);
 Scalar    iblock, ActualBlockLen, ElspotSum, GasPriceSum, TariffDsoLoadSum, TariffEigenPumpSum; 
 Parameter QDemSum(net)                 'Mellemregning ifm tidsaggregering';
 Parameter dQExtSum(produExtR)          'Mellemregning ifm tidsaggregering';
-Parameter QovMax(tt,uov)               'Maxlast for overskudsvarme (MWqov)';
-Parameter QovMaxSum(uov)               'Mellemregning ifm tidsaggregering';
+Parameter QfOVmax(tt,uov)              'Maxlast for overskudsvarme (MWqov)';
+Parameter QfOVmaxSum(uov)              'Mellemregning ifm tidsaggregering';
 Parameter TariffElecUSum(u)            'Mellemregning ifm tidsaggregering';
 Parameter TariffEigenUSum(u)           'Mellemregning ifm tidsaggregering';
 Parameter OnUSum(u)                    'Mellemregning ifm tidsaggregering';
@@ -155,10 +155,10 @@ Parameter MarginalsHour(unew)          'Timemiddel af rådige marginaler';
 # Start og stop indikatorer (beregnes efter solve af modelSlave).
 Parameter bStartStop(tt,u,startstop)  'Angiver om start hhv. stop er on';
 
-Scalar QInfeasPenalty   'DKK/MWq'  / 5000.0 /;  # Penalty på forbrug af virtuel varme kilde-dræn.
-Scalar RewardWaste      'Belønning for at afbrænde affalde DKK/kg'  / +0.100 /;  # Skal sikre at mest muligt affald afbrændes indenfor den rådige tonnage.
-Scalar CapESlackPenalty 'DKK/MWe'  / 5000.0 /;  # Penalty på CapESlack.
-Scalar QSrPenalty       'DKK/MWq'  /    0.0 /;  # Penalty på forbrug af spidslastvarme.
+Scalar QInfeasPenalty   'DKK/MWq'  / 15000.0 /;  # Penalty på forbrug af virtuel varme kilde-dræn.
+Scalar RewardWaste      'Belønning for at afbrænde affald DKK/kg'  / +0.100 /;  # Skal sikre at mest muligt affald afbrændes indenfor den rådige tonnage.
+Scalar CapESlackPenalty 'DKK/MWe'  /  5000.0 /;  # Penalty på CapESlack.
+Scalar QSrPenalty       'DKK/MWq'  /     0.0 /;  # Penalty på forbrug af spidslastvarme.
 #--- Scalar bOnSRPenalty    'DKK/MWq'  / 0.00 /;   # Skal sikre at bOnSR holdes på nul, hvis ingen SR-anlæg er aktive.
 
 
@@ -181,7 +181,7 @@ Parameter Prognoses(tt,lblPrognoses)     'Prognoser på ekspanderet tidsniveau';
 Parameter THeatSource_hh(tt,hpSource)     'VP varmekilde temperaturer [°C]';
 Parameter THeatSource(tt,hpSource)        'VP varmekilde temperaturer [°C]';
 # REMOVE Parameter QmaxPtx_hh(tt)                  'Max. effekt fra PtX';
-Parameter QovMax_hh(tt,uov)               'Max. effekt fra OV-leverandører';
+Parameter QfOVmax_hh(tt,uov)               'Max. effekt fra OV-leverandører';
 
 Scalar    OnVakStartFix             'Switch for fix af vak niveau i t1 og t1--1'                  / 1 /;
 Scalar    OnStartCostSlk            'Switch til deaktivering af startomkostninger på SLK'         / 1 /;
@@ -234,6 +234,7 @@ Parameter OnUNet(u,net)             'Angiver at et anlæg og dets net er aktivt 
 Parameter OnURevision(cp)            'Revision permitted 0/1 in actuel period';
 Parameter OnU_hh(tt,u)              'Actual availability of prod units på timebasis';
 Parameter OnU(tt,u)                 'Actual availability of prod units på aktuel tidsbasis';
+Parameter OnT(tt,tr)                'Actual availability of transmission units på aktuel tidsbasis';
 Parameter AvailUNet(u,net)          'Indicates upr exists in network';
 Parameter OnFuel(f)                 'Indicates fuels referred by plants';
 Parameter BothAffAvailable(tt)      'Angiver 0/1, at begge eksist. aff.linjer er til rådighed';
@@ -260,10 +261,10 @@ Parameter QDemandAnnualAvg(net)         'Annual nominal heat demand average [MW]
 Parameter QDemandAnnualSum(net)         'Total nominal heat demand [MWh/yr]';
 Parameter bOnPrevious(upr)              'Plant activity at end of previous rolling horizon step';
 Parameter bOnPreviousRH(upr,rhStep)     'Plant activity at end of previous rolling horizon step';
-Parameter FinPrevious(upr)           'Plant activity at end of previous rolling horizon step';
+Parameter FfInPrevious(upr)           'Plant activity at end of previous rolling horizon step';
 Parameter FinPreviousRH(upr,rhStep)  'Plant activity at end of previous rolling horizon step';
-Parameter LVakPrevious(vak)             'Tank level at end of previous rolling horizon step';
-Parameter LVakPreviousRH(vak,rhStep)    'Tank level at end of previous rolling horizon step';
+Parameter EvakPrevious(vak)             'Tank level at end of previous rolling horizon step';
+Parameter EvakPreviousRH(vak,rhStep)    'Tank level at end of previous rolling horizon step';
                                         
 Parameter FuelMix(upr,f)                'Brændselssammensætning for hvert anlæg';     
 Parameter FuelPriceU(upr,f)              'Specifik brændselspris for hvert anlæg';
@@ -280,7 +281,7 @@ Parameter QhpYield_hh(tt,hp)                             'Ydelsesfaktor ift. nom
 Parameter QhpYield(tt,hp)                                'Ydelsesfaktor ift. nominel kapacitet';
 Parameter COPmin(hp)                                     'Mindste COP henover året';
 Parameter YieldMin(hp)                                   'Mindste VP ydelse henover året';
-Parameter CHP(kv,lblCHP);
+#--- Parameter CHP(kv,lblCHP);
 Parameter DeprecCost(u)              'Afskrivninger i aktuel periode  for hvert anlæg';
 Parameter FinSum(upr)             'Sum af indgivet effekt over en periode';
 Parameter CO2emisFuelSum(f,co2kind)  'Sum af CO2-emission pr. drivmiddel [kg]';
@@ -304,7 +305,7 @@ Parameter Area(tr)            'Flowareal af T-ledning [m2]';
 Parameter VelocMax(tr)        'Max. hastighed i T-ledning [m/s]';
 Parameter Tavg(tr)            'Middeltemperatur i T-ledning [°C]';
 Parameter QTmin(tr)           'Minimal effekt ved v = VelocMax [MWq]';
-Parameter QTmax(tr)           'Maksimal effekt ved v = VelocMax [MWq]';
+Parameter QTfMax(tr)           'Maksimal effekt ved v = VelocMax [MWq]';
 Parameter L(tr)               'T-ledning længde [m]';
 Parameter Beta(tr,trkind)     'Faktor for T-ledning varmetab';
 Parameter h1(tr,trkind)       'Faktor for varmetab';
@@ -373,8 +374,8 @@ Parameter StateF(upr,fsto,startslut)     'Start- og slutlagerbeholdning i planpe
 # Normerede FJV-tidsserier
 Parameter QSalgspris(net)                'FJV-salgspris [DKK/MWh]';  QSalgspris(net) = 0.0;  #--- 300.00
 Parameter YS(lblScenYear)                'Markedspriser, afgifter, tariffer';
-Parameter QDemandActual_hh(tt,net)       'Fjv-behov i forbrugsområder';
-Parameter QDemandActual(tt,net)          'Fjv-behov i forbrugsområder';
+Parameter QeDemandActual_hh(tt,net)       'Fjv-behov i forbrugsområder';
+Parameter QeDemandActual(tt,net)          'Fjv-behov i forbrugsområder';
 Parameter QDemandSum(net)                'Sum af periodens fjv-behov over forbrugsområder';
 Parameter QDemandSumRHfull(rhStep,net)   'Sum af fjv-behov indenfor hver fuld RH-længde';
 Scalar    QDemandTotal                   'Sum af fjv-behov over alle net og tidspunkter i perioden';
@@ -387,11 +388,11 @@ Parameter AffAux(uaff)                   'Forhold mlm. varme- og total-virknings
 
 # REMOVE Parameter QmaxPtX_hh(tt)        'Max. varmeeffekt leveret fra PtX-anlæg';
 # REMOVE Parameter QmaxPtX(tt);
-Parameter QovMax_hh(tt,uov)              'Max. varmeeffekt leveret fra OV-leverandører';
+Parameter QfOVmax_hh(tt,uov)              'Max. varmeeffekt leveret fra OV-leverandører';
 
 *begin Parametre til diagnosticering
 
-Parameter QinfeasSum(net,infeasDir)      'Sum af QEInfeas';
+Parameter QinfeasSum(net,infeasDir)      'Sum af QeInfeas';
 Parameter CostInfeasSum(net)             'CostInfeas for hver periode';
 
 *end Parametre til diagnosticering
@@ -400,12 +401,15 @@ Parameter CostInfeasSum(net)             'CostInfeas for hver periode';
 
 *begin Kapacitets allokering til el-markeder
 
-Parameter CapEReservation(tbid,elmarket,updown)  'Kapacitetsreservationer til elmarkeder';
-Parameter CapEReservationSum(tbid,updown)        'Kapacitetsreservationer summeret over elmarkeder';
-Parameter CapEAvail(uelec,updown)                'Anlæg til rådighed for kapacitetsreservation';
-Parameter DataElMarket(lblElMarket,elmarket)     'Elmarkedsegenskaber';
-Parameter GradUCapE(tbid,uelec,updown)           'Følsomheder for CapE allokeringer';
-Parameter GradUCapESumU(tbid,updown)             'Sum af GradUCapE over uelec for hver budtime';
-Parameter GradUCapETotal(updown)                 'Sum af GradUCapESumU over buddøgnet';
+Parameter DataResv(tbid,elmarket,lblDataResv)     'Budmelding til elmarkeder (kapacitet, pris)';
+Parameter CapEResv(tbid,elmarket,dirResv)         'Kapacitetsreservationer til elmarkeder';
+Parameter CapEResvSum(tbid,dirResv)               'Kapacitetsreservationer summeret over elmarkeder';
+Parameter CapEAvail(uelec,dirResv)                'Anlæg til rådighed for kapacitetsreservation';
+Parameter GainCapE(tbid,elmarket,dirResv)         'Rådighedsbetaling for kapacitetsreservation [DKK]';
+Parameter GainCapETotal                           'Samlet rådighedsbetaling [DKK]';
+Parameter DataElMarket(lblElMarket,elmarket)      'Elmarkedsegenskaber';
+Parameter GradUCapE(tbid,uelec,dirResv)           'Følsomheder for CapE allokeringer';
+Parameter GradUCapESumU(tbid,dirResv)             'Sum af GradUCapE over uelec for hver budtime';
+Parameter GradUCapETotal(dirResv)                 'Sum af GradUCapESumU over buddøgnet';
 
 *end Kapacitets allokering til el-markeder

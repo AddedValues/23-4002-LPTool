@@ -16,7 +16,7 @@ t(tt) = ord(tt) LE NblockActual;
 
 *begin Beregn perioderesultater, som ikke kan indgå i slave-modellen med rullende horisont.
 
-FinSum(upr) = sum(t, FF.L(t,upr));
+FinSum(upr) = sum(t, Ff.L(t,upr));
 
 CO2emisFuelSum(f,co2kind) = sum(upr $(OnUGlobal(upr) AND (FuelMix(upr,f) GT 0)), 
                                 FinSum(upr) *  

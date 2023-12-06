@@ -25,7 +25,7 @@ StatsSolver('ObjectiveBest')  = ifthen(%1.objEst NE 0, %1.objEst, EPS);
 StatsSolver('Gap')            = 1 - StatsSolver('Objective') / StatsSolver('ObjectiveBest');
 StatsSolver('SumInfeas')      = ifthen(%1.sumInfes NE 0, %1.sumInfes, EPS);
 
-StatsInfeas(t,net,InfeasDir) = QEInfeas.L(t,net,InfeasDir);
+StatsInfeas(t,net,InfeasDir) = QeInfeas.L(t,net,InfeasDir);
 
 *end Run stats fra solver
 

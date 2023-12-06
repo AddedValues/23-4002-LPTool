@@ -49,7 +49,7 @@ Scalar TKelvin  'Kelvin ved 0C'   / 273.15 /;
 $show
 Scalar DayMax          'Max. antal dage beregnet ud fra timetal';
 Scalar tiny            'small number'   / 1E-14 /;
-Scalar big             'big number'     / 1E+09 /;
+Scalar BIG             'big number'     / 1E+09 /;
 Scalar ordt            'Ord(t) ift. ord(tt)' / 99999 /;          # OBS: ord(t) af første yes-element i t er 1 uanset om TimeBegin er større end 1.
 
 # Arbejdsvariable

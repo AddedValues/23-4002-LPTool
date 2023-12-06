@@ -29,15 +29,16 @@ par=OnUGlobalScen          rng=ScenMaster!C51:F86        rdim=1 cdim=1
 par=OnURevisionScen        rng=ScenMaster!C87:F93        rdim=1 cdim=1
 par=YS                     rng=ScenYear!A9:B106          rdim=1 cdim=0
 par=Brandsel               rng=Brandsel!B2:L21           rdim=1 cdim=1
-par=DataU                  rng=DataU!A3:AD33             rdim=1 cdim=1
+par=DataU                  rng=DataU!A3:AK33             rdim=1 cdim=1
 par=FuelCode               rng=DataU!A42:B60             rdim=1 cdim=0
 par=OmrCode                rng=DataU!F42:G44             rdim=1 cdim=0
 par=DsoCode                rng=DataU!F50:G54             rdim=1 cdim=0
 par=DataAff                rng=DataU!A65:D90             rdim=1 cdim=1
 par=FuelMix                rng=DataUFuel!A3:N33          rdim=1 cdim=1
 par=FuelPriceU             rng=DataUFuel!R3:AE33         rdim=1 cdim=1
-par=DataHpKind             rng=DataHP!A10:Q21            rdim=1 cdim=2
-par=CHP                    rng=CHP!A33:P37               rdim=1 cdim=1
+par=DataHpKind             rng=DataHP!A10:Q22            rdim=1 cdim=2
+*--- CHP over nu omfattet af tabellen DataU.
+*--- par=CHP                    rng=CHP!A33:P37               rdim=1 cdim=1
 par=DataPtX                rng=DataPtX!B9:C16            rdim=1 cdim=1
 par=DataTransm             rng=DataTransm!B11:D34        rdim=2 cdim=0
 par=TransmConfig           rng=DataTransm!G10:I16        rdim=1 cdim=1
@@ -48,8 +49,8 @@ par=StateF                 rng=FuelState!A10             rdim=2 cdim=1
 par=Availability_hh        rng=Availabilities!A10        rdim=1 cdim=1
 par=Revision_hh            rng=Availabilities!AE10       rdim=1 cdim=1
 par=Prognoses_hh           rng=Prognoses!A10             rdim=1 cdim=1
-par=CapEReservation        rng=CapacAlloc!B9:H34         rdim=1 cdim=2
-par=CapEAvail              rng=CapacAlloc!M10:O34        rdim=1 cdim=1
+par=DataResv               rng=CapacAlloc!B9:I34         rdim=1 cdim=2
+par=CapEAvail              rng=CapacAlloc!L10:N34        rdim=1 cdim=1
 par=DataElMarket           rng=CapacAlloc!Q10            rdim=1 cdim=1
 
 $offecho
@@ -79,7 +80,7 @@ $LOAD   DataAff
 $LOAD   FuelMix
 $LOAD   FuelPriceU
 $LOAD   DataHpKind
-$LOAD   CHP
+#---    $LOAD   CHP
 $LOAD   DataPtX
 $LOAD   DataTransm
 $LOAD   TransmConfig
@@ -89,7 +90,7 @@ $LOAD   StateU
 $LOAD   Availability_hh
 $LOAD   Revision_hh
 $LOAD   Prognoses_hh
-$LOAD   CapEReservation
+$LOAD   DataResv
 $LOAD   CapEAvail
 $LOAD   DataElMarket
 
@@ -121,9 +122,9 @@ loop (hpSource,
 );
 *end 
 
-*begin Sheet CHP
-loop (kv, if (sum(lblCHP, abs(CHP(kv,lblCHP))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af række i CHP-tabellen er nul for mindst eet KV-anlæg."; ); );
-*end 
+#--- *begin Sheet CHP
+#--- loop (kv, if (sum(lblCHP, abs(CHP(kv,lblCHP))) EQ 0.0, execute_unload "MecLpMain.gdx"; abort "ERROR: Sum af række i CHP-tabellen er nul for mindst eet KV-anlæg."; ); );
+#--- *end 
 
 *begin Sheet Brandsel
 loop (lblBrandsel,
@@ -155,6 +156,13 @@ loop (u,
 $OnOrder
 
 *end Sheet StateU
+
+*begin Sheet CapacAlloc
+
+# Overfør Kapacitetsreservationer til CapEResv.
+CapEResv(tbid,elmarket,dirResv) = DataResv(tbid,elmarket,lblDataResv);
+
+*end Sheet CapacAlloc
 
 *begin Master scenarier
 # Check at hele master-scenarie tabellen er indlæst.
@@ -319,7 +327,7 @@ loop (upr $(OnUGlobal(upr) AND NOT ucool(upr)),
 
 *begin Kapacitetsreservation
 
-CapEAvail(uelec,updown) = CapEAvail(uelec,updown) $OnUGlobal(uelec);
+CapEAvail(uelec,dirResv) = CapEAvail(uelec,dirResv) $OnUGlobal(uelec);
 
 *end Kapacitetsreservation
 

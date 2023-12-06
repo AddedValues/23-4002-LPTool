@@ -7,15 +7,17 @@ $log Entering file: %system.incName%
 # Tidsaggregeringen er principielt periodeafhængig pga. elprisfremskrivningerne, og derfor dannes en gdx-fil for hver periode fx TimeAggrParms_14.gdx for periode 14.
 # Ved indlæsning kopieres gdx-filen for den aktuelle periode til en fil med navnet TimeAggrParms_Actual.gdx.
 # Denne omstændelige procedure skyldes alene den ekstremt begrænsede teksthåndtering i GAMS modelsproget.
-                                    
+
+# HACK : Transmissionsledninger er altid til rådighed.
+OnT(t,tr) = 1;                                    
                                     
 if (NOT UseTimeAggr AND NOT UseTimeExpansionAny,               
 
 *begin No time aggregation, just 1-on-1 mapping.
 
   # Parametre som indtil videre er tidsuafhængige.
-  QDemandActual(tt,net)    = QDemandActual_hh(tt,net);
-  QovMax(tt,uov)           = QovMax_hh(tt,uov);
+  QeDemandActual(tt,net)    = QeDemandActual_hh(tt,net);
+  QfOVmax(tt,uov)           = QfOVmax_hh(tt,uov);
   ElspotActual(tt)         = ElspotActual_hh(tt);
   TariffDsoLoad(tt)        = TariffDsoLoad_hh(tt);
   TariffElecU(tt,u)        = TariffElecU_hh(tt,u);
@@ -43,8 +45,8 @@ elseif (NOT UseTimeAggr AND UseTimeExpansionAny),      # Ingen tidsaggregering, 
   loop (t,
     actt(tt) = ord(tt) EQ BBeg(t);     # BBeg angiver modeltimen, som det (evt. ekspanderede) tidspunkt t tilhører.
     #--- display "DEBUG: actt =", actt;
-    QDemandActual(t,net)    = QDemandActual_hh(actt,net) * BLen(t);
-    QovMax(t,uov)           = QovMax_hh(actt,uov) * BLen(t); 
+    QeDemandActual(t,net)    = QeDemandActual_hh(actt,net) * BLen(t);
+    QfOVmax(t,uov)           = QfOVmax_hh(actt,uov) * BLen(t); 
     ElspotActual(t)         = ElspotActual_hh(actt);
     TariffDsoLoad(t)        = TariffDsoLoad_hh(actt);
     TariffElecU(t,u)        = TariffElecU_hh(actt,u);
@@ -70,7 +72,7 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
   
     ElspotSum            = 0.0;                                           
     QdemSum(net)         = 0.0;                                           
-    QovMaxSum(uov)       = 0.0;
+    QfOVmaxSum(uov)      = 0.0;
     TariffDsoLoadSum     = 0.0;
     TariffElecUSum(u)    = 0.0;
     TariffEigenUSum(u)   = 0.0;
@@ -87,8 +89,8 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
       #--- GasPriceSum         = GasPriceSum + GasPriceActual_hh(tt);
       #--- dQExtSum(produExtR) = ... ;
     
-      QdemSum(net)         = QdemSum(net)         + QDemandActual_hh(tt,net);                                           
-      QovMaxSum(uov)       = QovMaxSum(uov)       + QovMax_hh(tt,uov);
+      QdemSum(net)         = QdemSum(net)         + QeDemandActual_hh(tt,net);                                           
+      QfOVmaxSum(uov)      = QfOVmaxSum(uov)      + QfOVmax_hh(tt,uov);
       ElspotSum            = ElspotSum            + ElspotActual_hh(tt);
       TariffDsoLoadSum     = TariffDsoLoadSum     + TariffDsoLoad_hh(tt);
       TariffElecUSum(u)    = TariffElecUSum(u)    + TariffElecU_hh(tt,u);
@@ -106,8 +108,8 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
         #--- GasPriceActual(actb)      = GasPriceSum / ActualBlockLen;
         #--- dQExt(actb,produExtR)     = dQExtSum(produExtR);
 
-        QDemandActual(actb,net) = QdemSum(net);                        
-        QovMax(actb,uov)        = QovMaxSum(uov);
+        QeDemandActual(actb,net) = QdemSum(net);                        
+        QfOVmax(actb,uov)       = QfOVmaxSum(uov);
         ElspotActual(actb)      = ElspotSum            / ActualBlockLen;        
         TariffDsoLoad(actb)     = TariffDsoLoadSum     / ActualBlockLen;
         TariffElecU(actb,u)     = TariffElecUSum(u)    / ActualBlockLen;
@@ -131,7 +133,7 @@ elseif (UseTimeAggr AND NOT UseTimeExpansionAny),      # Tidsaggregering, men in
   
         ElspotSum            = 0.0;                                       
         QdemSum(net)         = 0.0;                                       
-        QovMaxSum(uov)       = 0.0;
+        QfOVmaxSum(uov)      = 0.0;
         TariffDsoLoadSum     = 0.0;
         TariffElecUSum(u)    = 0.0;
         TariffEigenUSum(u)   = 0.0;

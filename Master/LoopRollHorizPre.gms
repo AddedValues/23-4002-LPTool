@@ -124,11 +124,11 @@ display "DEBUG: RHIntv", nRhStep, LenRHhoriz, LenRHStep, RHIntv;
 #--- # CO2-loftet er årsbaseret, og bliver her forholdsmæssigt fordelt på den aktuelle periode.
 #--- CO2EmisRefPeriod(net,co2kind) = CO2EmisRef(net,co2kind) $(CO2EmisRef(net,co2kind) GE 0.0);
 #--- 
-#--- QDemandSum(net) = sum(t, QDemandActual(t, net));
+#--- QDemandSum(net) = sum(t, QeDemandActual(t, net));
 #--- QDemandTotal    = sum(net, QDemandSum(net));
 #--- 
 #--- loop (rhStep $(ord(rhStep) LE nRHstep + 1),
-#---   QDemandSumRHfull(rhStep,net) = sum(t $(ord(t) GE RHIntv(rhStep,'begin') AND ord(t) LE RHIntv(rhStep,'end')), QDemandActual(t,net)) $OnNet(net);
+#---   QDemandSumRHfull(rhStep,net) = sum(t $(ord(t) GE RHIntv(rhStep,'begin') AND ord(t) LE RHIntv(rhStep,'end')), QeDemandActual(t,net)) $OnNet(net);
 #---   CO2EmisRefShare(rhStep,net,co2kind) $OnNet(net) = CO2EmisRefPeriod(net,co2kind) * QDemandSumRHfull(rhStep,net) / [1.0 $(QDemandSum(net) EQ 0.0) + QDemandSum(net)];
 #---   
 #---   #--- Sidste RH tildeles max. af forrige RH og af andelen som følger tildelingsreglen for de øvrige RH.

@@ -91,7 +91,7 @@ Set lblScenMas 'ScenMaster labels' /
                   OnCapacityReservation, DurationPeriod, HourBegin, HourEnd, HourBeginBidDay, HoursBidDay, 
                   TimestampStart, TimeResolutionDefault, TimeResolutionBid, OnTimeAggr, AggrKind, 
               # Misc. controls.
-                  QfInfeasMax, OnVakStartFix, OnStartCostSlk, OnRampConstraints, ElspotYear, QdemandYear,
+                  QeInfeasMax, OnVakStartFix, OnStartCostSlk, OnRampConstraints, ElspotYear, QdemandYear,
                   BottomLineScenMaster /;
 
 *end Define label Set for ScenMaster
@@ -154,13 +154,12 @@ set lblThpSource(lblPrognoses) 'VP kildetemperaturer ' /
                   TAir, TGround, TSea, TSewage, TDC, TArla, TBirn, TPtX
                /;
 
-set hpSource 'VP kildetyper' /
-                  Air, Ground, Sea, Sewage, DC, Arla, Birn, PtX
-               /;
+set hpSource 'VP kildetyper' / air, ground, sea, sewage, OV-DC, OV-Arla, OV-Birn, OV-PtX /; 
                
 set hpMapT(hpSource, lblThpSource) 'Korrespondance VP-type til VP-kildetemperatur' /
-               Air.TAir, Ground.TGround, Sea.TSea, Sewage.TSewage, DC.TDC, Arla.TArla, Birn.TBirn, PtX.TPtx
+               Air.TAir, Ground.TGround, Sea.TSea, Sewage.TSewage, OV-DC.TDC, OV-Arla.TArla, OV-Birn.TBirn, OV-PtX.TPtx
                /; 
+
 
 *end Prognoser og Raadigheder
 
@@ -244,7 +243,7 @@ set upsr(upr)    'SR-produktionsanlaeg'      /
     HoGk, HoOk,
     StGk, StOk
    /;
-   
+
 set ugas(upsr) 'Gasfyrede anlaeg' / HoGk, StGk /;
 
 set urHo(upr) 'Holstebro SR-produktionsanlaeg';    #---  / HoGk, HoOk /;   #---, HoNEk, MaEk, MaNEk  /;
@@ -490,7 +489,7 @@ set trActive(tr)  'Aktive T-ledninger';
 # Transmissionsledninger
 set pipe              'Used DN pipe sizes'      / DN100, DN125, DN150, DN200, DN250, DN300, DN400, DN500, DN600, DN700, DN800, DN900, DN1000, DN1100, DN1200 /;
 set lblpipe                                     / DN, Di, InsulDiam1, InsulDiam3, Roughness /;
-set lblDataTransm     'T-ledning attributter'   / On, netF, netT, Lkm, DNmm, TFone, TRtwo, VelocMax, MinFlow, QTmax, Capex /;
+set lblDataTransm     'T-ledning attributter'   / On, netF, netT, Lkm, DNmm, TFone, TRtwo, VelocMax, MinFlow, QTfMax, Capex /;
 set lblTrConfig       'T-ledning opsætning'     / netF, netT /;
 
 singleton set actpipe(pipe) 'Aktuel rørdimension for given T-ledning';
@@ -595,9 +594,11 @@ Set taxkv(tax)        'taxes but enr,co2'       / ch4, nox, sox /;              
 Set taxkv2(tax)       'taxes based on fuelheat' / enr, co2 /;                                    # afgifter, som pålægges brændsel til varmeproduktion i KV-anlæg.
 Set m                 'Machine kind'            / kedel, motor, kv, vp /;
 
-Set lblDataU          'Labels for DataU'        / Idriftsat, Omraade, KvoteOmfattet, Aggregat, CapacQ, ModuleSize, Fmin, Fmax, EtaQ, EtaP, ElEig0, ElEig1, 
-                                                  DSO, RampUp, RampDown, StartOmkst, StopOmkst, VarDVOmkst, 
-                                                  LoadRateVak, VAKChargeCost, VakLossERate, LossGain, DoFixVak, FracFixVAK, VakMin, VakMax, SR /;
+Set lblDataU          'Labels for DataU'        / Idriftsat, Omraade, KvoteOmfattet, Aggregat, SR, CapacQ, ModuleSize, 
+                                                  a1_PQ, a0_PQ, Eformel, QRgkMax, Qbypass, 
+                                                  Fmin, Fmax, EtaQ, EtaP, ElEig0, ElEig1, DSO, RampUp, RampDown, 
+                                                  FixCost, Afskrivning, StartOmkst, StopOmkst, VarDVOmkst, VarDVomkstRgk, VarDVomkstBypass, 
+                                                  LoadRateVak, VAKChargeCost, EvakLossRate, LossGain, DoFixVak, FracFixVAK, VakMin, VakMax /;
 
 Set lblDataAff        'Labels for DataAff'      / FrakAux, FrakBio, FrakTLafgift, FrakCO2Afgift, FrakNOxAfgift, FrakSOxAfgift, FrakVETilskud,
                                                   CO2Emission, NOxEmission, SOxEmission, HKCO2vsLHV, KstCO2vsLHV,
@@ -608,7 +609,7 @@ Set lblDataAff        'Labels for DataAff'      / FrakAux, FrakBio, FrakTLafgift
 
 Set lblTaxes          'Labels for afgifter'      / TaxNoxFlis, TaxNOxHalm, TaxNOxFGO, TaxCO2FGO, TaxEnergiFGO, TaxElvarme, TariffDSO, TariffTSO, TariffTrade,
                                                    TaxQEl, TaxNOxAffald, TaxCO2Affald, TaxEnergiAffald, TaxtillaegAffald, TaxtillaegRabat,TaxCO2KvoteNgas /;
-set lblCHP                                       / a1_PQ, a0_PQ, Pmax, Pmin, Eformel, EtaQ, Fmin, Fmax, EtaP, QfBypass, OnRGK, QRGKMax, VarDVOmkstRgk, Qmax, DVBypass /;
+set lblCHP                                       / a1_PQ, a0_PQ, Pmax, Pmin, Eformel, EtaQ, Fmin, Fmax, EtaP, QfBypass, OnRGK, QRGKMax, VarDVrgk, Qmax, DVBypass /;
 
 Set lblBrandsel       'Drivmiddel parms'         / PrisEnhed, PrisGJ, PrisMWh, Densitet, LHV, FossilAndel, CO2emis, SOXemis, CO2emisMWh, LhvMWh /;
 
@@ -634,11 +635,12 @@ $OnOrder
 
 *begin Capacity allocations
 
-set updown            'Up-Down regulation'            / up, down /;
-set elmarket          'Electricy markets'             / FCR, aFRR, mFRR /;
-set planZone          'Planning zone: Bid or default' / Default, Bid /;
-set planPhase         'Planning phase'                / FCR, aFRR, mFRR, dayAhead, intraDay /;
-set lblElMarket       'Elmarkeds egenskaber'          / Active, Symmetric, Up, Down, PriceAvail, PriceUp, PriceDown, BidMin, TimeToFull /;
+set lblResv               'Egenskaber kapac. reservation'          / up, down, symm, pris /;
+set dirResv(lblDataResv)  'Direction net freq. regulation'         / up, down, symm /;        
+set elmarket              'Electricy markets'                      / FCR, aFRmFRR /;   
+set planZone              'Planning zone: Bid or default'          / Default,/;        
+set planPhase             'Planning phase'                         / FCR, aFRmFRR, dayAhead, intraDay /;
+set lblElMarket           'Elmarkeds egenskaber'                   / Active, Symmetric, UpOnly, DownOnly, PriceCapac, PriceUp, PriceDown, BidMin, TimeToFull /;
 
 *end Capacity allocations
 
@@ -649,18 +651,19 @@ Set other             'Other items, plants' / ucool /;
 Set secondOrderFcn    'Coefficients for a second order function'   / intercept, 1st, 2nd /;
 Set lineSet           'Parameters for the line equation'           / intercept, slope /;
 Set COPSet            'Different COP sets'                         / 70_out, 50_out, flexCOP /;
-Set lblHpCop           / Tdesign, dTkilde, Tfrem, Tretur, EtaHp, intcp, 1st, 2nd, min, max /;
+Set lblHpCop           / Tdesign, dTkilde, Tfrem, Tretur, EtaHp, intcp, 1st, 2nd, 3rd, min, max /;
 Set lblCOPyield        / COP, Yield /;
 Set traCapacOthersSet  / Existing, NewMax /;
 
 Set mapHp2Source(hp,hpSource) 'Map VP til varmekildetype';
 
 mapHp2Source(hp,hpSource) = no;
-mapHp2Source(hp_air,  'air')    = yes;
-mapHp2Source(hp_sew,  'sewage') = yes;
-mapHp2Source(hp_Arla, 'Arla')   = yes;
-mapHp2Source(hp_Birn, 'Birn')   = yes;
-mapHp2Source(hp_PtX,  'PtX')    = yes;
+mapHp2Source(hp_air,  'air')     = yes;
+mapHp2Source(hp_sew,  'sewage')  = yes;
+*--- mapHp2Source(hp_Arla, 'OV-DC')   = yes;
+mapHp2Source(hp_Arla, 'OV-Arla') = yes;
+mapHp2Source(hp_Birn, 'OV-Birn') = yes;
+mapHp2Source(hp_PtX,  'OV-PtX')  = yes;
 
 set uov2fov(uov,fov) 'Relation mellem OV-kilder og OV-varmepumper' /
   HoNhpArla.OV-Arla, HoNhpBirn.OV-Birn, MaNhpPtX.OV-PtX
@@ -674,7 +677,7 @@ set uov2fov(uov,fov) 'Relation mellem OV-kilder og OV-varmepumper' /
 #     En besynderlighed ved GAMS er, at rækkefølgen af Set-members fastlægges i den rækkefølge, hvori de defineres på tværs af sets.
 #     Og dermed bliver rækkefølge af udskrivning af stats vha. GDXXRW afhængig af rækkefølgen for definition af sets.
 
-Set cpStatType 'Stats typer for centrale anlæg' / QRGK, PfBrut, PfNet, QF, QRGKShare /;
+Set cpStatType 'Stats typer for centrale anlæg' / QRGK, PfBrut, PfNet, Qf, QRGKShare /;
 
 Set topicAll 'Overall statistics' /
     ElspotPrice, SlaveObj, VPO, 
@@ -689,7 +692,7 @@ Set topicSolver 'GAMS Solver stats' /
     
 Set topicU     'Prod unit stats' /
     FullLoadHours, OperHours, BypassHours, RGKhours,
-    NStart, CO2QtyPhys, CO2QtyRegul, FF, FuelQty,
+    NStart, CO2QtyPhys, CO2QtyRegul, FuelQty,
     FuelConsumed, PowerGen, PowerNet, HeatGen, HeatCool, HeatBypass, HeatRGK,
     RGKshare,
     ElEgbrug,
@@ -703,7 +706,7 @@ Set topicU     'Prod unit stats' /
 Set topicMecU     'MEC anlægs-stats' /
     OperHours, BypassHours, Rgkhours,
     TurnOver, RealPowerPriceBuy, RealPowerPriceSell,
-    NStart, CO2QtyPhys, CO2QtyRegul, FF, FuelQty,
+    NStart, CO2QtyPhys, CO2QtyRegul, Ff, FuelQty,
     PowerNet, HeatGen, HeatCool, HeatSent, HeatBackPressure, HeatBypass, HeatRGK, HeatMargPrice,
     PowerSales,
     FixCostTotal, FixCostElTariff, DeprecCost,
@@ -714,7 +717,7 @@ Set topicMecU     'MEC anlægs-stats' /
 Set topicMecF 'MEC Brændsels-stats' / Qty, Pris, CO2QtyPhys, CO2QtyRegul /;
 
 #--- Set topicMecF     'MEC brændsels-stats' /    
-#---    ElspotPris, AffaldsPris, HalmPris, FlisPris, HpaPris, GasPris, OliePris, OV-ArlaPris, OV-Arla2Pris, OV-BirnPris, OV-PtXPris, 
+#---    ElspotPris, AffaldsPris, HalmPris, FlisPris, HpaPris, GasPris, OliePris, OV-ArlaPris, OV-BirnPris, OV-PtXPris, 
 #---    CO2KvotePris
 #---    /;
 
@@ -729,7 +732,7 @@ Set topicMasOvwPer      'Master overview topics for periods'    / MargObjOptim, 
                                                                   HeatCostAllOptim, HeatCostNewOptim, HeatSentOptim /;
 Set topicMasOvwNet      'Master overview topics for nets'       / QDemandAnnual, QDemandPeak, QDemandAvg, NProjNet, CapUExcess /;
 Set topicMasOvwUNew     'Master overview topics for units unew' / CapU, dCapU, dCapUOfz, NProjU, bOnInvestU /;
-Set topicMasOvwU        'Master overview topics for units u'    / CapUCost, HeatCapCostU, HeatMargCostU, HeatCostU, HeatGenU, FLH, FF, OperHours,
+Set topicMasOvwU        'Master overview topics for units u'    / CapUCost, HeatCapCostU, HeatMargCostU, HeatCostU, HeatGenU, FLH, Ff, OperHours,
                                                                   FuelQtys, CO2QtyPhys, CO2QtyRegul, Power, ElEgbrug /;
 Set topicMasOvwT        'Master overview topics for T-lines'    / HeatSent, HeatLost,CostPump /;
 Set topicMasOvwFuel     'Master overview topics for periods'    / CO2QtyPhys, CO2QtyRegul /;

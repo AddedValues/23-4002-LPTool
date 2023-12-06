@@ -23,12 +23,13 @@ MonthStart = floor((TimestampStart - 1E6 * YearStart) / 100);
 DayStart   = floor( (TimestampStart - 1E6 * YearStart - 100 * MonthStart));
 HourStart  = mod(TimestampStart, 100);
 
-Parameter OnUGlobal_L(u)        'Rådig status for hvert anlæg';
-Parameter OnUprGlobal_L(upr)    'Rådig status for hvert produktionsanlæg';
-Parameter OnVakGlobal_L(vak)    'Rådig status for hver VAK';
-Parameter Q_L(tt,u)             'Varmeproduktion for hvert anlæg [MWhq]';
-Parameter Fin_L(tt,upr)      'Indgivet energi for hvert anlæg [MWh]';
-Parameter LVak_L(tt,vak)        'Lagerstand for hver VAK [MWhq]';
+Parameter OnUGlobal_L(u)            'Rådig status for hvert anlæg';
+Parameter OnUprGlobal_L(upr)        'Rådig status for hvert produktionsanlæg';
+Parameter OnVakGlobal_L(vak)        'Rådig status for hver VAK';
+Parameter QfDemandActual_L(tt,net)  'Varmebehovseffekt [MWhq]';
+Parameter Qf_L(tt,u)                'Varmeproduktion for hvert anlæg [MWhq]';
+Parameter Ff_L(tt,upr)              'Indgivet energi for hvert anlæg [MWh]';
+Parameter Evak_L(tt,vak)            'Lagerstand for hver VAK [MWhq]';
 
 TimeVector('t1') = 0;
 loop (tt $(ord(tt) GE 2 AND ord(tt) LE Nblock),
@@ -43,20 +44,17 @@ OnUGlobal_L(u)     = max(tiny, OnUGlobal(u));
 OnUprGlobal_L(upr) = max(tiny, OnUGlobal(upr));
 OnVakGlobal_L(vak) = max(tiny, OnUGlobal(vak));
 
-Q_L(tt,u) $(TimeResol(tt) GT 0) = QF.L(tt,u) * 60 / TimeResol(tt);
-Q_L(tt,u) $(Q_L(tt,u) EQ 0.0)   = tiny;
+QfDemandActual_L(tt,net) $(TimeResol(tt) GT 0) = QeDemandActual(tt,net) / BLen(tt);  # Varmestrømme kan være negative (VAK-opladning).
+Qf_L(tt,u) $(TimeResol(tt) GT 0) = Qf.L(tt,u);  # Varmestrømme kan være negative (VAK-opladning).
+Qf_L(tt,u) $(Qf_L(tt,u) EQ 0.0)  = tiny;
+Ff_L(tt,upr) $(TimeResol(tt) GT 0) = max(tiny, Ff.L(tt,upr));
+Evak_L(tt,vak) = max(tiny, Evak.L(tt,vak));
 
-Fin_L(tt,upr) $(TimeResol(tt) GT 0) = max(tiny, FF.L(tt,upr) * 60 / TimeResol(tt));
-LVak_L(tt,vak) = max(tiny, LVak.L(tt,vak));
-
-#--- QT_L(tt,tr)           = QTF.L(tt,tr);
-#--- QRgk_L(tt,kv)         = QRgk.L(tt,kv);
-#--- Qbypass_L(tt,kv)      = QfBypass.L(tt,kv);
-#--- Qcool_L(tt,ucool)     = Qcool.L(tt,ucool);
-#--- Pnet_L(tt,kv)         = PfNet.L(tt,kv);
-#--- bOn_L(tt,upr)         = bOn.L(tt,upr);
-#--- bOnSR_L(tt,netq)      = bOnSR.L(tt,netq);
-
+#--- QTf_L(tt,tr)           = QTf.L(tt,tr);
+#--- QfRgk_L(tt,kv)         = QfRgk.L(tt,kv);
+#--- QfBypass_L(tt,kv)      = QfBypass.L(tt,kv);
+#--- PfNet_L(tt,kv)         = PfNet.L(tt,kv);
+#--- bOn_L(tt,upr)          = bOn.L(tt,upr);
 
 
 $onecho > MECLpOutput.txt
@@ -67,31 +65,31 @@ filter=0
 par=ActScen squeeze=N                rng=Overview!A9           cdim=0 rdim=1
 text="ActScen"                       rng=Overview!A8:A8
 
-par=OnUGlobal_L squeeze=N            rng=VarmeProd!I8          cdim=1 rdim=0
-par=TimeVector                       rng=VarmeProd!B11         cdim=0 rdim=1
-text="Timestamp(min)"                rng=VarmeProd!B10:B10
-par=QDemandActual                    rng=VarmeProd!D10         cdim=1 rdim=1
-text="Qdemand (MWhq)"                rng=VarmeProd!D10:D10
-par=Q_L                              rng=VarmeProd!H10         cdim=1 rdim=1
-text="QF (MWhq)"                      rng=VarmeProd!H10:H10
+par=OnUGlobal_L squeeze=N            rng=EffektUd!I8           cdim=1 rdim=0
+par=TimeVector                       rng=EffektUd!B11          cdim=0 rdim=1
+text="Timestamp(min)"                rng=EffektUd!B10:B10    
+par=QfDemandActual_L                 rng=EffektUd!D10          cdim=1 rdim=1
+text="QfDemandActual (MWq)"          rng=EffektUd!D10:D10    
+par=Qf_L                             rng=EffektUd!H10          cdim=1 rdim=1
+text="Qf (MWq)"                      rng=EffektUd!H10:H10
 
-par=OnUprGlobal_L squeeze=N          rng=FF!E8             cdim=1 rdim=0
-par=TimeVector                       rng=FF!B11            cdim=0 rdim=1
-text="Timestamp(min)"                rng=FF!B10:B10
-par=Fin_L                         rng=FF!D10            cdim=1 rdim=1
-text="FF (MWh)"                  rng=FF!D10:D10
-
-par=OnVakGlobal_L squeeze=N          rng=LVak!E8             cdim=1 rdim=0
-par=TimeVector                       rng=LVak!B11            cdim=0 rdim=1
-text="Timestamp(min)"                rng=LVak!B10:B10
-par=LVak_L                           rng=LVak!D10            cdim=1 rdim=1
-text="LVak (MWhq)"                   rng=LVak!D10:D10
+par=OnUprGlobal_L squeeze=N          rng=EffektInd!E8          cdim=1 rdim=0
+par=TimeVector                       rng=EffektInd!B11         cdim=0 rdim=1
+text="Timestamp(min)"                rng=EffektInd!B10:B10     
+par=Ff_L                             rng=EffektInd!D10         cdim=1 rdim=1
+text="Ff (MWf)"                      rng=EffektInd!D10:D10     
+                                                               
+par=OnVakGlobal_L squeeze=N          rng=LagerStand!E8         cdim=1 rdim=0
+par=TimeVector                       rng=LagerStand!B11        cdim=0 rdim=1
+text="Timestamp(min)"                rng=LagerStand!B10:B10    
+par=Evak_L                           rng=LagerStand!D10        cdim=1 rdim=1
+text="Evak (MWhq)"                   rng=LagerStand!D10:D10    
 
 $offecho
 
 execute_unload "MECLpOutput.gdx" 
 tt, t, uall, u, upr, uq, 
-ActScen, OnUGlobal_L, OnUprGlobal_L, OnVakGlobal_L, TimeVector, QdemandActual, Q_L, Fin_L, LVak_L
+ActScen, OnUGlobal_L, OnUprGlobal_L, OnVakGlobal_L, TimeVector, QfDemandActual_L, Qf_L, Ff_L, Evak_L
 ;
 
 execute "gdxxrw.exe MECLpOutput.gdx o=MECLpOutput.xlsm trace=1 @MECLpOutput.txt";

@@ -81,7 +81,7 @@ loop (planZone,
 
 *begin Overfør scenarieparametre fælles for anlæg.
 
-QfInfeasMax       = ActScen('QfInfeasMax');
+QeInfeasMax       = ActScen('QeInfeasMax');
 OnVakStartFix     = ActScen('OnVakStartFix');
 OnStartCostSlk    = ActScen('OnStartCostSlk');
 OnRampConstraints = ActScen('OnRampConstraints');
@@ -186,7 +186,7 @@ if (tmp > 0, abort 'Mindst eet produktionsanlæg upr mangler i tabellen DataU. S
 
 *begin Virkningsgrader
 
-TaxEForm(kv) = CHP(kv,'EFormel');
+TaxEForm(kv) = DataU(kv,'EFormel');
 
 EtaPU(u) = DataU(u,'EtaP');
 EtaQU(u) = DataU(u,'EtaQ');
@@ -275,7 +275,7 @@ loop (vak $OnUGlobal(vak),
 #---   If (DataU(vak,'FracFixVak') < 0 OR DataU(vak,'FracFixVak') > 1, execute_unload "MecLpMain.gdx"; abort "DataU(vak,'FracFixVak') out-of-range"; );
 #--- );
 
-LVak.L(tt,vak) = 0.0;
+Evak.L(tt,vak) = 0.0;
 
 *end VAK parametre
 
@@ -318,25 +318,25 @@ loop (ucool $OnUGlobal(ucool),
 
 *begin Overførsel fra tabellen Prognoses
 
-QDemandActual_hh(tt,'netHo') = Prognoses_hh(tt,'QdemHo');
-QDemandActual_hh(tt,'netSt') = Prognoses_hh(tt,'QdemSt');
+QeDemandActual_hh(tt,'netHo') = Prognoses_hh(tt,'QdemHo');
+QeDemandActual_hh(tt,'netSt') = Prognoses_hh(tt,'QdemSt');
 #--- QmaxPtx_hh(tt)               = Prognoses_hh(tt,'QmaxPtX');
-QovMax_hh(tt,'HoNhpArla')    = Prognoses_hh(tt,'QmaxArla');
-QovMax_hh(tt,'HoNhpBirn')    = Prognoses_hh(tt,'QmaxBirn');
-QovMax_hh(tt,'MaNhpPtX')     = Prognoses_hh(tt,'QmaxPtX');
-                       
+QfOVmax_hh(tt,'HoNhpArla')   = Prognoses_hh(tt,'QmaxArla');
+QfOVmax_hh(tt,'HoNhpBirn')   = Prognoses_hh(tt,'QmaxBirn');
+QfOVmax_hh(tt,'MaNhpPtX')    = Prognoses_hh(tt,'QmaxPtX');
+                             
 ElspotActual_hh(tt)          = Prognoses_hh(tt,'Elspot');
 TariffDsoLoad_hh(tt)         = Prognoses_hh(tt,'TariffDsoLoad');
-
-THeatSource_hh(tt,'air')    = Prognoses_hh(tt,'Tair');
-THeatSource_hh(tt,'Ground') = Prognoses_hh(tt,'TGround');
-THeatSource_hh(tt,'Sea')    = Prognoses_hh(tt,'TSea');
-THeatSource_hh(tt,'Sewage') = Prognoses_hh(tt,'TSewage');
-THeatSource_hh(tt,'DC')     = Prognoses_hh(tt,'TDC');
-THeatSource_hh(tt,'Arla')   = Prognoses_hh(tt,'TArla');
-THeatSource_hh(tt,'Birn')   = Prognoses_hh(tt,'TBirn');
-THeatSource_hh(tt,'PtX')    = Prognoses_hh(tt,'TPtX');
-
+                             
+THeatSource_hh(tt,'air')     = Prognoses_hh(tt,'Tair');
+THeatSource_hh(tt,'Ground')  = Prognoses_hh(tt,'TGround');
+THeatSource_hh(tt,'Sea')     = Prognoses_hh(tt,'TSea');
+THeatSource_hh(tt,'Sewage')  = Prognoses_hh(tt,'TSewage');
+#--- THeatSource_hh(tt,'OV-DC')      = Prognoses_hh(tt,'TDC');
+THeatSource_hh(tt,'OV-Arla')    = Prognoses_hh(tt,'TArla');
+THeatSource_hh(tt,'OV-Birn')    = Prognoses_hh(tt,'TBirn');
+THeatSource_hh(tt,'OV-PtX')     = Prognoses_hh(tt,'TPtX');
+                             
 #--- TNet_hh(tt,'Tfrem')   = Prognoses_hh(tt,'Tfrem');
 #--- TNet_hh(tt,'Tretur')  = Prognoses_hh(tt,'Tretur');
 #--- TNet_hh(tt,'Tamb')    = Prognoses_hh(tt,'Tamb');
@@ -356,11 +356,11 @@ OwnerShare('tr2') = 1 - Diverse('StruerAndel');
 DataHp(hp_Air,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Air',    lblCopYield);
 #--- DataHp(hp_Gw,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Ground', lblCopYield);
 #--- DataHp(hp_Sea,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sea',    lblCopYield);
-#--- DataHp(hp_DC,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'DC',     lblCopYield);
-DataHp(hp_Sew,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sewage', lblCopYield);
-DataHp(hp_Arla, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Arla',   lblCopYield);
-DataHp(hp_Birn, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Birn',   lblCopYield);
-DataHp(hp_PtX,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'PtX',    lblCopYield);
+#--- DataHp(hp_DC,   lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'OV-DC',  lblCopYield);
+DataHp(hp_Sew,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'Sewage',  lblCopYield);
+DataHp(hp_Arla, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'OV-Arla', lblCopYield);
+DataHp(hp_Birn, lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'OV-Birn', lblCopYield);
+DataHp(hp_PtX,  lblHpCop, lblCopYield) = DataHpKind(lblHpCop, 'OV-PtX',  lblCopYield);
 
 Parameter TempHp(tt,hp);
 #---- Loop (hp,   
@@ -400,8 +400,13 @@ Loop (hp,
 
 *begin Kapacitetsallokeringer
 
-CapEReservationSum(tbid,updown)  = sum(elmarket, CapEReservation(tbid,elmarket, updown));
+CapEResvSum(tbid,dirResv)  = sum(elmarket, CapEResv(tbid,elmarket, dirResv));
 
+# Beregn statisk rådighedsbetaling af elkapacitet.
+if (OnCapacityReservation,
+  GainCapE(tbid,elmarket,dirResv)  =E=  CapEResv(tbid,elmarket,dirResv) * DataResv(tbid,elmarket,'Pris');
+);
+GainCapETotal = sum(tbid, sum(elmarket, sum(dirResv, GainCapE(tbid,elmarket,dirResv)));
 
 *end Kapacitetsallokeringer
 
@@ -409,9 +414,8 @@ execute_unload "MecLpMain.gdx";
 
 
 *begin Initialisering af max. indfyret effekt.
-CapQU(u)       = DataU(u,'CapacQ');
+CapQU(u)     = DataU(u,'CapacQ');
 FinFMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
-FinFMax(kv)  = CHP(kv,'Fmax') $OnUGlobal(kv);
 FinFMax(hp)  = FinFMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
 
 *end Initialisering af max. indfyret effekt.
@@ -436,7 +440,7 @@ FinFMax(hp)  = FinFMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);
 # Grundlastvarmen er den øjeblikkelige sum af KV-anlæggenes modtryks-, røggas- og bypass-varme.
 # Grundlastvarmen dynamisk, og dermed påvirkelig, så den kan øges fx ved aktivering af bypass.
 
-QfBaseMaxAll = sum(kv $OnUGlobal(kv), CHP(kv,'Qmax') + CHP(kv,'QRgkMax') + CHP(kv,'QfBypass')) 
+QfBaseMaxAll = sum(kv $OnUGlobal(kv), DataU(kv,'CapacQ') + DataU(kv,'QRgkMax') + DataU(kv,'QBypass')) 
               + sum(upr $(uprbase(upr) AND NOT kv(upr)), DataU(upr,'Fmax') * DataU(upr,'EtaQ'));       
 
 *end 
@@ -462,8 +466,8 @@ loop (tr $OnTransGlobal(tr),
   Tavg(tr)        = sum(trkind, TinletT(tr,trkind)) / 2;
 #BUG RhoW(tr)        = (-3.159E-3 * (Tavg(tr) - 1.0767E-1) * Tavg(tr) + 1001.1);
   RhoW(tr)        = (-3.2267E-3 * Tavg(tr) - 1.01108E-1) * Tavg(tr) + 1000.9;
-  QTmax(tr)       = RhoW(tr) * Area(tr) * VelocMax(tr) * Cpp * (TinletT(tr,'frem') - TinletT(tr,'retur')) / 1E6 ; # [MWq]
-  QTmin(tr)       = DataTransm(tr,'MinFlow') * QTmax(tr);
+  QTfMax(tr)       = RhoW(tr) * Area(tr) * VelocMax(tr) * Cpp * (TinletT(tr,'frem') - TinletT(tr,'retur')) / 1E6 ; # [MWq]
+  QTmin(tr)       = DataTransm(tr,'MinFlow') * QTfMax(tr);
 
 
   # Pumperelaterede parametre.
@@ -483,7 +487,7 @@ loop (tr $OnTransGlobal(tr),
 
     # Parametre til varmetabsberegning i T-ledning, som afhænger af det aktuelle tidspunkt.
     kT(t,tr,trkind)     = 2 * Pi * lamG * h1(tr,trkind) * (TinletT(tr,trkind) - Prognoses_hh(t,'TSoil')) / 1E6;
-    alphaT_hh(t,tr,trkind) = kT(t,tr,trkind) * L(tr) / QTmax(tr);
+    alphaT_hh(t,tr,trkind) = kT(t,tr,trkind) * L(tr) / QTfMax(tr);
   );
 );  # Loop (tr)
 *end
