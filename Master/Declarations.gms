@@ -215,7 +215,7 @@ Parameter TariffDsoFeedIn(dso)          'DSO eltarif for indfødning';
 Parameter TariffElRaadighed(dso)        'Rådighedstarif';
 Parameter TariffElEffekt(dso)           'Effektbetaling';
 
-Parameter FinFMax(u)                    'Nominal max. fuel input [MW]';
+Parameter FfMax(u)                      'Nominal max. fuel input [MW]';
 Parameter CapEU(tt,uelec)               'Time-varying power capacity of electric plants';
 Parameter CapQU(u)                      'Heat capacity of plants';
 Parameter CapacP(u)                     'Elkapacitet MWe';

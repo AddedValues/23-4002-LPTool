@@ -50,7 +50,7 @@ TotalSumCO2Emis(net,co2kind) =  sum(tt $(ord(tt) LE DurationPeriod), TotalCO2Emi
 #   GradUCapE er marginalerne for hvert tidspunkt i driftsdøgnet (hvortil buddene er givet).
 #   GradUCapE beregnes med fortegn således, at den angiver gevinsten for en øgning af CapEAlloc med 1 enhed.
 
-# CapEU er den øjeblikkelige max. kapacitet: FinFMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
+# CapEU er den øjeblikkelige max. kapacitet: FfMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
 #--- EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                        =G=  BLen(t) * CapEAlloc(t,uelcons,'up');
 #--- EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                        =L=  BLen(t) * (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
 #--- EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  BLen(t) * (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));

@@ -415,8 +415,8 @@ execute_unload "MecLpMain.gdx";
 
 *begin Initialisering af max. indfyret effekt.
 CapQU(u)     = DataU(u,'CapacQ');
-FinFMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
-FinFMax(hp)  = FinFMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
+FfMax(upr) = DataU(upr,'CapacQ') / EtaQU(upr) * 1 $OnUGlobal(upr);  # Indlæst EtaQU er sat til 1.0 for VP.
+FfMax(hp)  = FfMax(hp) / COPmin(hp) * 1 $OnUGlobal(hp);   
 
 *end Initialisering af max. indfyret effekt.
 

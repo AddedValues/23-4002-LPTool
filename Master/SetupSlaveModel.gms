@@ -60,8 +60,8 @@ loop (upr,
         loop (tt $(ord(tt) EQ 1),            # Første tidspunkt i første rullende horisont (RH).
           bOn.fx('t1',upr) = StateU(upr,'start') GT 0.0; 
           bOnPrevious(upr) = StateU(upr,'start') GT 0.0; 
-          #--- FfInPrevious(upr) = StateU(upr,'start') * FinFMax(upr) * BLenRatio('t1');  # Aktivitetsniveau skal bringes til aktuel tidsopløsning.
-          FfInPrevious(upr) = StateU(upr,'start') * FinFMax(upr);
+          #--- FfInPrevious(upr) = StateU(upr,'start') * FfMax(upr) * BLenRatio('t1');  # Aktivitetsniveau skal bringes til aktuel tidsopløsning.
+          FfInPrevious(upr) = StateU(upr,'start') * FfMax(upr);
         );
       );
     else                                 # Efterfølgende RH 'kigger' tilbage på foregående RHs sidste tidspunkt.
@@ -78,7 +78,7 @@ loop (upr,
       #--- display "DEBUG: SolveSlaveModel rhStep = nRHstep + 1";
       if (StateU(upr,'slut') GE 0.0,        # Negativt tal angiver uspecificeret sluttilstand.
         loop (tt $(ord(tt) EQ TimeEnd),
-          Ff.fx(tt,upr) = StateU(upr,'slut') * FinFMax(upr); 
+          Ff.fx(tt,upr) = StateU(upr,'slut') * FfMax(upr); 
         );
       );
     );
@@ -190,54 +190,54 @@ QeInfeas.up(t,net,InfeasDir) = BLen(t) * QeInfeasMax;  # Øvre grænse på virtu
 # OBS Upper bound sættes kun hvis modellen viser sig at være unbounded, ellers forstyrrer det solveren.
 
 if (TRUE,
-  TotalCO2Emis.up(tt,net,co2kind)          = BIG;  # 'Samlede regulatoriske CO2-emission [ton/h]';
-  TotalCO2EmisSum.up(net,co2kind)          = BIG;  # 'Sum af regulatorisk CO2-emission [ton]';
-  CO2KvoteOmkst.up(tt,upr) $OnUGlobal(upr) = BIG;  # 'CO2 kvote omkostning [DKK]';
-                                           
-  Qf.lo(tt,u)                 $OnUGlobal(u)     =  0.0;  # 'Heat delivery from unit u';
-  Qf.lo(tt,vak)               $OnUGlobal(vak)   = -BIG;  # 'Heat delivery from vak';
-  FuelCost.lo(tt,upr)         $OnUGlobal(upr)   = -BIG;  # 'Fuel cost til el bliver negativ, hvis elprisen går i negativ';
-  TotalCostU.lo(tt,u)         $OnUGlobal(u)     = -BIG;
-  TotalElIncome.lo(tt,kv)     $OnUGlobal(kv)    = -BIG;
-  ElSales.lo(tt,kv)           $OnUGlobal(kv)    = -BIG;  # 'Indtægt fra elsalg';
-                                                
-  Qf.up(tt,u)                 $OnUGlobal(u)     = +BIG;  # 'Heat delivery from unit u';
-  FuelCost.up(tt,upr)         $OnUGlobal(upr)   = +BIG;  # 'Fuel cost til el bliver negativ, hvis elprisen går i negativ';
-  TotalCostU.up(tt,u)         $OnUGlobal(u)     = +BIG;
-  TotalElIncome.up(tt,kv)     $OnUGlobal(kv)    = +BIG;
-  ElSales.up(tt,kv)           $OnUGlobal(kv)    = +BIG;  # 'Indtægt fra elsalg';
-                                                
-  QTf.up(tt,tr)                                 = BIG;  # 'Transmitteret varme [MWq]';
-  QTeLoss.up(tt,tr)                             = BIG;  # 'Transmissionsvarmetab [MWq]';
-  CostPump.up(tt,tr)                            = BIG;  # 'Pumpeomkostninger';
+  TotalCO2Emis.up(tt,net,co2kind) = BIG $OnNetGlobal(net);   # 'Samlede regulatoriske CO2-emission [ton/h]';
+  TotalCO2EmisSum.up(net,co2kind) = BIG $OnNetGlobal(net);   # 'Sum af regulatorisk CO2-emission [ton]';
+  CO2KvoteOmkst.up(tt,upr)        = BIG $OnUGlobal(upr);     # 'CO2 kvote omkostning [DKK]';
+                           
+  Qf.lo(tt,u)                 =  0.0;                   # 'Heat delivery from unit u';
+  Qf.lo(tt,vak)               = -BIG $OnUGlobal(vak);   # 'Heat delivery from vak';
+  FuelCost.lo(tt,upr)         = -BIG $OnUGlobal(upr);   # 'Fuel cost til el bliver negativ, hvis elprisen går i negativ';
+  TotalCostU.lo(tt,u)         = -BIG $OnUGlobal(u);     
+  TotalElIncome.lo(tt,kv)     = -BIG $OnUGlobal(kv);    
+  ElSales.lo(tt,kv)           = -BIG $OnUGlobal(kv);    # 'Indtægt fra elsalg';
+													    
+  Qf.up(tt,u)                 = +BIG $OnUGlobal(u);     # 'Heat delivery from unit u';
+  FuelCost.up(tt,upr)         = +BIG $OnUGlobal(upr);   # 'Fuel cost til el bliver negativ, hvis elprisen går i negativ';
+  TotalCostU.up(tt,u)         = +BIG $OnUGlobal(u);
+  TotalElIncome.up(tt,kv)     = +BIG $OnUGlobal(kv);
+  ElSales.up(tt,kv)           = +BIG $OnUGlobal(kv);    # 'Indtægt fra elsalg';
+													    
+  QTf.up(tt,tr)               = BIG $OnTrans(tr);       # 'Transmitteret varme [MWq]';
+  QTeLoss.up(tt,tr)           = BIG $OnTrans(tr);       # 'Transmissionsvarmetab [MWq]';
+  CostPump.up(tt,tr)          = BIG $OnTrans(tr);       # 'Pumpeomkostninger';
   
-  Ff.up(tt,upr)               $OnUGlobal(upr)   = BIG;  # 'Indgivet effekt [MWf]';
-  StartOmkst.up(tt,upr)       $OnUGlobal(upr)   = BIG;  # 'Startomkostning [DKK]';
-  ElEgbrugOmkst.up(tt,upr)    $OnUGlobal(upr)   = BIG;  # 'Egetforbrugsomkostning [DKK]';
-  VarDVOmkst.up(tt,u)         $OnUGlobal(u)     = BIG;
-  DVOmkstRGK.up(tt,kv)        $OnUGlobal(kv)    = BIG;  # 'D&V omkostning relateret til RGK [DKK]';
-  CostInfeas.up(tt,net)                         = BIG;  # 'Infeasibility omkostn. [DKK]';
-  CostSrPenalty.up(tt,net)                      = BIG;  # 'Penalty på SR-varme [DKK]';
-  TaxProdU.up(tt,upr,tax)     $OnUGlobal(upr)   = BIG;       
-  TotalTaxUpr.up(tt, upr)     $OnUGlobal(upr)   = BIG;       
-  CO2Emis.up(tt,upr,co2kind)  $OnUGlobal(upr)   = BIG;  # 'CO2 emission [kg]';
-  FuelQty.up(tt,upr)          $OnUGlobal(upr)   = BIG;  # 'Drivmiddelmængde [ton]';
-  FeHeat.up(tt,kv)            $OnUGlobal(kv)    = BIG;  # 'Brændsel knyttet til varmeproduktion i KV-anlæg';
-                                                
-  PfNet.up(tt,kv)             $OnUGlobal(kv)    = BIG;  # 'Elproduktion af kraftvarmeværker';
-  PfBack.up(tt,kv)            $OnUGlobal(kv)    = BIG;
-  PfBypass.up(tt,kv)          $OnUGlobal(kv)    = BIG;
-  QfBack.up(tt,kv)            $OnUGlobal(kv)    = BIG;
-  QfBypass.up(tt,kv)          $OnUGlobal(kv)    = BIG;
-  QfRgk.up(tt,kv)             $OnUGlobal(kv)    = BIG;
-  QBypassCost.up(tt,kv)       $OnUGlobal(kv)    = BIG;
-                                                
-  Evak.up(tt,vak)             $OnUGlobal(vak)   = BIG;  # 'Ladning på vak [MWh]';
-  QfMaxVak.up(tt,vak)         $OnUGlobal(vak)   = BIG;  # 'Øvre grænse på opladningseffekt';
-  EvakLoss.up(tt,vak)         $OnUGlobal(vak)   = BIG;  # 'Storage loss per hour';
-  QfVakAbs.up(tt,vak)         $OnUGlobal(vak)   = BIG;  # 'Absolut laderate for beregning af ladeomkostninger [MW]';
-  QfBase.up(tt)                                 = BIG;  # 'Grundlastvarmeproduktion';
-  QfBasebOnSR.up(tt,netQ)                       = BIG;  
+  Ff.up(tt,upr)               = BIG $OnUGlobal(upr);    # 'Indgivet effekt [MWf]';
+  StartOmkst.up(tt,upr)       = BIG $OnUGlobal(upr);    # 'Startomkostning [DKK]';
+  ElEgbrugOmkst.up(tt,upr)    = BIG $OnUGlobal(upr);    # 'Egetforbrugsomkostning [DKK]';
+  VarDVOmkst.up(tt,u)         = BIG $OnUGlobal(u);
+  DVOmkstRGK.up(tt,kv)        = BIG $OnUGlobal(kv);     # 'D&V omkostning relateret til RGK [DKK]';
+  CostInfeas.up(tt,net)       = BIG $OnNetGlobal(net);  # 'Infeasibility omkostn. [DKK]';
+  CostSrPenalty.up(tt,net)    = BIG $OnNetGlobal(net);  # 'Penalty på SR-varme [DKK]';
+  TaxProdU.up(tt,upr,tax)     = BIG $OnUGlobal(upr);       
+  TotalTaxUpr.up(tt, upr)     = BIG $OnUGlobal(upr);         
+  CO2Emis.up(tt,upr,co2kind)  = BIG $OnUGlobal(upr);    # 'CO2 emission [kg]';
+  FuelQty.up(tt,upr)          = BIG $OnUGlobal(upr);    # 'Drivmiddelmængde [ton]';
+  FeHeat.up(tt,kv)            = BIG $OnUGlobal(kv) ;    # 'Brændsel knyttet til varmeproduktion i KV-anlæg';
+													    
+  PfNet.up(tt,kv)             = BIG $OnUGlobal(kv);     # 'Elproduktion af kraftvarmeværker';
+  PfBack.up(tt,kv)            = BIG $OnUGlobal(kv);     
+  PfBypass.up(tt,kv)          = BIG $OnUGlobal(kv);     
+  QfBack.up(tt,kv)            = BIG $OnUGlobal(kv);     
+  QfBypass.up(tt,kv)          = BIG $OnUGlobal(kv);     
+  QfRgk.up(tt,kv)             = BIG $OnUGlobal(kv);     
+  QBypassCost.up(tt,kv)       = BIG $OnUGlobal(kv);     
+													    
+  Evak.up(tt,vak)             = BIG $OnUGlobal(vak);    # 'Ladning på vak [MWh]';
+  QfMaxVak.up(tt,vak)         = BIG $OnUGlobal(vak);    # 'Øvre grænse på opladningseffekt';
+  EvakLoss.up(tt,vak)         = BIG $OnUGlobal(vak);    # 'Storage loss per hour';
+  QfVakAbs.up(tt,vak)         = BIG $OnUGlobal(vak);    # 'Absolut laderate for beregning af ladeomkostninger [MW]';
+  QfBase.up(tt)               = BIG;                    # 'Grundlastvarmeproduktion';
+  QfBasebOnSR.up(tt,netQ)     = BIG;  
 
 );  #
 

@@ -128,16 +128,16 @@ loop (tr $OnTrans(tr),
 StatsU(upr,topicU)     = 0.0;
 StatsVak(vak,topicVak) = 0.0;
 
-StatsU(upr,'PowInMax') = FinFMax(upr);
+StatsU(upr,'PowInMax') = FfMax(upr);
 StatsU(upr,'EtaPower') = EtaPU(upr) $OnUGlobal(upr);
 StatsU(upr,'EtaHeat')  = EtaQU(upr) $OnUGlobal(upr);
 
 * Varmepumpers fuldlasttimer skal opgøres efter varmeproduktion, da deres kapacitet er baseret på varmeoutput.
-#--- StatsU(cp,'FullLoadHours') = [sum(t, Ff.L(t,cp)) / Max(1, FinFMax(cp))] $OnUGlobal(cp);
-#--- StatsU(hp,'FullLoadHours') = [sum(t, Qf.L(t,hp)) / Max(1, FinFMax(hp))] $OnUGlobal(hp);
+#--- StatsU(cp,'FullLoadHours') = [sum(t, Ff.L(t,cp)) / Max(1, FfMax(cp))] $OnUGlobal(cp);
+#--- StatsU(hp,'FullLoadHours') = [sum(t, Qf.L(t,hp)) / Max(1, FfMax(hp))] $OnUGlobal(hp);
 
 loop (upr $(OnUGlobal(upr)),
-  StatsU(upr,'FullLoadHours') = sum(t, Ff.L(t,upr)) / Max(1, FinFMax(upr));
+  StatsU(upr,'FullLoadHours') = sum(t, Ff.L(t,upr)) / Max(1, FfMax(upr));
 );
 
 StatsU(upr,   'OperHours')        = OperHours(upr);

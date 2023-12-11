@@ -51,12 +51,12 @@ TariffElEffekt('Blow')       = YS('TariffElEffektBLow');
 TariffDso_hh(tt,dso) = sum(loadDso $(ord(loadDso) EQ TariffDsoLoad_hh(tt)), TariffDsoAll(dso,loadDso));
 
 *begin Beregning af anlægsafhængige el-tariffer.
-TariffElecU_hh(tt,u)   = YS('TariffElTSO')   + YS('TariffElTrade')                          + sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffDso_hh(tt,dso));
-TariffEigenU_hh(tt,u)  = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffDso_hh(tt,dso));
-TariffEigenPump_hh(tt) = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + TariffDso_hh(tt,'BLow');
-TariffElSellU(u)       = YS('TariffElTrade') + YS('TariffElFeedIn') + sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffDsoFeedIn(dso)); 
-TariffElRaadighedU(u)  = sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffElRaadighed(dso));
-TariffElEffektU(u)     = sum(dso $(ord(dso) EQ DataU(u,'DSO')), TariffElEffekt(dso));
+TariffElecU_hh(tt,uelcons)   = YS('TariffElTSO')   + YS('TariffElTrade')                          + sum(dso $(ord(dso) EQ DataU(uelcons,'DSO')), TariffDso_hh(tt,dso));
+TariffEigenU_hh(tt,uelec)    = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + sum(dso $(ord(dso) EQ DataU(uelec,  'DSO')), TariffDso_hh(tt,dso));
+TariffEigenPump_hh(tt)       = YS('TariffElTSO')   + YS('TariffElTrade')  + YS('TariffElProcess') + TariffDso_hh(tt,'BLow');
+TariffElSellU(uelprod)       = YS('TariffElTrade') + YS('TariffElFeedIn') + sum(dso $(ord(dso) EQ DataU(uelprod,'DSO')), TariffDsoFeedIn(dso)); 
+TariffElRaadighedU(uelprod)  = sum(dso $(ord(dso) EQ DataU(uelprod,'DSO')), TariffElRaadighed(dso));
+TariffElEffektU(uelcons)     = sum(dso $(ord(dso) EQ DataU(uelcons,'DSO')), TariffElEffekt(dso));
 
 *end
                                                                                           

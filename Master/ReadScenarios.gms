@@ -23,7 +23,7 @@ Parameter OnUGlobalScen(u,scmas)                  'Aktive anlæg 0/1';
 Parameter OnURevisionScen(u,scmas)                'Anlægsrevision aktiv 0/1';
 
 $onecho > MecLPinput.txt
-par=Scenarios              rng=ScenMaster!C9:F45         rdim=1 cdim=1
+par=Scenarios              rng=ScenMaster!C9:F46         rdim=1 cdim=1
 par=OnNetGlobalScen        rng=ScenMaster!C47:F50        rdim=1 cdim=1
 par=OnUGlobalScen          rng=ScenMaster!C51:F86        rdim=1 cdim=1
 par=OnURevisionScen        rng=ScenMaster!C87:F93        rdim=1 cdim=1
@@ -56,7 +56,7 @@ par=DataElMarket           rng=CapacAlloc!Q10            rdim=1 cdim=1
 $offecho
 
 $call "ERASE  MecLPinput.gdx"
-$call "GDXXRW MecLPinput.xlsb RWait=1 Trace=3 @MecLPinput.txt"
+$call "GDXXRW MecLPinput.xlsm RWait=1 Trace=3 @MecLPinput.txt"
 
 $if errorlevel 1 $abort gdxxrw: reading failed
 
