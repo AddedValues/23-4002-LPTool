@@ -8,16 +8,16 @@ $log Entering file: %system.incName%
 # Ved indlæsning kopieres gdx-filen for den aktuelle periode til en fil med navnet TimeAggrParms_Actual.gdx.
 # Denne omstændelige procedure skyldes alene den ekstremt begrænsede teksthåndtering i GAMS modelsproget.
 
-# HACK : Transmissionsledninger er altid til rådighed.
-OnT(t,tr) = 1;                                    
+# HACK : Transmissionsledninger er altid til rådighed, hvis de er globalt aktive.
+OnT(t,tr) = OnTrans(tr);                                    
                                     
 if (NOT UseTimeAggr AND NOT UseTimeExpansionAny,               
 
 *begin No time aggregation, just 1-on-1 mapping.
 
   # Parametre som indtil videre er tidsuafhængige.
-  QeDemandActual(tt,net)    = QeDemandActual_hh(tt,net);
-  QfOVmax(tt,uov)           = QfOVmax_hh(tt,uov);
+  QeDemandActual(tt,net)   = QeDemandActual_hh(tt,net);
+  QfOVmax(tt,uov)          = QfOVmax_hh(tt,uov);
   ElspotActual(tt)         = ElspotActual_hh(tt);
   TariffDsoLoad(tt)        = TariffDsoLoad_hh(tt);
   TariffElecU(tt,u)        = TariffElecU_hh(tt,u);

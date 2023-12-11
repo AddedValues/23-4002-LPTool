@@ -160,7 +160,7 @@ $OnOrder
 *begin Sheet CapacAlloc
 
 # Overfør Kapacitetsreservationer til CapEResv.
-CapEResv(tbid,elmarket,dirResv) = DataResv(tbid,elmarket,lblDataResv);
+CapEResv(tbid,elmarket,dirResv) = DataResv(tbid,elmarket,dirResv);
 
 *end Sheet CapacAlloc
 
@@ -302,13 +302,6 @@ if (YS("BottomLineYearScen") NE 999,
 
 
 *begin QA på DataU
-
-# MaNVak1 og MaNVak2 udelukker hinanden gensidigt, så begge kan ikke være aktive.
-if (OnUGlobal('MaNVak1') AND OnUGlobal('MaNVak2'),
-  execute_unload "MecLpMain.gdx";
-  abort "MaNVak1 og MaNVak2 kan ikke begge være aktive."
-);
-
 *end   QA på DataU
 
 *begin QA på FuelMix og FuelPriceU

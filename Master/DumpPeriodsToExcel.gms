@@ -292,7 +292,7 @@ loop (topicSolver,  if (StatsSolver(topicSolver) EQ 0.0, StatsSolver(topicSolver
 *begin Udskrivning via GDX-file til Excel via GDXXRW
 
 execute_unload 'MECoutput.gdx',
-Scenarios, actSc, ActScen, DurationPeriod, DataU, DataHp, DataTransm, QTmin, QTfMax, Brandsel,
+Scenarios, actSc, ActScen, DurationPeriod, DataU, DataHp, DataTransm, QTfMin, QTfMax, Brandsel,
 zSlave, zNormalized, zNormalizedReal, CostInfeas, 
 SalesHeatTotal, SalesPowerTotal, SubsidiesTotal, CostMaintTotal, CostStartTotal, CostCO2EtsTotal, CostFuelTotal, CostPowerTotal,
 CostTotal, TaxTotal, TaxEnrTotal, TaxCO2Total, TaxNOxTotal, TaxSOxTotal, InfeasTotal,   

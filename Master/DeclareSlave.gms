@@ -105,7 +105,6 @@ Positive variable       QfBase(tt)                  'Grundlastvarmeproduktion ef
 Positive variable       QfBasebOnSR(tt,netq)        'Product af QfBase og bOnSR';
 
 
-
 *begin Kapacitetsallokeringer
 Positive variable       CapEAlloc(tt,uelec,dirResv)    'Kapacitetsallokeringer på anlægsbasis';
 Positive variable       CapESlack(tt,dirResv)          'Kapacitetsallokerings slack ift. diskret størrelse';
@@ -229,13 +228,17 @@ EQ_PowInProdU(t,upr) $(OnU(t,upr) AND uq(upr)) .. Ff(t,upr)  =E= (Qf(t,upr) / Et
 # OBS Graenserne er for KV-anlaeg baseret på modtryksproduktion, da Qf kan indeholde RGK-varme og bypass-varme.
 # remove EQ_QProdUqmin(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =G=  BLen(t) * DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
 # remove EQ_QProdUqmax(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =L=  BLen(t) * DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
-EQ_QProdUqMin(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =G=  DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
-EQ_QProdUqMax(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =L=  DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+# remove EQ_QProdUqMin(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =G=  DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+# remove EQ_QProdUqMax(t,uq) $(OnU(t,uq)) .. Qf(t,uq)  =L=  DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+EQ_QProdUqMin(t,uq) .. Qf(t,uq)  =G=  DataU(uq,'Fmin') * CapQU(uq) * DataU(uq,'ModuleSize') * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
+EQ_QProdUqMax(t,uq) .. Qf(t,uq)  =L=  DataU(uq,'Fmax') * CapQU(uq) * [1 $(not hp(uq)) + sum(hp $sameas(hp,uq), QhpYield(t,hp))] * bOn(t,uq);
 
 # remove EQ_QProdKVmin(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =G=  BLen(t) * DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv); 
 # remove EQ_QProdKVmax(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =L=  BLen(t) * DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
-EQ_QProdKVmin(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =G=  DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv); 
-EQ_QProdKVmax(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =L=  DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
+# remove EQ_QProdKVmin(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =G=  DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv); 
+# remove EQ_QProdKVmax(t,kv) $(OnU(t,kv) AND NOT uaff(kv)) .. QfBack(t,kv)  =L=  DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
+EQ_QProdKVmin(t,kv) $(NOT uaff(kv)) .. QfBack(t,kv)  =G=  DataU(kv,'Fmin') * CapQU(kv) * bOn(t,kv);
+EQ_QProdKVmax(t,kv) $(NOT uaff(kv)) .. QfBack(t,kv)  =L=  DataU(kv,'Fmax') * CapQU(kv) * bOn(t,kv);
 
 # TODO marginaler skal nu skaleres med Blen(t), hvis det er relevant at bruge dem.
                       
@@ -247,16 +250,14 @@ Equation EQ_QTF2QTE(tt,tr)           'Beregning af transmitteret energi i lednin
 Equation EQ_FinF2FinE(tt,upr)        'Beregning af indgivet energi til unit upr [MWhf]';
 Equation EQ_HeatBalance(tt,net);
 
-EQ_QF2QE(t,u)              $(OnU(t,u))   .. Qe(t,u)         =E=  BLen(t) * Qf(t,u);
-EQ_FinF2FinE(t,upr)        $(OnU(t,upr)) .. Fe(t,upr)       =E=  BLen(t) * Ff(t,upr);
-EQ_QfRgk2QeRgk(t,kv)       $(OnU(t,kv))  .. QeRgk(t,kv)     =E=  BLen(t) * QfRgk(t,kv);
-EQ_QfBypass2QeBypass(t,kv) $(OnU(t,kv))  .. QeBypass(t,kv)  =E=  BLen(t) * QfBypass(t,kv);
-EQ_QfBack2QeBack(t,kv)     $(OnU(t,kv))  .. QeBack(t,kv)    =E=  BLen(t) * QfBack(t,kv);
-EQ_QTF2QTE(t,tr)           $(OnT(t,tr))  .. QTe(t,tr)       =E=  BLen(t) * QTf(t,tr);
+EQ_QF2QE(t,u)              $(OnUGlobal(u))   .. Qe(t,u)         =E=  BLen(t) * Qf(t,u);
+EQ_FinF2FinE(t,upr)        $(OnUGlobal(upr)) .. Fe(t,upr)       =E=  BLen(t) * Ff(t,upr);
+EQ_QfRgk2QeRgk(t,kv)       $(OnUGlobal(kv))  .. QeRgk(t,kv)     =E=  BLen(t) * QfRgk(t,kv);
+EQ_QfBypass2QeBypass(t,kv) $(OnUGlobal(kv))  .. QeBypass(t,kv)  =E=  BLen(t) * QfBypass(t,kv);
+EQ_QfBack2QeBack(t,kv)     $(OnUGlobal(kv))  .. QeBack(t,kv)    =E=  BLen(t) * QfBack(t,kv);
+EQ_QTF2QTE(t,tr)           $(OnTrans(tr))    .. QTe(t,tr)       =E=  BLen(t) * QTf(t,tr);
 
 # TODO Varmetabet i retur-retningen bæres reelt af netF i modsætning til tabet i frem-retningen. Brug trkind til at skelne og revidere EQ_Heat_Balance.
-
-# TODO QeDemandActual skal være på energibasis.
 
 EQ_HeatBalance(t,net) $OnNet(net) .. QeDemandActual(t,net) =E=
                                      sum(uq $(OnUNet(uq,net)),              Qe(t,uq))
@@ -363,9 +364,9 @@ Equation EQ_QfOvMax(tt,uov)    'Max. last paa OV';
 # OBS Restriktionerne herunder tillader at aftage ingen OV, selvom den er til rådighed.
 #     QeOV beregnes indirekte fra aftaget af den opgraderede OV.
 # remove EQ_QOV(t,uov) ..  Qf(t,uov)    =E=  QeOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
-EQ_QfOV(t,uov)  $OnU(t,uov) ..  Qf(t,uov)   =E=  QfOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
-EQ_QeOV(t,uov)  $OnU(t,uov) ..  Qe(t,uov)   =E=  BLen(t) * QfOV(t,uov);
-EQ_bOnOV(t,uov) $OnU(t,uov) ..  bOn(t,uov)  =L=  OnU(t,uov);
+EQ_QfOV(t,uov)    $OnU(t,uov) ..  Qf(t,uov)   =E=  QfOV(t,uov) * sum(hp $sameas(hp,uov), COP(t,hp) / (COP(t,hp) - 1) ) $OnU(t,uov) ;
+EQ_QeOV(t,uov)    $OnU(t,uov) ..  Qe(t,uov)   =E=  BLen(t) * QfOV(t,uov);
+EQ_bOnOV(t,uov)   $OnU(t,uov) ..  bOn(t,uov)  =L=  OnU(t,uov);
 EQ_QfOvMax(t,uov) $OnU(t,uov) ..  QfOV(t,uov)  =L=  QfOVmax(t,uov) * DataU(uov,'Fmax') * bOn(t,uov) ;   # Partielle aktiv-status tillades ifm. tidsaggregering.
 
 
@@ -764,9 +765,9 @@ EQ_QTmaxSt(t) $OnOwnerShare   ..  QTf(t,'tr1')  =L=  (    Diverse('StruerAndel')
                                                     + QTfMax('tr1') * (1 - bOnSR(t,'netHo'));
 
 # OBS En T-ledning hvor OnTrans er forskellig fra 1.0 (én), skal anvende tallet i OnTrans som nedre kapacitetsgrænse [MWq].
-# remove EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  BLen(t) * min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
+# remove EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  BLen(t) * min(OnTrans(tr), QTfMin(tr)) * bOnT(t,tr);
 # remove EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTf(t,tr)  =L=  BLen(t) * QTfMax(tr) * bOnT(t,tr) $OnTrans(tr);
-EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  min(OnTrans(tr), QTmin(tr)) * bOnT(t,tr);
+EQ_QTmin(t,tr) $(OnTrans(tr) NE 1.0)   .. QTf(t,tr)  =G=  min(OnTrans(tr), QTfMin(tr)) * bOnT(t,tr);
 EQ_QTmax(t,tr) $(OnTrans(tr) EQ 1.0)   .. QTf(t,tr)  =L=  QTfMax(tr) * bOnT(t,tr) $OnTrans(tr);
 
 Equation EQ_varmetabT(tt,tr)  'Varmetab i T-ledning';

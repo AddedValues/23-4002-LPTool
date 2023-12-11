@@ -404,9 +404,9 @@ CapEResvSum(tbid,dirResv)  = sum(elmarket, CapEResv(tbid,elmarket, dirResv));
 
 # Beregn statisk rådighedsbetaling af elkapacitet.
 if (OnCapacityReservation,
-  GainCapE(tbid,elmarket,dirResv)  =E=  CapEResv(tbid,elmarket,dirResv) * DataResv(tbid,elmarket,'Pris');
+  GainCapE(tbid,elmarket,dirResv) = CapEResv(tbid,elmarket,dirResv) * DataResv(tbid,elmarket,'Pris');
 );
-GainCapETotal = sum(tbid, sum(elmarket, sum(dirResv, GainCapE(tbid,elmarket,dirResv)));
+GainCapETotal = sum(tbid, sum(elmarket, sum(dirResv, GainCapE(tbid,elmarket,dirResv))));
 
 *end Kapacitetsallokeringer
 
@@ -467,7 +467,7 @@ loop (tr $OnTransGlobal(tr),
 #BUG RhoW(tr)        = (-3.159E-3 * (Tavg(tr) - 1.0767E-1) * Tavg(tr) + 1001.1);
   RhoW(tr)        = (-3.2267E-3 * Tavg(tr) - 1.01108E-1) * Tavg(tr) + 1000.9;
   QTfMax(tr)       = RhoW(tr) * Area(tr) * VelocMax(tr) * Cpp * (TinletT(tr,'frem') - TinletT(tr,'retur')) / 1E6 ; # [MWq]
-  QTmin(tr)       = DataTransm(tr,'MinFlow') * QTfMax(tr);
+  QTfMin(tr)       = DataTransm(tr,'MinFlow') * QTfMax(tr);
 
 
   # Pumperelaterede parametre.

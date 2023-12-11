@@ -213,7 +213,7 @@ set uall 'Units (produktionsanlaeg inkl. VAK) og statistik'  /
     HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpBirn, 
     StNhpAir, StNFlis, StNEk, 
     MaNbk, MaNEk, MaNhpAir, MaNbKV, MaNhpPtX, 
-    HoNVak, StVak, MaVak, MaNVak1, MaNVak2, 
+    HoNVak, StVak, MaVak, MaNVak, 
     uaggr      # uaggr sammenfatter statistik for alle anlaeg.
    /;
 
@@ -224,7 +224,7 @@ set u(uall) 'Units (produktionsanlaeg inkl. VAK)'  /
     HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpBirn, 
     StNhpAir,  StNFlis, StNEk, 
     MaNbk, MaNEk, MaNhpAir, MaNbKV, MaNhpPtX, 
-    HoNVak, StVak, MaVak, MaNVak1, MaNVak2
+    HoNVak, StVak, MaVak, MaNVak
    /;
                       
 set upr(u)  'Produktionsanlaeg excl. VAK' /
@@ -339,7 +339,7 @@ Set uexist(u)         'Eksist. anlaeg'            /
     HoGk, HoOk, MaAff1, MaAff2, MaBio, MaCool, MaCool2,
     StGk, StOk, StEk,  
     MaEk, 
-    HoNVak, StVak, MaVak, MaNVak1, MaNVak2
+    HoNVak, StVak, MaVak, MaNVak
     /;
 
 Set hpexist(u)         'Eksist. varmepumper'       /
@@ -348,7 +348,7 @@ Set hpexist(u)         'Eksist. varmepumper'       /
 
 Set unew(u)    'Nye anlaeg'   /
     HoNhpAir, HoNhpSew, HoNEk, HoNFlis, HoNhpArla, HoNhpBirn, 
-    #--- HoNVak,  MaNVak1, MaNVak2, 
+    #--- HoNVak,  MaNVak, 
     StNhpAir,  StNFlis, StNEk,
     #--- StVak, 
     MaNbk, MaNEk, MaNhpAir, MaNbKV, MaNhpPtX 
@@ -372,7 +372,7 @@ Set unewhp(unew) 'Nye varmepumper'  /
 Set uopt(unew)       'Nye anlaeg som skal kapacitetsoptimeres';   
 set unonopt(unew)    'Nye anlaeg som ikke skal kapacitetsoptimeres.';
 
-set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
+set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak, StVak /;
 Set vaknew(u)        'Nye varmetanke'     / system.empty /;
 
 set ucoolexist(uexist)   'Eksisterende bortkoeleanlaeg'    / MaCool, MaCool2 /;
@@ -450,7 +450,7 @@ uother(upr) = not uaffupr(upr) and not uov(upr);
 #---     HoGk, HoOk, MaAff1, MaAff2, MaBio, MaCool, MaCool2, 
 #---     StGk, StOk, StEk, StVak, 
 #---     MaEk, 
-#---     MaVak, HoNVak, MaNVak1, MaNVak2
+#---     MaVak, HoNVak, MaNVak
 #---     /;
 #--- 
 #--- Set hpexist(u)         'Eksist. varmepumper'       /
@@ -459,7 +459,7 @@ uother(upr) = not uaffupr(upr) and not uov(upr);
 #--- 
 #--- Set unew(u)    'Nye anlæg'   /
 #---     HoNhpAir, HoNhpSew, HoNEk, HoNhpArla, HoNhpBirn, 
-#---     #--- HoNVak,  MaNVak1, MaNVak2, 
+#---     #--- HoNVak,  MaNVak, 
 #---     StNhpAir,  StNFlis, StNEk,
 #---     #--- StVak, 
 #---     MaNbk, MaNbKV, MaNhpPtx
@@ -472,7 +472,7 @@ uother(upr) = not uaffupr(upr) and not uov(upr);
 #---     HoNhpAir, HoNhpSew, HoNhpArla, HoNhpBirn, MaNhpPtx,
 #---     StNhpAir /;
 #--- 
-#--- set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
+#--- set vakexist(uexist) 'Eksist. varmetanke' / MaVak, HoNVak, MaNVak, StVak /;
 #--- Set vaknew(u)        'Nye varmetanke'     / system.empty /;
 #--- 
 #--- set ucoolexist(uexist)   'Eksisterende bortkøleanlæg'    / MaCool, MaCool2 /;
@@ -508,24 +508,24 @@ alias(u,ualias);
 
 *begin VAK sets
 
-set vak(u)    'Varmetanke'  / MaVak, HoNVak, MaNVak1, MaNVak2, StVak /;
+set vak(u)    'Varmetanke'  / MaVak, HoNVak, MaNVak, StVak /;
 
 Singleton set actVak(vak) 'Aktuel VAK';
 
 set vaknet(vak,net)      'Hvilke vak hører til hvilket net' /
-   (MaVak, MaNVak1, MaNVak2).netMa, HoNVak.netHo, StVak.netSt 
+   (MaVak, MaNVak).netMa, HoNVak.netHo, StVak.netSt 
    /;
 
 set upr2vak(upr,vak)     'Hvilke prod-anlæg kan lade på vak' /
    (HoNEk).HoNVak, 
    (StNhpAir,  StNFlis, StNEk).StVak,
-   (MaAff1, MaAff2, MaBio, MaEk, MaNbk, MaNbKV, MaNhpPtx).(MaVak, MaNVak1, MaNVak2)
+   (MaAff1, MaAff2, MaBio, MaEk, MaNbk, MaNbKV, MaNhpPtx).(MaVak, MaNVak)
    /;
     
 set tr2vak(tr,vak)       'Hvilke T-ledninger kan lade på vak' / tr1.StVak, tr2.HoNVak /;
 
 set vak2tr(vak,tr)      'Hvilke tanke kan indføde på hvilke T-ledninger' /
-   (MaVak, MaNVak1, MaNVak2).(tr1, tr2)
+   (MaVak, MaNVak).(tr1, tr2)
    /;
 
 set tr2net(tr,net)      'Hvilke T-ledning til hvilke net' / (tr1.netSt), (tr2.netHo) /;
@@ -635,12 +635,12 @@ $OnOrder
 
 *begin Capacity allocations
 
-set lblResv               'Egenskaber kapac. reservation'          / up, down, symm, pris /;
+set lblDataResv           'Egenskaber kapac. reservation'          / up, down, symm, pris /;
 set dirResv(lblDataResv)  'Direction net freq. regulation'         / up, down, symm /;        
-set elmarket              'Electricy markets'                      / FCR, aFRmFRR /;   
-set planZone              'Planning zone: Bid or default'          / Default,/;        
-set planPhase             'Planning phase'                         / FCR, aFRmFRR, dayAhead, intraDay /;
-set lblElMarket           'Elmarkeds egenskaber'                   / Active, Symmetric, UpOnly, DownOnly, PriceCapac, PriceUp, PriceDown, BidMin, TimeToFull /;
+set elmarket              'Electricy markets'                      / FCR, aFRR, mFRR /;   
+set planZone              'Planning zone: Bid or default'          / default, bid /;        
+set planPhase             'Planning phase'                         / FCR, aFRR, mFRR, dayAhead, intraDay /;
+set lblElMarket           'Elmarkeds egenskaber'                   / active, symmetric, upOnly, downOnly, priceCapac, priceUp, priceDown, bidMin, timeToFull /;
 
 *end Capacity allocations
 
