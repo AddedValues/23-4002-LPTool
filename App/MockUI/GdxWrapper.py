@@ -56,7 +56,7 @@ class GdxWrapper():
     """
 
     # ----------------------------------------------------------------------------------------------------------
-    def __init__(self, db: g.GamsDatabase, name:str= None, pathFile:str= None, loggerName: str = None):
+    def __init__(self, db: g.GamsDatabase = None, name:str= None, pathFile:str= None, loggerName: str = None):
         """Initializes instance by a user-given database or by a name and a file path."""
         # pathGdx = r'C:\Users\MogensBechLaursen\Documents\gamsdir\projdir\DIN\ESV4\ESV4 scenarier\219MWf\DIN 101.gdx'
 
@@ -66,6 +66,8 @@ class GdxWrapper():
         self.logger = logging.getLogger(loggerName)
         
         if db is None:
+            if pathFile is None:
+                raise ValueError('Either db or pathFile must be given.')
             self.name = name
             self.pathFile = pathFile
             self.ws = g.GamsWorkspace()
