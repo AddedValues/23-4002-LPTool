@@ -5,8 +5,9 @@ See https://codegym.cc/da/groups/posts/da.232.solid-fem-grundlggende-principper-
 """
 
 from email import header
-from lib2to3.pygram import Symbols
+from math import log
 from re import A
+from turtle import mode
 from typing import Any
 import logging
 import sys
@@ -16,12 +17,16 @@ import locale
 import time
 from datetime import datetime, timedelta
 import asyncio
+from venv import create
 import numpy as np
 import pandas as pd
 # import pyxlsb
 import xlwings as xw
-import plotly.graph_objects as go
 import GdxWrapper as gw
+from dash import Dash, html, dash_table, dcc
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 global logger, pathRoot
 logger: logging.Logger = None
@@ -97,8 +102,8 @@ class StemData():
                 useIndex = lpTables.loc[i,'UseIndex']
                 rowDim = int( lpTables.loc[i,'RowDim']) if useIndex else 0  
                 colDim = int(lpTables.loc[i,'ColDim'])
-                print(f'Reading table {tableName} from sheet {sheetName} with range {rangeName}.')
-                print(f'UseIndex={useIndex}, RowDim = {rowDim}, ColDim = {colDim}.')
+                logger.info(f'Reading table {tableName} from sheet {sheetName} with range {rangeName}.')
+                # logger.info(f'UseIndex={useIndex}, RowDim = {rowDim}, ColDim = {colDim}.')
                 df = wb.sheets[sheetName].range(rangeName).options(pd.DataFrame, expand='table', index=rowDim, header=colDim).value
                 data[tableName] = df
             wb.close()
@@ -122,7 +127,8 @@ class ModelData():
         if not os.path.exists(self.path):
             raise ValueError(f'File {self.path} does not exist.')
 
-        self.data = dict()  # Key is symbol name, value is dataframe.
+        self.Gsymbols = dict()  # Key is symbol name in lower case, value is GSymbolProxy instance.
+        self.data = dict()      # Key is symbol name in lower case, value is dataframe of records.
         self.gw = gw.GdxWrapper(name='ModelData', pathFile=self.path, loggerName=logger.name)
         return
 
@@ -131,34 +137,199 @@ class ModelData():
         Reads data of a single GAMS symbol from the gdx file and returns a dataframe with the data.
         """
         # Read symbol data from gdx file
-        symbolData = self.gw.getDataFrame(symbolName, attrName)
+        gsym = gw.GSymbolProxy(symbolName, self.gw)
+        symbolData = self.gw.getRecords(symbolName.lower(), attrName)
+        if symbolData is None:
+            return None
+        
+        self.Gsymbols[symbolName.lower()] = gsym
+        self.data[symbolName.lower()] = symbolData
+
         return symbolData
 
     def __getitem__(self, symbolName: str) -> pd.DataFrame:
         """ Returns the dataframe with the given key. Lazy implementation."""
         # See: https://www.kdnuggets.com/2023/03/introduction-getitem-magic-method-python.html
         
-        if symbolName not in self.data:
-            self.data[symbolName] = self.readSymbolAsDataFrame(symbolName)
-        return self.data[symbolName]
+        if symbolName.lower() not in self.Gsymbols:
+            symbolData = self.readSymbolAsDataFrame(symbolName)
+            if symbolData is None:
+                logger.error(f'Symbol of name {symbolName} was not found.')
+                return None
+            self.data[symbolName] = symbolData
+
+        return self.data[symbolName.lower()]
+    
+
+def createPivot(dfRecs: pd.DataFrame, indexName: str, columnNames: list[str], valueName: str,
+                fillna: bool = True, createTimeColumn: bool = False, timeVector: list[float] = None) -> pd.DataFrame:
+    """
+    Creates a pivot table from a DataFrame of records e.g. of a GAMS symbol like parameter, variable, equation.
+    Each column of dfRecs holds the values of a defining dimension of the symbol.
+    One column holds the attribute of the symbol e.g. value, level, marginal, lower, upper.
+    
+    Parameters
+    ----------
+    dfRecs : pd.DataFrame
+        Holds the records part of which will be used to compose the pivot table
+    indexName : str
+        Name of the column in dfRecs that should be index of the pivot table.
+    columnNames : list[str]
+        List of names of columns in dfRecs to constitute the columns of the pivot table.
+        If columnNames has two or more members, the columns of the pivot table will be a 
+        multiindex i.e. a tuple of each dimension's member value (name).
+    valueName : str
+        Name of the column in dfRecs whose values will fill the body of the pivot table.
+    fillna : boolean, optional
+        If True (default), NaN-values will be converted to zeros.
+    createTimeColumn : boolean, optional
+        If True (default) and index of pivot the column of name 'tt', the numeric part of 
+        the index values will be converted to integers and stored in a new column named 'time',
+        and the entire pivot table sorted ascendingly by this column.
+
+    Raises
+    ------
+    ValueError
+        Either one of indexName, columnNames or valueName was not found in dfRecs.
+
+    Returns
+    -------
+    pivot : DataFrame
+        The pivot table
+
+    """
+    if indexName is not None and not indexName in dfRecs.columns:
+        raise ValueError(f'{indexName=} not found in columns of DataFrame dfRecs')
+    
+    for col in columnNames:
+        if not col in dfRecs.columns:
+            raise ValueError(f'Column {col=} not found in columns of DataFrame dfRecs')
+    
+    if not valueName in dfRecs.columns:
+        raise ValueError(f'{valueName=} not found in columns of DataFrame dfRecs')
+    
+    pivot = dfRecs.pivot(index=indexName, columns=columnNames, values=valueName)
+    
+    if fillna:
+        pivot = pivot.fillna(0.0)
+        
+    if createTimeColumn:
+        # Assuming the index of pivot has members of kind 't'nnnn where n is a digit.
+        if pivot.index.name != 'tt':
+            raise ValueError(f'Pivot must have index of name "tt", but "{pivot.index.name}" was found')
+            
+        if timeVector is None:
+            pivot['time'] = [int(tt[1:]) for tt in pivot.index]
+        else:
+            pivot['time'] = [timeVector[int(tt[1:]) - 1] for tt in pivot.index]
+
+        pivot = pivot.sort_values(by=['time'])
+    
+    return pivot
 
 
+# ---------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     logger = setupLogger('LpMockUI')
+
+    #region Reading data
+
     readStemData = False
     readModelData = True
 
+    tbegin = time.perf_counter_ns()
     if readStemData:
         # Create StemData object
+        logger.info('Reading StemData.')
         stemData = StemData()
         data = stemData.data
+
+    tend0 = time.perf_counter_ns()
+    print(f'Elapsed time reading stem data: {(tend0-tbegin)/1e9:.4f} seconds.')
 
     if readModelData:
         # Create ModelData object
         modelData = ModelData()
-        symbolNames = ['OnUGlobal', 'TimeResol', 'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', 'FuelCost', 'TotalCostU', 'TotalTax', 'StatsU']
+        symbolNames = ['u', 'upr', 'vak', 'OnUGlobal', 'TimeResol', \
+                       'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', \
+                        'FuelCost', 'TotalCostU', 'TotalTaxUpr', 'StatsU', 'StatsTax']
         for symbolName in symbolNames:
+            # logger.info(f'Reading symbol {symbolName}.')
             df = modelData[symbolName]
-            print(df)
+            # print(df)
 
+    tend1 = time.perf_counter_ns()
+    print(f'Elapsed time reading model data: {(tend1-tend0)/1e9:.4f} seconds.')
+
+    # for symbolName in symbolNames:
+    #     logger.info(f'Retrieving symbol {symbolName}.')
+    #     df = modelData[symbolName]
+
+    tend2 = time.perf_counter_ns()
+    print(f'Elapsed time in total: {(tend2-tbegin)/1e9:.4f} seconds.')
+
+    #endregion Reading data
+
+    #region Extracting data to show
+
+    # Pick available plants using the u symbol and the OnUGlobal symbol
+    dfTimeResol = modelData['TimeResol']
+    timeIncr = (dfTimeResol['level'] / 60).to_numpy()
+    timeVec = np.cumsum(timeIncr)
+    
+    dfU = modelData['u']
+    dfOnUGlobal = modelData['OnUGlobal']
+    uAvail = dfOnUGlobal['u'].to_list()
+    dfUpr = modelData['upr']
+    # Remove columns of dfUpr that are not available
+    dfUpr = dfUpr[dfUpr['u'].isin(uAvail)]
+
+    dfQf_LRecs = modelData['Qf_L']
+    dfQf_L = createPivot(dfQf_LRecs, indexName='tt', columnNames=['u'], valueName='level', createTimeColumn=True, timeVector=timeVec)
+    
+    # dfQf_Lavail nov contains a column name 'time' and a column for each plant that is available. Dimension 'tt' is used as index.
+    # Pick only values of available production plants. 
+        # Also, replace values of dfQf_Lavail that are less than 1E-12 with zero. The value 1E-14 is used by the GAMS model to ensure filled-in records.
+    dfQf_Lavail = dfQf_L[uAvail + ['time']]   # Pick only columns of available plants and the time column.
+    dfQf_Lavail[dfQf_Lavail < 1e-12] = 0.0
+
+    # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
+    for col in dfQf_Lavail.columns:
+        if col.contains('Cool'):
+            dfQf_Lavail[col] = -dfQf_Lavail[col] 
+
+    pass
+    #endregion Extracting data to show
+
+
+    #region Setting up user interface
+
+    # App layout
+
+    # https://plotly.com/python-api-reference/
+
+    fig = px.scatter(dfQf_L, x="time", color="u", hover_name="u", hover_data=["u", "time", "level"], mode="lines")
+    fig.show()
+
+    pass
+
+    # Initialize the app
+    app = Dash(__name__)
+
+    app.layout = html.Div([
+        dcc.Graph(
+            id='heat-flow-vs-time',
+            figure=fig
+        )
+    ])  
+
+    # Run the app
+    app.run(debug=False)
+
+    # Create a figure with plotly express
+    fig = go.Figure()
+
+
+
+    #endregion Setting up user interface
     pass

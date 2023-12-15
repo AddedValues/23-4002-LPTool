@@ -16,6 +16,7 @@ Prequisites for using this python module:
 """
 # import os
 # import sys
+from typing import Any, List, Dict, Tuple
 import inspect             # Inspection of the python stack.
 import logging
 import numpy as np
@@ -98,16 +99,23 @@ class GdxWrapper():
         self.eqnLookup = self.__getSymbolLookup(self.eqns.keys())
 
         self.all = {**self.sets, **self.parms, **self.vars, **self.eqns}
-        
-        # self.allLookup =  dict() # Key is symbol kind {set,parm,var,eqn}
-        # self.allLookup['set'] = self.setLookup
-        # self.allLookup['parm'] = self.parmLookup
-        # self.allLookup['var'] = self.varLookup
-        # self.allLookup['eqn'] = self.eqnLookup
+        self.allLookup = self.__getSymbolLookup(self.all.keys())
 
         return
 
     # ----------------------------------------------------------------------------------------------------------
+
+    def __getitem__(self, symbolName):
+        """
+        Returns a GAMS symbol instance.
+        """
+        realName = self.allLookup.get(symbolName.lower(), None)
+        if realName is None:
+            raise ValueError(f'{__name__}.__getitem__: GAMS symbol {symbolName} not found.')
+        symbol = self.all[realName]
+
+        return symbol
+        
     def firstkey(self, d : dict):
         """ First key of dictionary d. Python has no such method."""
         if d is None:
@@ -638,10 +646,10 @@ class GdxWrapper():
         The dataframe holds every record of the symbol where each dimension constitutes
         a column and every requested attribute likewise holds a column. 
         The Dataframe has a default enumerated index (zero-based).
-          symbolName:      Name of GAMS symbol (must be eqn, parm, var).
-          attrName:        Attribute to be retrieved from symbol (defaults to 'level' / 'value'):
-                           Parm:     {level} or {value}; {level} is used as an alias for {value}
-                           Var, Eqn: {level,marginal,lower,upper,scale}
+            symbolName:     Name of GAMS symbol (must be eqn, parm, var).
+            attrName:       Attribute to be retrieved from symbol (defaults to 'level' / 'value'):
+                            Parm:     {level} or {value}; {level} is used as an alias for {value}
+                            Var, Eqn: {level,marginal,lower,upper,scale}
         """
 
         # print str(datetime.now())
@@ -655,18 +663,20 @@ class GdxWrapper():
         gSymbol = GSymbol(symbol, self)
         doms = symbol.domains_as_strings
         # self.logger.debug(f'{symbolName=}: {doms=}, {gSymbol.nrec=}')
-        colHeader = doms + [attrName]
+        colHeader = doms + [attrName] if gSymbol.kind != 'set' else doms
         df = pd.DataFrame(index=range(gSymbol.nrec), columns=colHeader)
-        for irec, rec in enumerate(symbol):
-            attrValue = self.getAttrValue(gSymbol.kind, rec, attrName)
-            colValues = rec.keys + [attrValue]
-            # if irec < 10:
-            #     self.logger.debug(f'{irec=}, {rec.keys=}, {colValues=}')
-            df.iloc[irec,:] = colValues
+        if gSymbol.kind == 'set':
+            for irec, rec in enumerate(symbol):
+                df.iloc[irec,:] = rec.keys
+        else:
+            for irec, rec in enumerate(symbol):
+                attrValue = self.getAttrValue(gSymbol.kind, rec, attrName)
+                colValues = rec.keys + [attrValue]
+                df.iloc[irec,:] = colValues
 
         return df
     # ----------------------------------------------------------------------------------------------------------
-       
+
 # ----------------------------------------------------------------------------------------------------------
 
 class GRecord():
@@ -699,6 +709,48 @@ class GRecord():
         return self.__str__()
     
 # ----------------------------------------------------------------------------------------------------------
+    
+class GSymbolProxy():
+    """
+    A class wrapping a single GAMS gdx symbol without refering the GAMS symbol itself.
+    Provides easy access to attributes.
+    Author: MBL
+    """
+
+    def __init__(self, symbolName: str, gw:GdxWrapper):   #--- , logger: logging.Logger):
+        """Initializes instance by a user-given symbol."""
+        symbol = gw[symbolName]
+        if symbol is None:
+            raise ValueError(f'GAMS symbol {symbolName} was not found.')
+        
+        gsym = GSymbol(symbol, gw)
+        self.name: str = gsym.name
+        self.kind: str = gsym.kind
+        self.text: str = gsym.text
+        self.domains: str | List[str] = gsym.domains
+        self.nrec: int = gsym.nrec
+        self.dimension: int = gsym.dimension
+        self.isScalar: bool = (gsym.dimension == 0)
+
+        # Release the reference to the GAMS symbol.
+        gsym = None  
+
+    def __repr__(self):
+        return str(self)
+    
+    def __str__(self):
+        # return self.name
+    
+        if self.kind == 'eqn':
+            str = f"{self.kind}, name={self.name}, dim={self.dimension}, eqntype={self.eqntype}, nrec={self.nrec}, Domains='{self.domains}"  #--- "\nDesc: {self.text}"
+        elif self.kind == 'var':
+            str = f"{self.kind}, name={self.name}, dim={self.dimension}, vartype={self.vartype} nrec={self.nrec} Domains='{self.domains}'"  #--- "\nDesc: {self.text}" 
+        else:
+            str = f"{self.kind}, name={self.name}, dim={self.dimension}, nrec={self.nrec} Domains='{self.domains}'"   #--- "\nDesc: {self.text}" 
+        return str
+
+    # ------------ End of class GSymbolProxy  -----------------
+
 class GSymbol():
     """
     A class wrapping a single GAMS gdx symbol.
@@ -733,6 +785,7 @@ class GSymbol():
         # self.logger.debug(f'domains={self.domains}, name={self.name}, nrec={self.nrec}, text={self.text}')
         self.dimension = symbol.dimension
         self.isScalar = (symbol.dimension == 0)
+
         # self.logger.debug(f'dimension={self.dimension}, isScalar={self.isScalar}')
         self.recs = None
         self.sets = None
@@ -781,7 +834,9 @@ class GSymbol():
             return 'X'
         elif intEqnType == 5:
             return 'C'
-        raise Exception('Equation type enumeration ' + str(intEqnType) + ' is not defined')
+        else:
+            return 'N/A'
+            # raise Exception('Equation type enumeration ' + str(intEqnType) + ' is not defined')
 
     def getVarType(self, intVarType):
         if intVarType == 1:
@@ -802,14 +857,14 @@ class GSymbol():
             return 'SemiCont'
         elif intVarType == 9:
             return 'SemiInt'
-        raise Exception('Equation type enumeration ' + str(intVarType) + ' is not defined')
+        else:
+            return 'N/A'
+            # raise Exception('Equation type enumeration ' + str(intVarType) + ' is not defined')
 
     def __repr__(self):
         return str(self)
     
     def __str__(self):
-        # return self.name
-    
         if self.kind == 'eqn':
             str = f"{self.kind}, name={self.name}, dim={self.dimension}, eqntype={self.eqntype}, nrec={self.nrec}, Domains='{self.domains}"  #--- "\nDesc: {self.text}"
         elif self.kind == 'var':

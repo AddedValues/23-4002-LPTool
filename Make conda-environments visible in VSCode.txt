@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------
+
+Setting up conda environment attached to a specific python version:
+
+1. open an Anaconda prompt terminal.
+2. conda create --name <env-name> python==<python version>
+
+Example: conda create --name myenv --clone base python==3.11.5
+
+
+Packages to install afterwards:
+1. conda install numpy
+2. conda install pandas
+3. conda install xlwings
+4. conda install matplotlib
+5. conda install seaborn
+#-- 6. conda install scipy (pre-installed in base env)
+7. conda install plotly
+8. conda install dash
+
+Add to PATH environment variable:
+C:\<path to Anaconda3>\condabin
+C:\<path to Anaconda3>\scripts
+
+Insert path to condabin in VSCode setting named "Python: Conda Path"
+--------------------------------------------------------------------------
+Installing GAMS python api into a conda environment:
+
+1. Open an Anaconda prompt terminal (as admin if anaconda is installed for all users)                                                                              
+2. Activate the desired conda environment: conda activate <environment name>
+3. Install using pip (even in an Anaconda setting)
+   pip install <path-to-gams-python-wheels>
+
+Example of installing in environment named myenv and using GAMS version 45.4.0:
+   2. conda activate myenv
+   3. pip install gamsapi[all];  #--- 3. pip install gamsapi[all]==45.4.0  #--- 3. pip install gams[all] --find-links C:\GAMS\45\api\python\bdist 
+
+--------------------------------------------------------------------------
+
+VSCode setting to be changed to make VSCode detect conda environments:
+
+Comment posted on YouTube video https://www.youtube.com/watch?v=dBXUmBFy7BI 
+
+Thanks for the advice - it brought me forward.
+But I may have a particular installation of Anaconda, that is a global one (for all users).
+VSCode failed to find the environments (did not display any but the global interpreter) 
+and I had to add / correct the setting "Python: Venv Path" in VSCode to "C:\users\<your username>\.conda\envs.
+It was just a guess that VSCode would somehow adopt a conda-environment although the setting was for venv.
+It turned out right and the VSCode command "Python: Select Interpreter" then display all environments.
