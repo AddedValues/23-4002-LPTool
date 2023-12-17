@@ -8,7 +8,7 @@ from email import header
 from math import log
 from re import A
 from turtle import mode
-from typing import Any
+from typing import IO, Any
 import logging
 import sys
 import os
@@ -23,7 +23,8 @@ import pandas as pd
 # import pyxlsb
 import xlwings as xw
 import GdxWrapper as gw
-from dash import Dash, html, dash_table, dcc
+from dash import Dash, html, dash_table, dcc, callback, Output, Input
+import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -70,7 +71,77 @@ def setupLogger(logfileName: str) -> logging.Logger:
 
     return logger
 
+# %% Observer pattern sample
 
+#region Observer pattern   
+from abc import ABC, ABCMeta, abstractmethod
+
+class IObservable(metaclass=ABCMeta):
+    @staticmethod
+    @abstractmethod
+    def subscribe(observer):
+        """ The subscribe method must be implemented by all classes that implement this interface. """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def unsubscribe(observer):
+        """ The unsubscribe method must be implemented by all classes that implement this interface. """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def notify(observer):
+        """ The notify method must be implemented by all classes that implement this interface. """
+        pass
+
+class Subject(IObservable):
+    def __init__(self, name: str):
+        self.name = name
+        self.observers = set()
+    def subscribe(self, observer):
+        self.observers.add(observer)
+        print(f'{observer} subscribed to {self}')
+
+    def unsubscribe(self, observer):
+        self.observers.remove(observer)
+        print(f'{observer} unsubscribed from {self}')
+
+    def notify(self, *args, **kwargs):
+        for observer in self.observers:
+            observer.notify(*args, **kwargs)
+
+    def __str__(self):
+        return f'Subject {self.name}'
+
+class IObserver(metaclass=ABCMeta):
+    @staticmethod
+    @abstractmethod
+    def notify(self, *args, **kwargs):
+        """ The notify method must be implemented by all classes that implement this interface. """
+        pass
+
+class Observer(IObserver):
+    def __init__(self, observable: IObservable, name: str):
+        self.name = name
+        observable.subscribe(self)
+
+    def notify(self, observable, *args, **kwargs):
+        print(f'Observer {self.name} received: {args} {kwargs}')
+
+    def __str__(self):
+        return f'Observer {self.name}'
+    
+subject = Subject('Subject-1')
+observer1 = Observer(subject, 'Observer-1')
+observer2 = Observer(subject, 'Observer-2')
+subject.notify(f'hello observers', [1,2,3], {'a':1, 'b':2})
+subject.unsubscribe(observer1)
+subject.unsubscribe(observer2)
+pass    
+#endregion Observer pattern   
+
+#%%        
 class StemData():
 
     def __init__(self, fileName: str = 'MecLPinput.xlsm'):
@@ -115,8 +186,7 @@ class StemData():
             xlapp.quit()
 
         return data
-    
-
+   
 class ModelData():
 
     def __init__(self, fileName: str = 'MecLpMain.gdx'):
@@ -295,8 +365,16 @@ if __name__ == '__main__':
 
     # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
     for col in dfQf_Lavail.columns:
-        if col.contains('Cool'):
+        if 'Cool' in col:
             dfQf_Lavail[col] = -dfQf_Lavail[col] 
+
+    orderU = ['HoNVak', 'StVak', 'MaNVak', 'MaVak', 'MaAff1', 'MaAff2', 'MaBio', 'MaCool', 'MaCool2', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
+              'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
+              'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
+    orderU = [u for u in orderU if u in dfQf_Lavail.columns]
+    
+    # Sort columns of dfQf_Lavail according to orderU and add the time column at the end.
+    dfQf_Lavail = dfQf_Lavail[['time'] + orderU]
 
     pass
     #endregion Extracting data to show
@@ -308,28 +386,63 @@ if __name__ == '__main__':
 
     # https://plotly.com/python-api-reference/
 
-    fig = px.scatter(dfQf_L, x="time", color="u", hover_name="u", hover_data=["u", "time", "level"], mode="lines")
-    fig.show()
+    # Drop columns containing Vak and Cool
+    dfQf_Lavail = dfQf_Lavail.drop(columns=[col for col in dfQf_Lavail.columns if 'Vak' in col or 'Cool' in col])
+    orderU = [u for u in orderU if u in dfQf_Lavail.columns]
+    # fig = px.line(dfQf_Lavail, x="time", y=orderU, line_shape='hv')  
+    # fig.show()
 
-    pass
+    # pass
 
     # Initialize the app
     app = Dash(__name__)
+    
 
-    app.layout = html.Div([
-        dcc.Graph(
-            id='heat-flow-vs-time',
-            figure=fig
-        )
-    ])  
+    # App layout
+    app.layout = html.Div(
+        [
+            html.H4("Forsyningsselskabets varmeproduktion"),
+            html.P("Anlaeg: "),
+            dcc.Checklist(
+                id="plants",
+                options=orderU,
+                value=orderU,
+                inline=True,
+            ),
+            html.P("Gruppering: "),
+            dcc.RadioItems(
+                id="grouping",
+                options=["Grundlast", "SR", "Ingen"],
+                value="Ingen",
+                inline=True,
+            ),
+            dcc.Graph(id="graph"),
+        ]
+    )
+
+    @app.callback(
+        Output("graph", "figure"),
+        Input("plants", "value"),
+        Input("grouping", "value"),
+    )
+    def generate_chart(plants, grouping):
+        # df = dfQf_Lavail.copy(deep=True)
+        print(f'{plants=}')
+        print(f'{grouping=}')
+        uSelected = [u for u in orderU if u in plants]    # Sort according to predefined order.
+
+        df = dfQf_Lavail[['time'] + uSelected]
+
+        # Grouping ignored for now.
+        fig = px.line(dfQf_Lavail, x="time", y=uSelected, line_shape='hv')  
+        return fig
+        
 
     # Run the app
     app.run(debug=False)
 
-    # Create a figure with plotly express
-    fig = go.Figure()
-
-
+    # # Create a figure with plotly express
+    # fig = go.Figure()
 
     #endregion Setting up user interface
     pass
