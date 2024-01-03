@@ -382,6 +382,8 @@ if __name__ == '__main__':
 
     #region Setting up user interface
 
+    # Dash multi-page app: see https://dash.plotly.com/urls
+
     # App layout
 
     # https://plotly.com/python-api-reference/
@@ -395,8 +397,7 @@ if __name__ == '__main__':
     # pass
 
     # Initialize the app
-    app = Dash(__name__)
-    
+    app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.DARKLY])
 
     # App layout
     app.layout = html.Div(

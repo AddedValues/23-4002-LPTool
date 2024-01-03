@@ -11,6 +11,7 @@ import pandas as pd
 # from dataclasses import dataclass
 # from datetime import datetime, timedelta
 
+# Months are not used (yet).
 MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAJ', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEC']
 
 def whoami():
