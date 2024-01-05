@@ -145,7 +145,11 @@ pass
 class StemData():
 
     def __init__(self, fileName: str = 'MecLPinput.xlsm'):
-        """ Initializes the StemData object. """
+        """ 
+        Initializes the StemData object. 
+        Reads data from the excel file and stores it in a dictionary.
+        A lazy implementation is not used due to the excessive load time of the Excel file.
+        """
 
         # self.path = os.path.join('C:\\GitHub\\23-4002-LPTool\\Data\\MockUI', fileName)
         self.path = os.path.join('C:\\GitHub\\23-4002-LPTool\\Master', fileName)
@@ -186,7 +190,7 @@ class StemData():
             xlapp.quit()
 
         return data
-   
+
 class ModelData():
 
     def __init__(self, fileName: str = 'MecLpMain.gdx'):
@@ -305,80 +309,82 @@ if __name__ == '__main__':
     #region Reading data
 
     readStemData = False
-    readModelData = True
+    readModelData = False
 
-    tbegin = time.perf_counter_ns()
-    if readStemData:
-        # Create StemData object
-        logger.info('Reading StemData.')
-        stemData = StemData()
-        data = stemData.data
+    if readStemData or readModelData:
 
-    tend0 = time.perf_counter_ns()
-    print(f'Elapsed time reading stem data: {(tend0-tbegin)/1e9:.4f} seconds.')
+        tbegin = time.perf_counter_ns()
+        if readStemData:
+            # Create StemData object
+            logger.info('Reading StemData.')
+            stemData = StemData()
+            data = stemData.data
 
-    if readModelData:
-        # Create ModelData object
-        modelData = ModelData()
-        symbolNames = ['u', 'upr', 'vak', 'OnUGlobal', 'TimeResol', \
-                       'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', \
-                        'FuelCost', 'TotalCostU', 'TotalTaxUpr', 'StatsU', 'StatsTax']
-        for symbolName in symbolNames:
-            # logger.info(f'Reading symbol {symbolName}.')
-            df = modelData[symbolName]
-            # print(df)
+        tend0 = time.perf_counter_ns()
+        print(f'Elapsed time reading stem data: {(tend0-tbegin)/1e9:.4f} seconds.')
 
-    tend1 = time.perf_counter_ns()
-    print(f'Elapsed time reading model data: {(tend1-tend0)/1e9:.4f} seconds.')
+        if readModelData:
+            # Create ModelData object
+            modelData = ModelData()
+            symbolNames = ['u', 'upr', 'vak', 'OnUGlobal', 'TimeResol', \
+                        'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', \
+                            'FuelCost', 'TotalCostU', 'TotalTaxUpr', 'StatsU', 'StatsTax']
+            for symbolName in symbolNames:
+                # logger.info(f'Reading symbol {symbolName}.')
+                df = modelData[symbolName]
+                # print(df)
 
-    # for symbolName in symbolNames:
-    #     logger.info(f'Retrieving symbol {symbolName}.')
-    #     df = modelData[symbolName]
+        tend1 = time.perf_counter_ns()
+        print(f'Elapsed time reading model data: {(tend1-tend0)/1e9:.4f} seconds.')
 
-    tend2 = time.perf_counter_ns()
-    print(f'Elapsed time in total: {(tend2-tbegin)/1e9:.4f} seconds.')
+        # for symbolName in symbolNames:
+        #     logger.info(f'Retrieving symbol {symbolName}.')
+        #     df = modelData[symbolName]
+
+        tend2 = time.perf_counter_ns()
+        print(f'Elapsed time in total: {(tend2-tbegin)/1e9:.4f} seconds.')
 
     #endregion Reading data
 
     #region Extracting data to show
 
-    # Pick available plants using the u symbol and the OnUGlobal symbol
-    dfTimeResol = modelData['TimeResol']
-    timeIncr = (dfTimeResol['level'] / 60).to_numpy()
-    timeVec = np.cumsum(timeIncr)
-    
-    dfU = modelData['u']
-    dfOnUGlobal = modelData['OnUGlobal']
-    uAvail = dfOnUGlobal['u'].to_list()
-    dfUpr = modelData['upr']
-    # Remove columns of dfUpr that are not available
-    dfUpr = dfUpr[dfUpr['u'].isin(uAvail)]
+    if readModelData:
+        # Pick available plants using the u symbol and the OnUGlobal symbol
+        dfTimeResol = modelData['TimeResol']
+        timeIncr = (dfTimeResol['level'] / 60).to_numpy()
+        timeVec = np.cumsum(timeIncr)
+        
+        dfU = modelData['u']
+        dfOnUGlobal = modelData['OnUGlobal']
+        uAvail = dfOnUGlobal['u'].to_list()
+        dfUpr = modelData['upr']
+        # Remove columns of dfUpr that are not available
+        dfUpr = dfUpr[dfUpr['u'].isin(uAvail)]
 
-    dfQf_LRecs = modelData['Qf_L']
-    dfQf_L = createPivot(dfQf_LRecs, indexName='tt', columnNames=['u'], valueName='level', createTimeColumn=True, timeVector=timeVec)
-    
-    # dfQf_Lavail nov contains a column name 'time' and a column for each plant that is available. Dimension 'tt' is used as index.
-    # Pick only values of available production plants. 
-        # Also, replace values of dfQf_Lavail that are less than 1E-12 with zero. The value 1E-14 is used by the GAMS model to ensure filled-in records.
-    dfQf_Lavail = dfQf_L[uAvail + ['time']]   # Pick only columns of available plants and the time column.
-    dfQf_Lavail[dfQf_Lavail < 1e-12] = 0.0
+        dfQf_LRecs = modelData['Qf_L']
+        dfQf_L = createPivot(dfQf_LRecs, indexName='tt', columnNames=['u'], valueName='level', createTimeColumn=True, timeVector=timeVec)
+        
+        # dfQf_Lavail nov contains a column name 'time' and a column for each plant that is available. Dimension 'tt' is used as index.
+        # Pick only values of available production plants. 
+            # Also, replace values of dfQf_Lavail that are less than 1E-12 with zero. The value 1E-14 is used by the GAMS model to ensure filled-in records.
+        dfQf_Lavail = dfQf_L[uAvail + ['time']]   # Pick only columns of available plants and the time column.
+        dfQf_Lavail[dfQf_Lavail < 1e-12] = 0.0
 
-    # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
-    for col in dfQf_Lavail.columns:
-        if 'Cool' in col:
-            dfQf_Lavail[col] = -dfQf_Lavail[col] 
+        # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
+        for col in dfQf_Lavail.columns:
+            if 'Cool' in col:
+                dfQf_Lavail[col] = -dfQf_Lavail[col] 
 
-    orderU = ['HoNVak', 'StVak', 'MaNVak', 'MaVak', 'MaAff1', 'MaAff2', 'MaBio', 'MaCool', 'MaCool2', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
-              'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
-              'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
-    orderU = [u for u in orderU if u in dfQf_Lavail.columns]
-    
-    # Sort columns of dfQf_Lavail according to orderU and add the time column at the end.
-    dfQf_Lavail = dfQf_Lavail[['time'] + orderU]
+        orderU = ['HoNVak', 'StVak', 'MaNVak', 'MaVak', 'MaAff1', 'MaAff2', 'MaBio', 'MaCool', 'MaCool2', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
+                'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
+                'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
+        orderU = [u for u in orderU if u in dfQf_Lavail.columns]
+        
+        # Sort columns of dfQf_Lavail according to orderU and add the time column at the end.
+        dfQf_Lavail = dfQf_Lavail[['time'] + orderU]
 
-    pass
+        pass
     #endregion Extracting data to show
-
 
     #region Setting up user interface
 
@@ -389,58 +395,109 @@ if __name__ == '__main__':
     # https://plotly.com/python-api-reference/
 
     # Drop columns containing Vak and Cool
-    dfQf_Lavail = dfQf_Lavail.drop(columns=[col for col in dfQf_Lavail.columns if 'Vak' in col or 'Cool' in col])
-    orderU = [u for u in orderU if u in dfQf_Lavail.columns]
+    # dfQf_Lavail = dfQf_Lavail.drop(columns=[col for col in dfQf_Lavail.columns if 'Vak' in col or 'Cool' in col])
+    # orderU = [u for u in orderU if u in dfQf_Lavail.columns]
     # fig = px.line(dfQf_Lavail, x="time", y=orderU, line_shape='hv')  
     # fig.show()
 
     # pass
 
     # Initialize the app
-    app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.DARKLY])
+    app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.MORPH])
 
     # App layout
+    #region App layout timeseries
+    # app.layout = html.Div(
+    #     [
+    #         html.H4("Forsyningsselskabets varmeproduktion"),
+    #         html.P("Anlaeg: "),
+    #         dcc.Checklist(
+    #             id="plants",
+    #             options=orderU,
+    #             value=orderU,
+    #             inline=True,
+    #         ),
+    #         html.P("Gruppering: "),
+    #         dcc.RadioItems(
+    #             id="grouping",
+    #             options=["Grundlast", "SR", "Ingen"],
+    #             value="Ingen",
+    #             inline=True,
+    #         ),
+    #         dcc.Graph(id="graph"),
+    #     ]
+    # )
+    #endregion App layout timeseries
+
+    #region App layout 
     app.layout = html.Div(
         [
-            html.H4("Forsyningsselskabets varmeproduktion"),
-            html.P("Anlaeg: "),
-            dcc.Checklist(
-                id="plants",
-                options=orderU,
-                value=orderU,
-                inline=True,
-            ),
-            html.P("Gruppering: "),
-            dcc.RadioItems(
-                id="grouping",
-                options=["Grundlast", "SR", "Ingen"],
-                value="Ingen",
-                inline=True,
-            ),
-            dcc.Graph(id="graph"),
-        ]
-    )
+            dbc.Row([
+            html.P(html.H1("App Header", style={'textAlign': 'center'})),
+            html.Hr(style={'border': '2px solid black'}),
+            ]),
+            dbc.Row([
+                dbc.Col(id='nav_bar', lg=2, children=['Nav bar']),
+                dbc.Col([
+                    dbc.Tabs([
 
-    @app.callback(
-        Output("graph", "figure"),
-        Input("plants", "value"),
-        Input("grouping", "value"),
-    )
-    def generate_chart(plants, grouping):
-        # df = dfQf_Lavail.copy(deep=True)
-        print(f'{plants=}')
-        print(f'{grouping=}')
-        uSelected = [u for u in orderU if u in plants]    # Sort according to predefined order.
+                        dbc.Tab([
+                            html.Ul([
+                                html.Br(),
+                                html.Li('Number of Economies: 170'),
+                                html.Li('Temporal Coverage: 1974 - 2019'),
+                                html.Li('Update Frequency: Quarterly'),
+                                html.Li('Last Updated: March 18, 2020'),
+                                html.Li([
+                                    'Source: ',
+                                    html.A('https://datacatalog.worldbank.org/dataset/poverty-and-equity-database',
+                                            href='https://datacatalog.worldbank.org/dataset/poverty-and-equity-database')
+                                ])
+                            ])
+                        ], label='Intro'),
+                        
+                        dbc.Tab([
+                            html.Br(),
+                            html.P('Her specificeres lastplanlægningen', style={'textAlign': 'left'})
+                        ], label='JobSpec'),
 
-        df = dfQf_Lavail[['time'] + uSelected]
+                        dbc.Tab([
+                            html.Br(),
+                            html.P('Her vises resultater for lastplanen', style={'fontSize': '44', 'textAlign': 'left'})
+                        ], label='Results'),
+                    ])
+                ], lg=10)
+            ]),
+            dbc.Row([
+            html.Hr(style={'border': '2px solid black'}),
+                html.P(html.H1("App Footer", style={'textAlign': 'center'})),
+            ]),
+        ], 
+    title='MockUI')
+    
+    #endregion App layout
 
-        # Grouping ignored for now.
-        fig = px.line(dfQf_Lavail, x="time", y=uSelected, line_shape='hv')  
-        return fig
-        
+    #region Callbacks
+    # app.callback(
+    #     Output("graph", "figure"),
+    #     Input("plants", "value"),
+    #     Input("grouping", "value"),
+    # )
+    # def generate_chart(plants, grouping):
+    #     # df = dfQf_Lavail.copy(deep=True)
+    #     print(f'{plants=}')
+    #     print(f'{grouping=}')
+    #     uSelected = [u for u in orderU if u in plants]    # Sort according to predefined order.
+
+    #     df = dfQf_Lavail[['time'] + uSelected]
+
+    #     # Grouping ignored for now.
+    #     fig = px.line(dfQf_Lavail, x="time", y=uSelected, line_shape='hv')  
+    #     return fig
+    #endregion Callbacks
 
     # Run the app
-    app.run(debug=False)
+    app.run(debug=False, port=8552)
 
     # # Create a figure with plotly express
     # fig = go.Figure()
