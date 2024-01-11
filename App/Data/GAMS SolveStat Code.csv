@@ -1,0 +1,14 @@
+﻿Value;Short Message;Description
+1;NORMAL COMPLETION;The solver terminated in a normal way: it was not interrupted by a limit (resource, iterations, nodes or other) or by internal difficulties. The model status describes the characteristics of the accompanying solution.
+2;ITERATION INTERRUPT;The solver was interrupted because it used too many iterations. The option iterlim may be used to increase the iteration limit if everything seems normal.
+3;RESOURCE INTERRUPT;The solver was interrupted because it used too much time. The option reslim may be used to increase the time limit if everything seems normal.
+4;TERMINATED BY SOLVER;The solver encountered some difficulty and was unable to continue. More details will appear following the message.
+5;EVALUATION INTERRUPT;Too many evaluations of nonlinear terms at undefined values. We recommend to use variable bounds to prevent forbidden operations, such as division by zero. The rows in which the errors occur are listed just before the solution.
+6;CAPABILITY PROBLEMS;The solver does not have the capability required by the model. For example, some solvers do not support certain types of discrete variables or support a more limited set of functions than other solvers.
+7;LICENSING PROBLEMS;The solver cannot find the appropriate license key needed to use a specific subsolver.
+8;USER INTERRUPT;The user has sent a message to interrupt the solver via the interrupt button in the IDE or sending a Control+C from a command line.
+9;ERROR SETUP FAILURE;The solver encountered a fatal failure during problem set-up time.
+10;ERROR SOLVER FAILURE;The solver encountered a fatal error.
+11;ERROR INTERNAL SOLVER FAILURE;The solver encountered an internal fatal error.
+12;SOLVE PROCESSING SKIPPED;The entire solve step has been skipped. This happens if execution errors were encountered and the GAMS parameter ExecErr has been set to a nonzero value or the property MaxExecError has a nonzero value.
+13;ERROR SYSTEM FAILURE;This indicates a completely unknown or unexpected error condition.

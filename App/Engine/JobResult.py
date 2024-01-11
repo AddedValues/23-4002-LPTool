@@ -11,7 +11,7 @@ class JobResult(Lpbase):
 
     def __init__(self, name:str, description:str, gdb: gams.GamsDatabase) -> None:
         super().__init__(name, description, JobResult._version)
-        self.logger = logging.getLogger(Lpbase.logName)
+        self.getLogger = logging.getLogger(Lpbase.logName)
         self.gdb = gdb
         self.gw = gw.GdxWrapper(self.gdb, name=gdb.name) #--- , logger=self.logger)
 

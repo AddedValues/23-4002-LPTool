@@ -10,13 +10,6 @@ execute_unload "MecLpMain.gdx";
 modelSlave.optFile = 1;
 $include options.inc
 
-*begin DEBUG
-
-option LimRow=250, LimCol=250;
-
-
-*end   DEBUG
-
 solve modelSlave maximizing zSlave using MIP;
 
 pModelStat = modelSlave.ModelStat; display pModelStat;

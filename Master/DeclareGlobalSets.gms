@@ -31,7 +31,13 @@ Singleton set  actBlock(aggr) 'Aktuelt blokskema' / system.empty /;
 #     Bemærk at set tt og set t begge anvender 't' som indeksnavn.
 
 # TODO Set tt  shall be included $Include to allow for flexible time range.
-Set tt         'Time intervals available at any resolution' / t1*t2016 /;  # Accomodates for 7 days at 5 min resolution.
+#--- Set tt         'Time intervals available at any resolution' / t1*t648 /;  # Accomodates for 2 days at 5 min resolution and 3 days at 60 min resolution.
+
+# Certain sets are included such that they can be modified by an external agent before the model is read.
+$Include DeclareTopSets.gms
+
+#--- REPLACED by above include-stmt: Set tt         'Time intervals available at any resolution' / t1*t48 /;  # Accomodates for 2 days at 60 min resolution.
+
 Set t(tt)      'Actual time intervals';
 Set tRH(tt)    'Time intervals for actual rolling horizon';
 Set tbid       'Hours in bidding day' / t1 * t24 /;

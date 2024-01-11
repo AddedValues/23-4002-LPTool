@@ -200,13 +200,13 @@ if (TRUE,
   TotalCostU.lo(tt,u)         = -BIG $OnUGlobal(u);     
   TotalElIncome.lo(tt,kv)     = -BIG $OnUGlobal(kv);    
   ElSales.lo(tt,kv)           = -BIG $OnUGlobal(kv);    # 'Indtægt fra elsalg';
-													    
+                                                        
   Qf.up(tt,u)                 = +BIG $OnUGlobal(u);     # 'Heat delivery from unit u';
   FuelCost.up(tt,upr)         = +BIG $OnUGlobal(upr);   # 'Fuel cost til el bliver negativ, hvis elprisen går i negativ';
   TotalCostU.up(tt,u)         = +BIG $OnUGlobal(u);
   TotalElIncome.up(tt,kv)     = +BIG $OnUGlobal(kv);
   ElSales.up(tt,kv)           = +BIG $OnUGlobal(kv);    # 'Indtægt fra elsalg';
-													    
+                                                        
   QTf.up(tt,tr)               = BIG $OnTrans(tr);       # 'Transmitteret varme [MWq]';
   QTeLoss.up(tt,tr)           = BIG $OnTrans(tr);       # 'Transmissionsvarmetab [MWq]';
   CostPump.up(tt,tr)          = BIG $OnTrans(tr);       # 'Pumpeomkostninger';
@@ -223,7 +223,7 @@ if (TRUE,
   CO2Emis.up(tt,upr,co2kind)  = BIG $OnUGlobal(upr);    # 'CO2 emission [kg]';
   FuelQty.up(tt,upr)          = BIG $OnUGlobal(upr);    # 'Drivmiddelmængde [ton]';
   FeHeat.up(tt,kv)            = BIG $OnUGlobal(kv) ;    # 'Brændsel knyttet til varmeproduktion i KV-anlæg';
-													    
+                                                        
   PfNet.up(tt,kv)             = BIG $OnUGlobal(kv);     # 'Elproduktion af kraftvarmeværker';
   PfBack.up(tt,kv)            = BIG $OnUGlobal(kv);     
   PfBypass.up(tt,kv)          = BIG $OnUGlobal(kv);     
@@ -231,7 +231,7 @@ if (TRUE,
   QfBypass.up(tt,kv)          = BIG $OnUGlobal(kv);     
   QfRgk.up(tt,kv)             = BIG $OnUGlobal(kv);     
   QBypassCost.up(tt,kv)       = BIG $OnUGlobal(kv);     
-													    
+                                                        
   Evak.up(tt,vak)             = BIG $OnUGlobal(vak);    # 'Ladning på vak [MWh]';
   QfMaxVak.up(tt,vak)         = BIG $OnUGlobal(vak);    # 'Øvre grænse på opladningseffekt';
   EvakLoss.up(tt,vak)         = BIG $OnUGlobal(vak);    # 'Storage loss per hour';

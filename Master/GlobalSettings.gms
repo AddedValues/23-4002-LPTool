@@ -13,11 +13,19 @@ $show
 * Turn off the listing and cross-reference of the symbols used
 #-$offsymxref offsymlist
 
-option
+if (OnTracing,
+  option
     limrow = 10,     #/* equations listed per block */
     limcol = 10,     #/* variables listed per block */
-    solprint = on,  # solvers solution output printed
-    sysout = on;    # solvers system output printed
+    solprint = on,   # solvers solution output printed
+    sysout = on;     # solvers system output printed
+else
+  option 
+    limrow =  0,     #/* equations listed per block */
+    limcol =  0,     #/* variables listed per block */
+    solprint = off,  # solvers solution output printed
+    sysout = off;    # solvers system output printed
+);
 
 *end
 

@@ -8,6 +8,9 @@ Scope:      Controls build-up of GAMS model
 Date:       2023-05-20 14:56
 $OffText
 #(
+
+Scalar OnTracing '0/1 for user-controlled tracing' / 0 /;
+
 $set oDumpStatsToExcel 0
 $set oDumpMasterStatsToExcel 1
 $set oAlfaVersion 5

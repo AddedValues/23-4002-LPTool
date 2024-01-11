@@ -56,7 +56,7 @@ par=DataElMarket           rng=CapacAlloc!Q10            rdim=1 cdim=1
 $offecho
 
 $call "ERASE  MecLPinput.gdx"
-$call "GDXXRW MecLPinput.xlsm RWait=1 Trace=3 @MecLPinput.txt"
+$call "GDXXRW MecLPinput.xlsb RWait=1 Trace=3 @MecLPinput.txt"
 
 $if errorlevel 1 $abort gdxxrw: reading failed
 

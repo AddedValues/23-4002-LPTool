@@ -3,12 +3,18 @@
 
 $OffListing
 
-option reslim = 60;
-option solPrint = OFF;
-#--- option LIMROW=0, LIMCOL=0;
 
-option solPrint = ON;
-option LIMROW=250, LIMCOL=25;
+if (OnTracing, 
+  option solPrint = ON;
+  option LIMROW=250;
+  option LIMCOL=25;
+else
+  option solPrint = OFF;
+  option LIMROW=0;
+  option LIMCOL=0;
+);
+
+option reslim = 60;
 
 option MIP = gurobi
 

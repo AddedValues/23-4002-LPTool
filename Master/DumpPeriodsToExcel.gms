@@ -52,11 +52,12 @@ loop (net,
   if (CostFuelTotal(net)   EQ 0.0, CostFuelTotal(net) = tiny; );
  );
 
-display SalesHeatTotal, SalesPowerTotal, SubsidiesTotal;
-display CostMaintTotal, CostStartTotal, CostFuelTotal, CostPowerTotal, CostCO2EtsTotal, CostTotal, TaxTotal; #--- , CostTransTotal, CostVakTotal;
-display TaxEnrTotal, TaxCO2Total, TaxNOxTotal, TaxSOxTotal;
-display InfeasTotal;
-
+if (OnTracing,
+  display SalesHeatTotal, SalesPowerTotal, SubsidiesTotal;
+  display CostMaintTotal, CostStartTotal, CostFuelTotal, CostPowerTotal, CostCO2EtsTotal, CostTotal, TaxTotal; #--- , CostTransTotal, CostVakTotal;
+  display TaxEnrTotal, TaxCO2Total, TaxNOxTotal, TaxSOxTotal;
+  display InfeasTotal;
+);
 
 * Fuldlasttimer og lastprocent.
 zNormalized = zSlave.L * PeriodObjScale;
@@ -94,7 +95,7 @@ loop (kv $OnUGlobal(kv),
       QMargPrice_Hourly(t,kv) = [TotalCostU.L(t,kv) - TotalElIncome.L(t,kv)] / max(0.01,Qf.L(t,kv)); 
   );
 );
-display OperHours, QMargPrice; 
+if (OnTracing, display OperHours, QMargPrice; );
 
 $if not errorfree $exit
 
@@ -213,8 +214,9 @@ StatsVak(vak,'QLoss')    $(OnUGlobal(vak) AND CapQU(vak) GT 0.0) = max(tiny, sum
 
 #--- loop (upr, loop (topicU,   if (StatsU(upr,topicU)     EQ 0.0, StatsU(upr,topicU)     = tiny; ); ); ) $OnUGlobal(upr);
 #--- loop (vak, loop (topicVak, if (StatsVak(vak,topicVak) EQ 0.0, StatsVak(vak,topicVak) = tiny; ); ); ) $OnUGlobal(upr);
-display StatsU, StatsVak;
-
+if (OnTracing,
+  display StatsU, StatsVak;
+);
 
 *begin Beregning af StatsTax
 

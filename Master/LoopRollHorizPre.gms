@@ -26,7 +26,7 @@ if (LenRHhoriz GT Nblock,
  
 # TODO De værdier som fx nRHstep, som beregnes i blokken herunder, skal evt. specificeres direkte via input, hvor også RHIntv indlæses.
 
-display "INFO: RH setup", UseTimeAggr, UseTimeExpansionAny, DurationPeriod; 
+if (OnTracing, display "INFO: RH setup", UseTimeAggr, UseTimeExpansionAny, DurationPeriod; );
 
 # Tilpas RH overhæng, hvis deaggregering er aktiv. Overhænget skaleres med middelbloklængden. Nblock er antal tidsblokke for et helt år.
 if (UseTimeAggr,                 
@@ -109,7 +109,7 @@ loop (rhStep $(ord(rhStep) LE nRHstep + 1),
   );
 );
 
-display "DEBUG: RHIntv", nRhStep, LenRHhoriz, LenRHStep, RHIntv;
+if (OnTracing, display "DEBUG: RHIntv", nRhStep, LenRHhoriz, LenRHStep, RHIntv; );
 
 *end 
 

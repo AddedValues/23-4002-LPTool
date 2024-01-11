@@ -36,7 +36,7 @@ loop (tt $(ord(tt) GE 2 AND ord(tt) LE Nblock),
   TimeVector(tt) = TimeVector(tt-1) + TimeResol(tt-1);
 );  
 TimeVector('t1') = tiny;
-display TimeVector;
+if (OnTracing, display TimeVector; );
 
 TimeVector(tt) $(ord(tt) GE 2 AND ord(tt) LE Nblock) = TimeVector(tt-1) + TimeResol(tt-1);
 
