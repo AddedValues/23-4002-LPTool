@@ -8,11 +8,10 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${file}",  // C:\\GitHub\\23-4002-LPTool\\App",
             "console": "integratedTerminal",
             "justMyCode": true
         }
     ],
     // https://stackoverflow.com/questions/62224884/how-to-make-vscodes-python-debugger-skip-stepping-into-some-modules-when-debugg
-    "rules": [{"module":"*GdxWrapper*", "include":false}]
 }

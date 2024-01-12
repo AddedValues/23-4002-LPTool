@@ -33,12 +33,16 @@ class LpBase():
     appRootPath: str = None
 
     @staticmethod
-    def setAppRootPath(appPath):
-        if not os.path.exists(appPath):
-            raise ValueError(f'App root path {appPath} does not exist.')
+    def setAppConfig(config: dict) -> None:
+        """ Set the application configuration. """
+        if config is None:
+            raise ValueError('config is None.')
         
-        LpBase.appRootPath = appPath
-        return appPath
+        if not os.path.exists(config['pathRoot']):
+            raise ValueError(f'App root path {config["pathRoot"]} does not exist.')
+        
+        LpBase.config = config
+        return 
 
     @staticmethod
     def getUid() -> str:

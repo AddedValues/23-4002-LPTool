@@ -37,7 +37,7 @@ if (NOT UseTimeAggr,
   # Trin 1: Timer før BidDay
   tbegin = 1;
   tend   = NblockHour('Default') * (HourBeginBidDay - 1);
-  display "DEBUG: Trin 1: tbegin, tend", tbegin, tend;
+  if (OnTracing, display "DEBUG: Trin 1: tbegin, tend", tbegin, tend; );
   loop (tt $(ord(tt) GE tbegin AND ord(tt) LE tend),
     BLen(tt)     = TimeScaleInv('Default');
     BBeg(tt)     = 1 + trunc((ord(tt) - tbegin) * TimeScaleInv('Default') + 1E-8);  # Model time, som tidspunkt tt tilhører.
@@ -49,7 +49,7 @@ if (NOT UseTimeAggr,
   # Trin 2: Timer indenfor BidDay (antal = HoursBidDay)
   tbegin = tend + 1;
   tend   = tend + NblockHour('Bid') * HoursBidDay;
-  display "DEBUG: Trin 2: tbegin, tend", tbegin, tend;
+  if (OnTracing, display "DEBUG: Trin 2: tbegin, tend", tbegin, tend; );
   loop (tt $(ord(tt) GE tbegin AND ord(tt) LE tend),
     BLen(tt)    = TimeScaleInv('Bid');
     BBeg(tt)    = HourBeginBidDay + trunc((ord(tt) - tbegin) * TimeScaleInv('Bid') + 1E-8);      # Model time, som tidspunkt tt tilhører.
@@ -61,7 +61,7 @@ if (NOT UseTimeAggr,
   # Trin 3: Timer efter BidDay
   tbegin = tend + 1;
   tend   = tend + NblockHour('Default') * (DurationPeriod - HourEndBidDay);
-  display "DEBUG: Trin 3: tbegin, tend", tbegin, tend;
+  if (OnTracing, display "DEBUG: Trin 3: tbegin, tend", tbegin, tend; );
   loop (tt $(ord(tt) GE tbegin AND ord(tt) LE tend),
     BLen(tt)    = TimeScaleInv('Default');
     BBeg(tt)    = HourEndBidDay + 1 + trunc((ord(tt) - tbegin) * TimeScaleInv('Default') + 1E-8);  # Model time, som tidspunkt tt tilhører.
@@ -72,7 +72,7 @@ if (NOT UseTimeAggr,
 
   t(tt)   = ord(tt) LE Nblock;
   BLen(tt) $(ord(tt) GT Nblock) = 0.0;
-  display "DEBUG: t(tt), BLen, Bbeg, Bend", t, BLen, Bbeg, Bend;
+  if (OnTracing, display "DEBUG: t(tt), BLen, Bbeg, Bend", t, BLen, Bbeg, Bend; );
 
   # Kobling mellem tt og tbid, dvs. tidspunkter og auktionstimer.
   tt2tbid(tt,tbid) = no;
@@ -90,7 +90,9 @@ if (NOT UseTimeAggr,
     #--- display "DEBUG tt2hh: thh", thh;
     tt2hh(tt,tta) = thh(tt);                 # Gennemløb tidspunkter indenfor den aktuelle time tta.
   );
-  display NblockHour, TimeIndexBeginBidDay, tt2tbid, tt2hh;
+  if (OnTracing,
+    display NblockHour, TimeIndexBeginBidDay, tt2tbid, tt2hh;
+  );
   
 elseif (UseTimeAggr AND NOT UseTimeExpansionAny),       # Tidsaggregering, men ingen tidsekspansion.
 
@@ -135,7 +137,7 @@ display Nblock, NblockAggr, NblockHour, BLen;
 # OBS t(tt) kan blive reduceret i LoopRollHorizPre.gms, hvis DurationPeriod er mindre end 8760 timer.
 t(tt) = yes;
 t(tt) = ord(tt) LE Nblock;
-display "LoopPeriodPre.gms (2) DEBUG: ", Nblock;
+if (OnTracing, display "LoopPeriodPre.gms (2) DEBUG: ", Nblock; );
 
 BLenMax = smax(t, BLen(t));
 BLenRatio(tt) $(ord(tt) GE 2 AND ord(tt) LE Nblock) = BLen(tt) / BLen(tt-1);
