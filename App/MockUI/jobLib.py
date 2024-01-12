@@ -1,9 +1,11 @@
 
 import os 
 import glob
+from re import S
 import shutil
 import logging
 import string
+from typing import Any
 import numpy as np
 import pandas as pd
 import xlwings as xw
@@ -116,7 +118,7 @@ class CoreData():
         self.logger  = logger if logger is not None else logging.getLogger(__name__)
         
         self.inFiles = {'input': 'MecLpInput.xlsb', 'gpr': 'MecLP.gpr', 'main.gms': 'MecLpMain.gms', 'options': 'GamsCmdlineOptions.txt', 'inc': 'options.inc', 'output': None, 'timeAggr': 'MECTidsAggregering.xlsx'}
-        self.outFiles = {'input': 'MecLpInput.xlsb', 'gdxout': 'MecLpMain.gdx', 'listing': '_gams_py_gjo0.lst', 'log': 'MecLpMain.log'}
+        self.outFiles = {'input': 'MecLpInput.xlsb', 'xlsm': 'MECLpOutput.xlsm', 'gdxout': 'MecLpMain.gdx', 'listing': '_gams_py_gjo0.lst', 'log': 'MecLpMain.log'}
 
         self.sourceDir = os.path.join(rootDir, 'Master')          # Path of master files (source, input data)
         self.workDir   = os.path.join(rootDir, 'WorkDir')         # Root folder of put new folders for each job    
@@ -472,15 +474,33 @@ class CoreData():
         return
 
 class GamsData():
-    """ This class handles read operations on a GAMS database. """
+    """ 
+    This class handles read operations on a GAMS database. 
+    The data mey be stored in an internal dictionary of dataframes optionally in a lazy fashion.
+    """
 
-    def __init__(self, db: gams.GamsDatabase, keepData:bool = True, logger: logging.Logger = None):
+    def __init__(self, db: gams.GamsDatabase, keepData:bool = True, logger: logging.Logger = None, caseSensitive: bool = False):
+        """
+        Parameters
+        ----------
+        db : GamsDatabase
+            GAMS database to be read.
+        keepData : bool, optional
+            If True, the data is kept in memory as a dictionary of dataframes. The default is True.
+            logger : logging.Logger, optional
+            Logger to be used. If None is passed, a logger will be created with the name of the class. The default is None.
+        caseSensitive : bool, optional
+            If True, the symbol names of dictionaries returned from methods getSets, getParameters, getVariables, getEquations
+                are case-sensitive otherwise lowercase. The default is False.
+        """
         if not isinstance(db, gams.GamsDatabase):
             raise ValueError(f'gamsDb must be of type GamsDatabase, not {type(db)}')
         
         self.db = db
         self.keepData = keepData
         self.logger = logger if logger is not None else logging.getLogger(__name__)
+        self.caseSensitive = caseSensitive
+
         self.con = gtr.Container(db)
         self.data = self.con.data  # CasePreservingDict
         self.symbols = self.data.keys()
@@ -494,7 +514,7 @@ class GamsData():
     def __len__(self):
         return len(self.data)
 
-    def _getSymbol(self, key: str):
+    def _getSymbol(self, key: str) -> pd.DataFrame:
         symbolNameLower = self.lookup.get(key.lower(), None)
         if symbolNameLower is None:
             self.logger.error(f'Symbol name {key} not found in GAMS database {self.db.name}')
@@ -507,19 +527,127 @@ class GamsData():
             df = self.keptData[symbolNameLower]
         else:
             df = self.data[symbolNameLower].records
-
+    
         return df
     
     def __getitem__(self, key: str):
+        """ 
+        This method is an indexer for the class i.e. using syntax gamsData['key'] 
+        to retrieve contents of a GAMS symbol as a Pandas dataframe.
+        """
         return self._getSymbol(key)
     
-    def __contains__(self, key: str):
-        symbolName = self.lookup.get(key.lower(), None)
+    def __contains__(self, symbolName: str):
+        symbolName = self.lookup.get(symbolName.lower(), None)
         return symbolName is not None
     
-    def getKind(self, key: str) -> str:
+    def getKind(self, symbolName: str) -> str:
         """ Returns the kind of symbol (e.g. Set, Parameter, Variable, Equation, Alias)"""
-        symbol = self._getSymbol(key)
+        symbol = self._getSymbol(symbolName)
         kind = str(symbol.__class__)[:-2].split('.')[-1]
         return kind
+    
+    def getSymbol(self, symbolName: str):
+        """ 
+        Returns the GAMS Transfer symbol matching the case-insensitive name of the symbol. 
+        Returns None if the symbol is not found.
+        """
+        return self.data[symbolName.lower()]
+    
+    def getSymbolProperties(self, symbolName: str) -> dict:
+        """ Returns a dictionary of properties for a symbol. """
+        symbol = self._getSymbol(symbolName)
+        return symbol.summary   
+    
+    def getSymbolNames(self) -> list[str]:
+        """ Returns a list of symbol names as case-sensitive. """
+        if self.caseSensitive:
+            return list(self.data.keys())
+        return list(self.lookup.keys())
+    
+    def getSets(self) -> dict[str,Any]:
+        """ Returns a list of sets as GAMS symbols. """
+        symbols = self.con.getSets()
+        if self.caseSensitive:
+            return {s.name: s for s in symbols}
+        return {s.name.lower(): s for s in symbols}
+
+    def getAliases(self) -> dict[str,Any]:
+        """ Returns a list of aliases as GAMS symbols. """
+        symbols = self.con.getAliases()
+        if self.caseSensitive:
+            return {s.name: s for s in symbols}
+        return {s.name.lower(): s for s in symbols}
+
+    def getParameters(self) -> dict[str,Any]:
+        """ Returns a list of parameters as GAMS symbols. """
+        symbols = self.con.getParameters()
+        if self.caseSensitive:
+            return {s.name: s for s in symbols}
+        return {s.name.lower(): s for s in symbols}
+
+    def getVariables(self) -> dict[str,Any]:
+        """ Returns a list of variables as GAMS symbols. """
+        symbols = self.con.getVariables()
+        if self.caseSensitive:
+            return {s.name: s for s in symbols}
+        return {s.name.lower(): s for s in symbols}
+
+    def getEquations(self) -> dict[str,Any]:
+        """ Returns a list of equations as GAMS symbols. """
+        symbols = self.con.getEquations()
+        if self.caseSensitive:
+            return {s.name: s for s in symbols}
+        return {s.name.lower(): s for s in symbols}
+
+
+if __name__ == '__main__':
+    # Test of GamsData
+    pathFolder = r'C:\GitHub\23-4002-LPTool\App\MockUI'
+    pathGdx = os.path.join(pathFolder, 'MeclpMain.gdx')
+    if not os.path.exists:
+        raise ValueError(f'File {pathGdx} not found.')
+    
+    # Open GAMS database from a file and create a GamsData instance. 
+    # OBS: A GAMS database also can reside in memory and is accessed through a GamsJob instance e.g. gamsJob.out_db.    
+    ws = gams.GamsWorkspace()
+    gamsDb = ws.add_database_from_gdx(pathGdx)
+    db = GamsData(db=gamsDb, keepData=True)
+
+    # Test of GamsData ---------------------------------------------------------
+    # OBS: symbol names are case sensitive when using the GamsData methods. 
+    # GamsData is a convenient wrapper around the GAMS Transfer Container class.
+    
+    # Retrieve a set as a symbol and its records as a dataframe.
+    set_u = db.getSymbol('u')
+    print(f'{set_u.summary=}')
+    dfRecs = db['u']
+    print(f'set_u as records\n{dfRecs.head()}')
+
+    # Retrieve a parameter as a dataframe.
+    parm = db.getSymbol('StatsSolver')
+    print(f'{parm.summary=}')
+    # Two alternative ways of retrieving the dataframe of symbol records.
+    dfRecs = parm.records
+    print(f'{dfRecs.head(3)=}')
+    dfRecs = db['StatsSolver']
+    print(f'{dfRecs.head(3)=}')
+    # Convert the dataframe to a dictionary as it comprises only one column.
+    dictStatsSolver = dict(zip(dfRecs['topicSolver'], dfRecs['value']))
+    print(f'{dictStatsSolver=}')
+
+    # Retrieve variables as dictionary where key is lowercase symbolname.
+    vars = db.getVariables()
+    print(f'Variable names:\n{[v for v in vars.keys()]}')
+    vv = vars['qf']
+    print(vv.summary)
+
+    dfRecs = vv.records
+    print('As records\n',vv.records.head(2))  # One row for each record
+
+    dfRecs = vv.pivot(index='tt', columns=['u'], fill_value='level') 
+    print('As table\n', dfRecs.head(2))           # Tabular format with one row for each value of tt and a column for each u.
+
+    pass
+
     
