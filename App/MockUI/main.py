@@ -19,6 +19,8 @@ from   lpBase import LpBase
 
 pd.options.display.max_columns = None
 
+#region Setup job parameters
+
 def setupJobParms(scenId: str):
     masterParms = dict()  # Key is parameter name, value is parameter value.
     defaultMasterParms = jl.JobSpec.getDefaultMasterParms()
@@ -85,24 +87,34 @@ appConfig = {
 LpBase.setAppConfig(appConfig)
 logger = LpBase.getLogger()
 
-allPlants = [   'MaNVak', 'MaVak', 'HoNVak', 'StVak', 'MaCool', 'MaCool2', 'MaAff1', 'MaAff2', 'MaBio', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
-                'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
-                'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
+plantGroups = {'Ma': 'BHP', 'Ho': 'Holstebro', 'St': 'Struer'}
+
+orderU = [  'MaNVak', 'MaVak', 'HoNVak', 'StVak', 'MaCool', 'MaCool2', 'MaAff1', 'MaAff2', 'MaBio', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
+            'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
+            'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
+
 
 activePlants = ['MaNVak', 'MaVak', 'StVak', 'MaCool', 'MaCool2', 'MaAff1',
                 'MaBio', 'MaEk', 'MaNbk', 'MaNhpAir',
                 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
                 'StEk', 'StGk', 'StOk']
 
+symbolNames = [ 'u', 'upr', 'vak', 'OnUGlobal', 'TimeResol', \
+                'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', \
+                'FuelCost', 'TotalCostU', 'TotalTaxUpr', 'StatsU', 'StatsTax']
+
 scenId = 'm01s01u00r00f00'
 
+#endregion Setup job parameters
 
 performRun = False
 if performRun:
+    tbegin = time.perf_counter_ns()
+
     jobHandler = jl.JobHandler(description=None, pathRootDir=appConfig['pathRoot'], modelText=None)
 
     # Setup job specification
-    # TODO - Set the parameters of the job specification.
+    # TODO - Fetch the parameters of the job specification.
     parms = setupJobParms(scenId)
     jobSpec = jl.JobSpec('name', 'desc', scenId, parms, appConfig['traceOps'])
     core: jl.CoreData = jobHandler.runJob(jobSpec)
@@ -112,9 +124,10 @@ if performRun:
     else:
         logger.error(f'Optimization failed with status SolveStat={statsSolver["SolveStat"]}.')
         sys.exit(1)
+    tend = time.perf_counter_ns()
+    print(f'Elapsed time executing model run: {(tend-tbegin)/1e9:.4f} seconds.')
 else:
     core: jl.CoreData = jl.CoreData(scenId, appConfig['pathRoot'], appConfig['traceOps'])
-    
 
 
 #region Extracting data to show
@@ -128,67 +141,36 @@ else:
 readStemData = False
 readModelData = True
 
-if readStemData or readModelData:
+if readStemData:
     tbegin = time.perf_counter_ns()
-    if readStemData:
-        # Create StemData object
-        logger.info('Reading StemData.')
-        stemData = jl.StemData(os.path.join(core.targetDir, core.inFiles['input']))
-        data = stemData.data
-
+    # Create StemData object
+    logger.info('Reading StemData.')
+    stemData = jl.StemData(os.path.join(core.targetDir, core.inFiles['input']))
+    data = stemData.data
     tend0 = time.perf_counter_ns()
     if readStemData: print(f'Elapsed time reading stem data: {(tend0-tbegin)/1e9:.4f} seconds.')
 
-    if readModelData:
-        # Create ModelData object
-        modelData = jl.ModelData(scenId, pathFile=os.path.join(core.targetDir, core.outFiles['gdxout']))
-        symbolNames = [ 'u', 'upr', 'vak', 'OnUGlobal', 'TimeResol', \
-                        'Qf_L', 'QTf', 'PfNet', 'FuelQty', 'QfDemandActual_L', 'EVak_L', \
-                        'FuelCost', 'TotalCostU', 'TotalTaxUpr', 'StatsU', 'StatsTax']
-        for symbolName in symbolNames:
-            # logger.info(f'Reading symbol {symbolName}.')
-            df = modelData[symbolName]
-            print(f'{symbolName=}\n {df.head(2)}')
-
-    tend1 = time.perf_counter_ns()
-    print(f'Elapsed time reading model data: {(tend1-tend0)/1e9:.4f} seconds.')
-
-    # for symbolName in symbolNames:
-    #     logger.info(f'Retrieving symbol {symbolName}.')
-    #     df = modelData[symbolName]
-
-    tend2 = time.perf_counter_ns()
-    print(f'Elapsed time in total: {(tend2-tbegin)/1e9:.4f} seconds.')
-
-pass
-
-#%% Read data from gdx file 
-
 if readModelData:
-    # Pick available plants using the u symbol and the OnUGlobal symbol
+    modelData = jl.ModelData(scenId, pathFile=os.path.join(core.targetDir, core.outFiles['gdxout']))
+
+    # Get time resolution for model time intervals.
     dfTimeResol = modelData['TimeResol']
     timeIncr = (dfTimeResol['value'] / 60).to_numpy()
     timeVec = np.cumsum(timeIncr) - timeIncr[0]
     
+    # Pick available plants using the u symbol and the OnUGlobal symbol
     dfU = modelData['u']
     dfOnUGlobal = modelData['OnUGlobal']
     uAvail = dfOnUGlobal['u'].to_list()
     dfUpr = modelData['upr']
 
-    # Remove columns of dfUpr that are not available
+    # Remove columns of any plant dfUpr that are not available
     dfUpr = dfUpr[dfUpr['u'].isin(uAvail)]
-    orderU = ['MaNVak', 'MaVak', 'HoNVak', 'StVak', 'MaCool', 'MaCool2', 'MaAff1', 'MaAff2', 'MaBio', 'MaEk', 'MaNbk', 'MaNbKV', 'MaNEk', 'MaNhpAir', 'MaNhpPtX', 
-        'HoNEk', 'HoNFlis', 'HoNhpAir', 'HoNhpArla', 'HoNhpBirn', 'HoNhpSew', 'HoGk', 'HoOk', 
-        'StEk', 'StNEk', 'StNFlis', 'StNhpAir', 'StGk', 'StOk']
-
     # Setup the display order of plants.
     orderU = [u for u in orderU if u in uAvail]
-    plantGroups = {'Ma': 'BHP', 'Ho': 'Holstebro', 'St': 'Struer'}
-
 
     # Fetch the records of Qf_L and create a pivot table
     dfQf_LRecs = modelData['Qf_L']
-    # print(dfQf_LRecs.head())
 
     #region Abandoned code working on records of Qf_L
     # df = dfQf_LRecs.copy(deep=True)
@@ -230,23 +212,21 @@ if readModelData:
 
     # print(timeVec)
     print(dfQf_LRecs.head(10))
-    dfQf_Lx = jl.ModelData.createPivot(dfQf_LRecs, indexName='tt', columnNames=['u'], attrName='value', createTimeColumn=True, timeVector=timeVec)
+    dfQf_Lx = jl.ModelData.createPivot(dfQf_LRecs, indexName='tt', columnNames=['u'], attrName='value', fillna=True, fillTiny=True, createTimeColumn=True, timeVector=timeVec)
     
     # dfQf_Lavail nov contains a column name 'time' and a column for each plant that is available. Dimension 'tt' is used as index.
     # Pick only values of available production plants. 
     # Also, replace values of dfQf_Lavail that are less than 1E-12 with zero. The value 1E-14 is assigned within the GAMS model to ensure filled-in records.
-    dfQf_L = dfQf_Lx[['time'] + uAvail]   # Pick only columns of available plants and the time column.
-    # dfQf_L = dfQf_L.mask(dfQf_L.loc[:,:] < 1E-12 ,0.0, inplace=False)
-    dfQf_L = dfQf_L.replace(1E-14, 0.0)
+    dfQf_L = dfQf_Lx[['time'] + uAvail]   # Reorder columns such that time is leftmost and drop columns other than plant values.
 
-
-    # # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
+    # If any column of dfQf_Lavail ends with 'Cool', reverse the sign of the column values. Cooled heat is not delivered to the district heating system.
     for col in dfQf_L.columns:
         if 'Cool' in col:
             dfQf_L.loc[:,col] = -dfQf_L.loc[:,col] 
 
     # Create a column in dfQf_L that holds the timestamp composed of the now plus the time column.
-    timeOffset = datetime.fromisoformat('2024-01-08 00:00:00')
+    # CONVENTION: The time column holds the time interval index of the model. 
+    timeOffset = datetime.fromisoformat('2024-01-15 00:00:00')
     dfQf_L['timestamp'] = [timeOffset + timedelta(hours=t) for t in dfQf_L['time']]
 
     # Sort columns of dfQf_L according to orderU and add the time column at the end.

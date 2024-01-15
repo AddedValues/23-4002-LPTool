@@ -15,6 +15,7 @@ import gams.transfer as gtr
 
 from lpBase import LpBase
 
+TINY : float = 1E-14   # TINY is a placeholder for zero values in GAMS model data. 
 ZERO : int = 0
 ONE  : int = 1
 TWO  : int = 2
@@ -25,7 +26,6 @@ MEAN : str = 'mean'  # Assign the average of the block to the unpacked value.
 MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAJ', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEC', 'ÅR']
 
 LETTERS = string.ascii_uppercase
-
 
 class ExcelTable():
 
@@ -110,6 +110,7 @@ class ExcelTable():
             self.logger.error(f'Error in getCellAddr: {ex}')
             raise ex
         return (irowBase1, icolBase1)
+
 
 class CoreData():
     """ This class handles operations on input files and in particular setting of parameters within the Excel input file. """
@@ -463,6 +464,56 @@ class CoreData():
         return
 
 
+class StemData():
+
+    def __init__(self, filePath: str = 'MecLPinput.xlsb'):
+        """ 
+        Initializes the StemData object. 
+        Reads data from the excel file and stores it in a dictionary.
+        A lazy implementation is not used due to the excessive load time of the Excel file.
+        """
+
+        # self.path = os.path.join('C:\\GitHub\\23-4002-LPTool\\Data\\MockUI', fileName)
+        self.path = filePath #--- os.path.join('C:\\GitHub\\23-4002-LPTool\\Master', fileName)
+        if not os.path.exists(self.path):
+            print(f'Error: File {self.path} does not exist.')
+
+        self.logger = LpBase.getLogger()
+        self.data = self.read_excel_data()
+
+    def read_excel_data(self) -> dict[str, pd.DataFrame]:
+        """
+        Reads data from the excel file and returns a dictionary with the data.
+        """
+        # Read data from excel file
+        data = dict()  # Key is table name, value is dataframe.
+        xlapp = xw.App(visible=False, add_book=False)
+        try:
+            wb = xlapp.books.open(self.path, read_only=True)
+            data['LpTables'] = wb.sheets['LPspec'].range('tblLpTables').options(pd.DataFrame, expand='table', index=False).value
+            lpTables = data['LpTables']
+
+            for i in range(len(lpTables)):
+                tableName = lpTables.loc[i,'TableName']
+                sheetName = lpTables.loc[i,'SheetName']
+                rangeName = lpTables.loc[i,'RangeName']
+                useIndex = lpTables.loc[i,'UseIndex']
+                rowDim = int( lpTables.loc[i,'RowDim']) if useIndex else 0  
+                colDim = int(lpTables.loc[i,'ColDim'])
+                StemData._logger.info(f'Reading table {tableName} from sheet {sheetName} with range {rangeName}.')
+                # logger.info(f'UseIndex={useIndex}, RowDim = {rowDim}, ColDim = {colDim}.')
+                df = wb.sheets[sheetName].range(rangeName).options(pd.DataFrame, expand='table', index=rowDim, header=colDim).value
+                data[tableName] = df
+            wb.close()
+            
+        except Exception as e:
+            self.logger.exception(f'Error reading excel file {self.path}.', exc_info=True)
+        finally:
+            xlapp.quit()
+
+        return data
+
+
 class GamsData():
     """ 
     This class handles read operations on a GAMS database. 
@@ -590,57 +641,11 @@ class GamsData():
             return {s.name: s for s in symbols}
         return {s.name.lower(): s for s in symbols}
 
-class StemData():
-
-    def __init__(self, filePath: str = 'MecLPinput.xlsb'):
-        """ 
-        Initializes the StemData object. 
-        Reads data from the excel file and stores it in a dictionary.
-        A lazy implementation is not used due to the excessive load time of the Excel file.
-        """
-
-        # self.path = os.path.join('C:\\GitHub\\23-4002-LPTool\\Data\\MockUI', fileName)
-        self.path = filePath #--- os.path.join('C:\\GitHub\\23-4002-LPTool\\Master', fileName)
-        if not os.path.exists(self.path):
-            print(f'Error: File {self.path} does not exist.')
-
-        self.logger = LpBase.getLogger()
-        self.data = self.read_excel_data()
-
-    def read_excel_data(self) -> dict[str, pd.DataFrame]:
-        """
-        Reads data from the excel file and returns a dictionary with the data.
-        """
-        # Read data from excel file
-        data = dict()  # Key is table name, value is dataframe.
-        xlapp = xw.App(visible=False, add_book=False)
-        try:
-            wb = xlapp.books.open(self.path, read_only=True)
-            data['LpTables'] = wb.sheets['LPspec'].range('tblLpTables').options(pd.DataFrame, expand='table', index=False).value
-            lpTables = data['LpTables']
-
-            for i in range(len(lpTables)):
-                tableName = lpTables.loc[i,'TableName']
-                sheetName = lpTables.loc[i,'SheetName']
-                rangeName = lpTables.loc[i,'RangeName']
-                useIndex = lpTables.loc[i,'UseIndex']
-                rowDim = int( lpTables.loc[i,'RowDim']) if useIndex else 0  
-                colDim = int(lpTables.loc[i,'ColDim'])
-                StemData._logger.info(f'Reading table {tableName} from sheet {sheetName} with range {rangeName}.')
-                # logger.info(f'UseIndex={useIndex}, RowDim = {rowDim}, ColDim = {colDim}.')
-                df = wb.sheets[sheetName].range(rangeName).options(pd.DataFrame, expand='table', index=rowDim, header=colDim).value
-                data[tableName] = df
-            wb.close()
-            
-        except Exception as e:
-            self.logger.exception(f'Error reading excel file {self.path}.', exc_info=True)
-        finally:
-            xlapp.quit()
-
-        return data
-
 class ModelData(GamsData):
-    """ Accesses data of a GAMS model in lazy fashion (on-demand)."""
+    """
+    Accesses data of a GAMS model in lazy fashion (on-demand).
+    Class is a wrapper around GamsData allowing for specification of an in-memory or file-based GAMS database.
+    """
 
     def __init__(self, scenId:str= None, db: gams.GamsDatabase = None, pathFile:str = None):
         """ Initializes the ModelData object. """
@@ -664,9 +669,12 @@ class ModelData(GamsData):
 
         return
     
+    def __str__(self):
+        return f'{self.__class__.__name__} on db={self.db.name} for scenario={self.scenId}'
+    
     @staticmethod
     def createPivot(dfRecs: pd.DataFrame, indexName: str, columnNames: list[str], attrName: str,
-                    fillna: bool = True, createTimeColumn: bool = False, timeVector: list[float] = None) -> pd.DataFrame:
+                    fillna: bool = True, fillTiny: bool = True, createTimeColumn: bool = False, timeVector: list[float] = None) -> pd.DataFrame:
         """
         Creates a pivot table from a DataFrame of records e.g. of a GAMS symbol like parameter, variable, equation.
         Each column of dfRecs holds the values of a defining dimension of the symbol.
@@ -722,6 +730,9 @@ class ModelData(GamsData):
         
         if fillna:
             dfPivot = dfPivot.fillna(0.0)
+        if fillTiny:
+            dfPivot = dfPivot.replace(TINY, 0.0)    
+
             
         if createTimeColumn:
             # Assuming the index of pivot has members of kind 't'nnnn where n is a digit.
@@ -739,6 +750,7 @@ class ModelData(GamsData):
             dfPivot = dfPivot.sort_values(by=['time'])
         
         return dfPivot
+
 
 class JobSpec(): 
     """
@@ -833,7 +845,7 @@ class JobSpec():
 
 class JobHandler():
     """
-    JobHandler performs the runs of the LP optimization model.
+    JobHandler handles the runs of the LP optimization model.
     """
     version = "0.0.1"
 
@@ -844,15 +856,18 @@ class JobHandler():
         self.rootDir = pathRootDir
         self.modelText = modelText
         return
-    
 
     def __str__(self) -> str:   
-        return f"{super().__str__()} {self.rootDir}"
+        return f"{self.__class__.name}: {self.rootDir}"
     
     @staticmethod
     def time2int(time: dt.datetime) -> int:
-        """ Converts a datetime object to an integer of kind 't'nnnn. """
+        """
+        Converts a datetime object to an integer of kind 't'nnnn. 
+        Used to convey the time of a scenario to the GAMS model which expects an integer.
+        """
         return int(time.strftime('%Y%m%d%H'+'00'))
+
 
     @staticmethod
     def getFileName(scenId: str, fnameOrig: str, fext: str) -> str:
@@ -901,7 +916,7 @@ class JobHandler():
             opt.solprint = 0
             opt.limrow = 0
             opt.limcol = 0
-            opt.listing = 'off'              # Tell gams whether to produce a listing file at end of run (equivalent to the gams $OffListing or $OnListing directive)
+            opt.listing = 'off'                   # Tell gams whether to produce a listing file at end of run (equivalent to the gams $OffListing or $OnListing directive)
             opt.savepoint = 0
             opt.gdx  = core.outFiles['gdxout']    # Tell gams to produce a gdx file at end of run (equivalent to the gams command line option GDX=default)
             gamsJob = ws.add_job_from_file(core.inFiles['main.gms'])
@@ -916,9 +931,6 @@ class JobHandler():
             self.logger.info(f'GAMS job for scenario {core.scenId} completed.')
 
             # Read job status from GAMS in-memory database.
-            # masterIter = int(gamsJob.out_db.get_parameter("MasterIter").first_record().value)
-            # iterOptim =  int(gamsJob.out_db.get_parameter("IterOptim").first_record().value)
-            # self.logger.debug(f'{masterIter=}, {iterOptim=}')
             m = gtr.Container(gamsJob.out_db)
             statsSolver: gtr.syms.container_syms._parameter.Parameter = m.data['StatsSolver']
             # print(statsSolver.summary)
