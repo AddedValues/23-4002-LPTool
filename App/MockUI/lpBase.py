@@ -14,7 +14,7 @@ def whoami():
     s = inspect.stack()
     return [ s[1][3], s[2][3] ]  # function and caller names.
 
-class JobResultKind(enum.Enum):
+class LpJobResultKind(enum.Enum):
     OK = 0
     Info = 1
     Warning = 2

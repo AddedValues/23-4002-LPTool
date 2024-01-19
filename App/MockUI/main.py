@@ -1,4 +1,5 @@
 from typing import IO, Any
+import types
 import sys
 import os
 import time
@@ -14,7 +15,7 @@ import xlwings as xw
 # from dash import Dash, html, dash_table, dcc, Output, Input, State
 # import dash_bootstrap_components as dbc
 # from dash.exceptions import PreventUpdate
-import jobLib as jl
+import lpJobLib as jl
 from   lpBase import LpBase
 
 pd.options.display.max_columns = None
