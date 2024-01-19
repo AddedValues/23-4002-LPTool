@@ -123,7 +123,7 @@ loop (tr $OnTrans(tr),
 #---    CO2Kvote, TotalElIncome,
 #---    FuelCost, DVCost, StartCost, ElCost, TotalCost, TotalTax,
 #---    EtaPower, EtaHeat, PowInMax, ElSpotIncome,
-#---    CapEAllocMWhUp, CapEAllocMWhDown
+#---    CapFAllocMWhUp, CapFAllocMWhDown
 #---    /;
 
 StatsU(upr,topicU)     = 0.0;
@@ -163,8 +163,8 @@ StatsU(upr,   'CO2Kvote')         = sum(t, TaxProdU.L(t,upr,'ets'));   # NB: Udt
 StatsU(upr,   'PowerNet')         = tiny $OnUGlobal(upr);
 StatsU(upr,   'PowerGen')         = tiny $OnUGlobal(upr);
 StatsU(upr,   'ElEgbrug')         = sum(t, ElEigenE.L(t,upr));
-StatsU(uelec, 'CapEAllocMWhUp')   = sum(tt2tbid(tt,tbid), CapEAlloc.L(tt,uelec,'up')); 
-StatsU(uelec, 'CapEAllocMWhDown') = sum(tt2tbid(tt,tbid), CapEAlloc.L(tt,uelec,'down')); 
+StatsU(uelec, 'CapFAllocMWhUp')   = sum(tt2tbid(tt,tbid), CapFAlloc.L(tt,uelec,'up')); 
+StatsU(uelec, 'CapFAllocMWhDown') = sum(tt2tbid(tt,tbid), CapFAlloc.L(tt,uelec,'down')); 
 
 loop (kv $(OnUGlobal(kv)),
   StatsU(kv,'PowerNet')   = sum(t, PfNet.L(t,kv));

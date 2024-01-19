@@ -157,7 +157,7 @@ Parameter bStartStop(tt,u,startstop)  'Angiver om start hhv. stop er on';
 
 Scalar QInfeasPenalty   'DKK/MWq'  / 15000.0 /;  # Penalty på forbrug af virtuel varme kilde-dræn.
 Scalar RewardWaste      'Belønning for at afbrænde affald DKK/kg'  / +0.100 /;  # Skal sikre at mest muligt affald afbrændes indenfor den rådige tonnage.
-Scalar CapESlackPenalty 'DKK/MWe'  /  5000.0 /;  # Penalty på CapESlack.
+Scalar CapFSlackPenalty 'DKK/MWe'  /  5000.0 /;  # Penalty på CapFSlack.
 Scalar QSrPenalty       'DKK/MWq'  /     0.0 /;  # Penalty på forbrug af spidslastvarme.
 #--- Scalar bOnSRPenalty    'DKK/MWq'  / 0.00 /;   # Skal sikre at bOnSR holdes på nul, hvis ingen SR-anlæg er aktive.
 
@@ -216,7 +216,7 @@ Parameter TariffElRaadighed(dso)        'Rådighedstarif';
 Parameter TariffElEffekt(dso)           'Effektbetaling';
 
 Parameter FfMax(u)                      'Nominal max. fuel input [MW]';
-Parameter CapEU(tt,uelec)               'Time-varying power capacity of electric plants';
+Parameter CapFU(tt,uelec)               'Time-varying power capacity of electric plants';
 Parameter CapQU(u)                      'Heat capacity of plants';
 Parameter CapacP(u)                     'Elkapacitet MWe';
 Parameter CapacPoverQ(u)                'Elkapacitet ift. varmekapacitet MWe/MWq';
@@ -402,14 +402,14 @@ Parameter CostInfeasSum(net)             'CostInfeas for hver periode';
 *begin Kapacitets allokering til el-markeder
 
 Parameter DataResv(tbid,elmarket,lblDataResv)     'Budmelding til elmarkeder (kapacitet, pris)';
-Parameter CapEResv(tbid,elmarket,dirResv)         'Kapacitetsreservationer til elmarkeder';
-Parameter CapEResvSum(tbid,dirResv)               'Kapacitetsreservationer summeret over elmarkeder';
-Parameter CapEAvail(uelec,dirResv)                'Anlæg til rådighed for kapacitetsreservation';
-Parameter GainCapE(tbid,elmarket,dirResv)         'Rådighedsbetaling for kapacitetsreservation [DKK]';
-Parameter GainCapETotal                           'Samlet rådighedsbetaling [DKK]';
+Parameter CapFResv(tbid,elmarket,dirResv)         'Kapacitetsreservationer til elmarkeder';
+Parameter CapFResvSum(tbid,dirResv)               'Kapacitetsreservationer summeret over elmarkeder';
+Parameter CapFAvail(uelec,dirResv)                'Anlæg til rådighed for kapacitetsreservation';
+Parameter GainCapF(tbid,elmarket,dirResv)         'Rådighedsbetaling for kapacitetsreservation [DKK]';
+Parameter GainCapFTotal                           'Samlet rådighedsbetaling [DKK]';
 Parameter DataElMarket(lblElMarket,elmarket)      'Elmarkedsegenskaber';
-Parameter GradUCapE(tbid,uelec,dirResv)           'Følsomheder for CapE allokeringer';
-Parameter GradUCapESumU(tbid,dirResv)             'Sum af GradUCapE over uelec for hver budtime';
-Parameter GradUCapETotal(dirResv)                 'Sum af GradUCapESumU over buddøgnet';
+Parameter GradUCapF(tbid,uelec,dirResv)           'Følsomheder for CapF allokeringer';
+Parameter GradUCapFSumU(tbid,dirResv)             'Sum af GradUCapF over uelec for hver budtime';
+Parameter GradUCapFTotal(dirResv)                 'Sum af GradUCapFSumU over buddøgnet';
 
 *end Kapacitets allokering til el-markeder

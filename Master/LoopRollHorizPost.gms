@@ -47,22 +47,22 @@ TotalSumCO2Emis(net,co2kind) =  sum(tt $(ord(tt) LE DurationPeriod), TotalCO2Emi
 
 # Tolkning af equation marginaler:
 #   Generelt angiver en equation marginal, hvad objektfunktionen (her: gevinsten) vil stige, hvis højresiden øges med 1 enhed, alt andet lige.
-#   GradUCapE er marginalerne for hvert tidspunkt i driftsdøgnet (hvortil buddene er givet).
-#   GradUCapE beregnes med fortegn således, at den angiver gevinsten for en øgning af CapEAlloc med 1 enhed.
+#   GradUCapF er marginalerne for hvert tidspunkt i driftsdøgnet (hvortil buddene er givet).
+#   GradUCapF beregnes med fortegn således, at den angiver gevinsten for en øgning af CapFAlloc med 1 enhed.
 
-# CapEU er den øjeblikkelige max. kapacitet: FfMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
-#--- EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                        =G=  BLen(t) * CapEAlloc(t,uelcons,'up');
-#--- EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                        =L=  BLen(t) * (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
-#--- EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  BLen(t) * (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));
-#--- EQ_CapEAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  BLen(t) * CapEAlloc(t,uelprod,'down');
+# CapFU er den øjeblikkelige max. kapacitet: FfMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
+#--- EQ_CapFAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapFAvail(uelcons,'up'))   .. Ff(t,uelcons)                        =G=  BLen(t) * CapFAlloc(t,uelcons,'up');
+#--- EQ_CapFAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapFAvail(uelcons,'down')) .. Ff(t,uelcons)                        =L=  BLen(t) * (CapFU(t,uelcons) - CapFAlloc(t,uelcons,'down'));
+#--- EQ_CapFAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapFAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  BLen(t) * (CapFU(t,uelprod) - CapFAlloc(t,uelprod,'up'));
+#--- EQ_CapFAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapFAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  BLen(t) * CapFAlloc(t,uelprod,'down');
 
-GradUCapE(tbid,uelcons,'up')   $OnUGlobal(uelcons) = sum(tt2tbid(tt,tbid), +Blen(tt) * EQ_CapEAllocConsUp.m(tt,uelcons));
-GradUCapE(tbid,uelcons,'down') $OnUGlobal(uelcons) = sum(tt2tbid(tt,tbid), -Blen(tt) * EQ_CapEAllocConsDown.m(tt,uelcons));
-GradUCapE(tbid,uelprod,'up')   $OnUGlobal(uelprod) = sum(tt2tbid(tt,tbid), -Blen(tt) * EQ_CapEAllocProdUp.m(tt,uelprod));
-GradUCapE(tbid,uelprod,'down') $OnUGlobal(uelprod) = sum(tt2tbid(tt,tbid), +Blen(tt) * EQ_CapEAllocProdDown.m(tt,uelprod));
+GradUCapF(tbid,uelcons,'up')   $OnUGlobal(uelcons) = sum(tt2tbid(tt,tbid), +Blen(tt) * EQ_CapFAllocConsUp.m(tt,uelcons));
+GradUCapF(tbid,uelcons,'down') $OnUGlobal(uelcons) = sum(tt2tbid(tt,tbid), -Blen(tt) * EQ_CapFAllocConsDown.m(tt,uelcons));
+GradUCapF(tbid,uelprod,'up')   $OnUGlobal(uelprod) = sum(tt2tbid(tt,tbid), -Blen(tt) * EQ_CapFAllocProdUp.m(tt,uelprod));
+GradUCapF(tbid,uelprod,'down') $OnUGlobal(uelprod) = sum(tt2tbid(tt,tbid), +Blen(tt) * EQ_CapFAllocProdDown.m(tt,uelprod));
 
-GradUCapESumU(tbid,dirResv) = sum(uelec $OnUGlobal(uelec), GradUCapE(tbid,uelec,dirResv));
-GradUCapETotal(dirResv)     = sum(tbid, GradUCapESumU(tbid,dirResv));
+GradUCapFSumU(tbid,dirResv) = sum(uelec $OnUGlobal(uelec), GradUCapF(tbid,uelec,dirResv));
+GradUCapFTotal(dirResv)     = sum(tbid, GradUCapFSumU(tbid,dirResv));
 
 *end 
 

@@ -192,9 +192,9 @@ BothAffAvailable(t) = OnU(t,'MaAff1') AND OnU(t,'MaAff2');
 
 *begin Beregning af tidsafhængig elektrisk kapacitet for uelec anlæg.
 
-loop (kv $OnUGlobal(kv),   CapEU(t,uelprod) $sameas(uelprod,kv)  = EtaPU(kv) * FfMax(kv);  );
-loop (uek $OnUGlobal(uek), CapEU(t,uelcons) $sameas(uelcons,uek) = FfMax(uek); );
-loop (hp $OnUGlobal(hp),   CapEU(t,uelcons) $sameas(uelcons,hp)  = FfMax(hp) / COP(t,hp); );  
+loop (kv $OnUGlobal(kv),   CapFU(t,uelprod) $sameas(uelprod,kv)  = EtaPU(kv) * FfMax(kv);  );
+loop (uek $OnUGlobal(uek), CapFU(t,uelcons) $sameas(uelcons,uek) = FfMax(uek); );
+loop (hp $OnUGlobal(hp),   CapFU(t,uelcons) $sameas(uelcons,hp)  = FfMax(hp) / COP(t,hp); );  
 
 *end
 

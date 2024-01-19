@@ -106,37 +106,33 @@ Positive variable       QfBasebOnSR(tt,netq)        'Product af QfBase og bOnSR'
 
 
 *begin Kapacitetsallokeringer
-Positive variable       CapEAlloc(tt,uelec,dirResv)    'Kapacitetsallokeringer på anlægsbasis';
-Positive variable       CapESlack(tt,dirResv)          'Kapacitetsallokerings slack ift. diskret størrelse';
-Positive variable       CapEAllocSumU(tt,dirResv)      'Kapacitetsallokering summeret over anlæg';
-Positive variable       CostCapESlack(tt,dirResv)      'Penalty cost på CapESlack';
+Positive variable       CapFAlloc(tt,uelec,dirResv)    'Kapacitetsallokeringer på anlægsbasis';
+Positive variable       CapFSlack(tt,dirResv)          'Kapacitetsallokerings slack ift. diskret størrelse';
+Positive variable       CapFAllocSumU(tt,dirResv)      'Kapacitetsallokering summeret over anlæg';
+Positive variable       CostCapFSlack(tt,dirResv)      'Penalty cost på CapFSlack';
 
-Equation EQ_CapEAllocConsDown(tt,uelcons) 'Reserverer nedregul. kapac. for elforbrug. anlæg';
-Equation EQ_CapEAllocConsUp(tt,uelcons)   'Reserverer opregul.  kapac. for elforbrug. anlæg';
-Equation EQ_CapEAllocProdDown(tt,uelprod) 'Reserverer nedregul. kapac. for elprod. anlæg';
-Equation EQ_CapEAllocProdUp(tt,uelprod)   'Reserverer opregul.  kapac. for elprod. anlæg';
+Equation EQ_CapFAllocConsDown(tt,uelcons) 'Reserverer nedregul. kapac. for elforbrug. anlæg';
+Equation EQ_CapFAllocConsUp(tt,uelcons)   'Reserverer opregul.  kapac. for elforbrug. anlæg';
+Equation EQ_CapFAllocProdDown(tt,uelprod) 'Reserverer nedregul. kapac. for elprod. anlæg';
+Equation EQ_CapFAllocProdUp(tt,uelprod)   'Reserverer opregul.  kapac. for elprod. anlæg';
 
-# CapEU er den øjeblikkelige max. kapacitet: FfMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
-# remove EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                            =G=  BLen(t) * CapEAlloc(t,uelcons,'up');
-# remove EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                            =L=  BLen(t) * (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
-# remove EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  BLen(t) * (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));
-# remove EQ_CapEAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  BLen(t) * CapEAlloc(t,uelprod,'down');
+# CapFU er den øjeblikkelige max. kapacitet: FfMax / COP for elforbrugende anlæg, og PfNet(t) for elproducerende anlæg
 
-EQ_CapEAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'up'))   .. Ff(t,uelcons)                           =G=  CapEAlloc(t,uelcons,'up');
-EQ_CapEAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapEAvail(uelcons,'down')) .. Ff(t,uelcons)                           =L=  (CapEU(t,uelcons) - CapEAlloc(t,uelcons,'down'));
-EQ_CapEAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  (CapEU(t,uelprod) - CapEAlloc(t,uelprod,'up'));
-EQ_CapEAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapEAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  CapEAlloc(t,uelprod,'down');
+EQ_CapFAllocConsUp(t,uelcons)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapFAvail(uelcons,'up'))   .. Ff(t,uelcons)                             =G=  CapFAlloc(t,uelcons,'up');
+EQ_CapFAllocConsDown(t,uelcons) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelcons) AND CapFAvail(uelcons,'down')) .. Ff(t,uelcons)                             =L=  (CapFU(t,uelcons) - CapFAlloc(t,uelcons,'down'));
+EQ_CapFAllocProdUp(t,uelprod)   $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapFAvail(uelprod,'up'))   .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =L=  (CapFU(t,uelprod) - CapFAlloc(t,uelprod,'up'));
+EQ_CapFAllocProdDown(t,uelprod) $(OnCapacityReservation AND IsBidDay(t) AND OnU(t,uelprod) AND CapFAvail(uelprod,'down')) .. sum(kv $sameas(kv,uelprod), PfNet(t,kv))  =G=  CapFAlloc(t,uelprod,'down');
 
-Equation EQ_CapEAllocSum(tt,dirResv)       'Beregner CapEAllocSumU';
-EQ_CapEAllocSum(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CapEAllocSumU(t,dirResv)  =E=  sum(uelec $OnU(t,uelec), CapEAlloc(t,uelec,dirResv));
+Equation EQ_CapFAllocSum(tt,dirResv)       'Beregner CapFAllocSumU';
+EQ_CapFAllocSum(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CapFAllocSumU(t,dirResv)  =E=  sum(uelec $OnU(t,uelec), CapFAlloc(t,uelec,dirResv));
 
 Equation EQ_AllocReservMatch(tbid,tt,dirResv)  'Sikrer match mellem allok. og reservation';
 # TODO CHECK om skalering med BLen er korrekt her.
 EQ_AllocReservMatch(tbid,tt,dirResv) $(OnCapacityReservation AND ord(tbid) LE HoursBidDay AND IsBidDay(tt) AND tt2tbid(tt,tbid)) .. 
-                                         CapEAllocSumU(tt,dirResv) + CapESlack(tt,dirResv)  =E=  BLen(tt) * sum(elmarket $DataElMarket('Active',elmarket), CapEResv(tbid,elmarket,dirResv));
+                                         CapFAllocSumU(tt,dirResv) + CapFSlack(tt,dirResv)  =E=  BLen(tt) * sum(elmarket $DataElMarket('Active',elmarket), CapFResv(tbid,elmarket,dirResv));
 
-Equation EQ_CostCapESlack(tt,dirResv)      'Beregner penalty på CapESlack';
-EQ_CostCapESlack(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CostCapESlack(t,dirResv)  =E=  CapESlackPenalty * CapESlack(t,dirResv);
+Equation EQ_CostCapFSlack(tt,dirResv)      'Beregner penalty på CapFSlack';
+EQ_CostCapFSlack(t,dirResv) $(OnCapacityReservation AND IsBidDay(t)) .. CostCapFSlack(t,dirResv)  =E=  CapFSlackPenalty * CapFSlack(t,dirResv);
 
 *end Kapacitetsallokeringer
 
@@ -160,7 +156,7 @@ Equation EQ_TotalCO2Emis(tt,net,co2kind);
 
 #OBS Genberegning af slave objective efter hver rullende horisont skal opdateres hvis EQ_ObjSlave opdateres.
 
-EQ_ObjSlave .. zSlave  =E=  ( GainCapETotal
+EQ_ObjSlave .. zSlave  =E=  ( GainCapFTotal
                               + sum (t,
                                 + QSales(t)
                                 + sum (tr  $OnTrans(tr),    -CostPump(t,tr))
@@ -168,7 +164,7 @@ EQ_ObjSlave .. zSlave  =E=  ( GainCapETotal
                                 + sum (kv  $OnU(t,kv),      +TotalElIncome(t,kv))
                                 + sum (net $OnNet(net),     -CostInfeas(t,net))
                                 + sum (net $OnNet(net),     -CostSrPenalty(t,net))
-                                + sum (dirResv,             -CostCapESlack(t,dirResv))
+                                + sum (dirResv,             -CostCapFSlack(t,dirResv))
                                 +                            RewardBurnWaste(t)
                                 )
                              ) / PeriodObjScale;      # Total cost in MDKK.

@@ -50,7 +50,7 @@ par=Availability_hh        rng=Availabilities!A10        rdim=1 cdim=1
 par=Revision_hh            rng=Availabilities!AE10       rdim=1 cdim=1
 par=Prognoses_hh           rng=Prognoses!A10             rdim=1 cdim=1
 par=DataResv               rng=CapacAlloc!B9:I34         rdim=1 cdim=2
-par=CapEAvail              rng=CapacAlloc!L10:N34        rdim=1 cdim=1
+par=CapFAvail              rng=CapacAlloc!L10:N34        rdim=1 cdim=1
 par=DataElMarket           rng=CapacAlloc!Q10            rdim=1 cdim=1
 
 $offecho
@@ -91,7 +91,7 @@ $LOAD   Availability_hh
 $LOAD   Revision_hh
 $LOAD   Prognoses_hh
 $LOAD   DataResv
-$LOAD   CapEAvail
+$LOAD   CapFAvail
 $LOAD   DataElMarket
 
 $GDXIN   # Close GDX file.
@@ -159,8 +159,8 @@ $OnOrder
 
 *begin Sheet CapacAlloc
 
-# Overfør Kapacitetsreservationer til CapEResv.
-CapEResv(tbid,elmarket,dirResv) = DataResv(tbid,elmarket,dirResv);
+# Overfør Kapacitetsreservationer til CapFResv.
+CapFResv(tbid,elmarket,dirResv) = DataResv(tbid,elmarket,dirResv);
 
 *end Sheet CapacAlloc
 
@@ -320,7 +320,7 @@ loop (upr $(OnUGlobal(upr) AND NOT ucool(upr)),
 
 *begin Kapacitetsreservation
 
-CapEAvail(uelec,dirResv) = CapEAvail(uelec,dirResv) $OnUGlobal(uelec);
+CapFAvail(uelec,dirResv) = CapFAvail(uelec,dirResv) $OnUGlobal(uelec);
 
 *end Kapacitetsreservation
 

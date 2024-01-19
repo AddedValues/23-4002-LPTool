@@ -707,7 +707,7 @@ Set topicU     'Prod unit stats' /
     CO2Kvote, TotalElIncome,
     FuelCost, DVCost, StartCost, ElCost, TotalCost, TotalTax,
     EtaPower, EtaHeat, PowInMax, ElSpotIncome,
-    CapEAllocMWhUp, CapEAllocMWhDown     /;
+    CapFAllocMWhUp, CapFAllocMWhDown     /;
 
 Set topicMecU     'MEC anlægs-stats' /
     OperHours, BypassHours, Rgkhours,

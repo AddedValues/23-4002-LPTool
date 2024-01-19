@@ -16,6 +16,21 @@ pModelStat = modelSlave.ModelStat; display pModelStat;
 
 $batInclude 'SaveSolverState.gms' modelSlave
 
+*begin Write short stats to new gdx file
+
+execute_unload "JobStats.gdx", 
+  ActScen, 
+  TimeResol,
+  OnUGlobal, 
+  u, uActive,   
+  StatsSolver,
+  zSlave  
+;
+
+*end Write short stats to new gdx file
+
+
+
 If (pModelStat EQ 3, 
   display "Solveren overskred tidsbegrænsningen. Se option .reslim hhv. option for den specifikke solver.";
 ElseIf (pModelStat GT 2 AND pModelStat NE 8), 

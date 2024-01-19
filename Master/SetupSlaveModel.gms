@@ -161,7 +161,7 @@ loop (forcedOnUpr $OnUGlobal(forcedOnUpr),
 
 loop (uelec $OnUGlobal(uelec),
   loop (dirResv,
-    if (NOT CapEAvail(uelec,dirResv), CapEAlloc.fx(t,uelec,dirResv) = 0.0; );
+    if (NOT CapFAvail(uelec,dirResv), CapFAlloc.fx(t,uelec,dirResv) = 0.0; );
   );
 );
 

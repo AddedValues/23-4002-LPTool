@@ -400,13 +400,13 @@ Loop (hp,
 
 *begin Kapacitetsallokeringer
 
-CapEResvSum(tbid,dirResv)  = sum(elmarket, CapEResv(tbid,elmarket, dirResv));
+CapFResvSum(tbid,dirResv)  = sum(elmarket, CapFResv(tbid,elmarket, dirResv));
 
 # Beregn statisk rådighedsbetaling af elkapacitet.
 if (OnCapacityReservation,
-  GainCapE(tbid,elmarket,dirResv) = CapEResv(tbid,elmarket,dirResv) * DataResv(tbid,elmarket,'Pris');
+  GainCapF(tbid,elmarket,dirResv) = CapFResv(tbid,elmarket,dirResv) * DataResv(tbid,elmarket,'Pris');
 );
-GainCapETotal = sum(tbid, sum(elmarket, sum(dirResv, GainCapE(tbid,elmarket,dirResv))));
+GainCapFTotal = sum(tbid, sum(elmarket, sum(dirResv, GainCapF(tbid,elmarket,dirResv))));
 
 *end Kapacitetsallokeringer
 
